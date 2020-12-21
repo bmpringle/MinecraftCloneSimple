@@ -1,0 +1,8 @@
+InputHandler:
+    InputHandler() {
+        //create a EventQueue 
+    }
+    
+    handleInput(EventQueue* worldEventQueue) {
+        //use glfw to obtain input and call events
+    }

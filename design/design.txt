@@ -1,0 +1,15 @@
+Goal: Create a 100x100x100 world in which the player is able to move around, and place dirt, cobblestone, and wooden planks. This should be generated nonrandomly.
+
+main:
+World world = World();
+
+setup(&world);
+while(true) {
+    world.updateGame();
+    world.renderGame();
+}
+
+
+setup:
+    setup GLFW and OpenGL for rendering
+    give World and references it needs to keep track of for the game here

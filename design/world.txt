@@ -1,0 +1,30 @@
+World:
+
+World() {
+    Array<Block> internalBlockData = Array<Block>();
+    generateWorld();
+    InputHandler input = InputHandler();
+    EventQueue worldEventQueue = EventQueue();
+    WorldRenderer renderer = WorldRenderer();
+    Player thePlayer = Player();
+}
+
+generateWorld() {
+    //set blocks in world 
+}
+
+updateGame() {
+    input.handleInput(&worldEventQueue);
+    for(int x = 0; x < 100; ++x) {
+        for(int y = 0; y < 100; ++y) {
+            for(int z = 0; z < 100; ++z) {
+                internalBlockData.updateBlockAtPosition(x, y, z);
+            }
+        }
+    }
+    thePlayer.updatePlayerInWorld(&this);
+}
+
+renderGame() {
+    //will do this after the rest of the game is implemented.
+}
