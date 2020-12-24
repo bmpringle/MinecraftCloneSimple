@@ -2,6 +2,7 @@
 #define BLOCK_H
 
 #include <string>
+#include "Model.h"
 
 struct BlockPos {
     public:
@@ -14,10 +15,18 @@ struct BlockPos {
         int z = 0;
 };
 
-class Block {
+class Block : public Model {
     public:
+        Block();
+
         std::string getName();
+
         BlockPos getPos();
+
+        void setPos(BlockPos pos_);
+
+        AABB getAABB();
+        
     private:
         BlockPos pos;
 };

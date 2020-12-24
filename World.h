@@ -5,21 +5,37 @@
 #include "EventLib/EventQueue.h"
 #include "BlockArrayData.h"
 #include "Player.h"
+#include "RenderInclude.h"
 
 class World {
     public:
-        World();
+        World(GLFWwindow* window);
 
         void updateGame();
 
         void renderGame();
+
+        void mainLoop();
+
+        float getWorldGravity();
+
+        BlockArrayData* getBlockData();
     private:
         void generateWorld();
 
-        Player thePlayer;
+        void internalKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+        EventQueue worldEventQueue;
         InputHandler input;
         WorldRenderer renderer;
-        EventQueue worldEventQueue;
         BlockArrayData internalBlockData;
+        GLFWwindow* window;
+        std::shared_ptr<Player> thePlayer;
+
+        //in meters/s^2
+        float worldGravity = 2;
 };
+
+bool AABBIntersectedByAABB(AABB box1, AABB box2);
+
 #endif

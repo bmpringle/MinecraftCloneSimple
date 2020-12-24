@@ -1,0 +1,167 @@
+#ifndef GLFWKEYCODECONVERTER_H
+#define GLFWKEYCODECONVERTER_H
+
+#include "RenderInclude.h"
+#include <optional>
+
+std::optional<char> fromKeyCode(int keycode) {
+    switch(keycode) {
+        case GLFW_KEY_0:
+            return '0';
+        case GLFW_KEY_1:
+            return '1';
+        case GLFW_KEY_2:
+            return '2';
+        case GLFW_KEY_3:
+            return '3';
+        case GLFW_KEY_4:
+            return '4';
+        case GLFW_KEY_5:
+            return '5';
+        case GLFW_KEY_6:
+            return '6';
+        case GLFW_KEY_7:
+            return '7';
+        case GLFW_KEY_8:
+            return '8';
+        case GLFW_KEY_9:
+            return '9';
+        case GLFW_KEY_A:
+            return 'a';
+        case GLFW_KEY_B:
+            return 'b';
+        case GLFW_KEY_C:
+            return 'c';
+        case GLFW_KEY_D:
+            return 'd';
+        case GLFW_KEY_E:
+            return 'e';
+        case GLFW_KEY_F:
+            return 'f';
+        case GLFW_KEY_G:
+            return 'g';
+        case GLFW_KEY_H:
+            return 'h';
+        case GLFW_KEY_I:
+            return 'i';
+        case GLFW_KEY_J:
+            return 'j';
+        case GLFW_KEY_K:
+            return 'k';
+        case GLFW_KEY_L:
+            return 'l';
+        case GLFW_KEY_M:
+            return 'm';
+        case GLFW_KEY_N:
+            return 'n';
+        case GLFW_KEY_O:
+            return 'o';
+        case GLFW_KEY_P:
+            return 'p';
+        case GLFW_KEY_Q:
+            return 'q';
+        case GLFW_KEY_R:
+            return 'r';
+        case GLFW_KEY_S:
+            return 's';
+        case GLFW_KEY_T:
+            return 't';
+        case GLFW_KEY_U:
+            return 'u';
+        case GLFW_KEY_V:
+            return 'v';
+        case GLFW_KEY_W:
+            return 'w';
+        case GLFW_KEY_X:
+            return 'x';
+        case GLFW_KEY_Y:
+            return 'y';
+        case GLFW_KEY_Z:
+            return 'z';
+        case GLFW_KEY_SPACE:
+            return ' ';
+        default:
+            return std::nullopt;
+    }
+}
+std::optional<int> toKeyCode(char c) {
+    switch(c) {
+        case '0':
+            return GLFW_KEY_0;
+        case '1':
+            return GLFW_KEY_1;
+        case '2':
+            return GLFW_KEY_2;
+        case '3':
+            return GLFW_KEY_3;
+        case '4':
+            return GLFW_KEY_4;
+        case '5':
+            return GLFW_KEY_5;
+        case '6':
+            return GLFW_KEY_6;
+        case '7':
+            return GLFW_KEY_7;
+        case '8':
+            return GLFW_KEY_8;
+        case '9':
+            return GLFW_KEY_9;
+        case 'a':
+            return GLFW_KEY_A;
+        case 'b':
+            return GLFW_KEY_B;
+        case 'c':
+            return GLFW_KEY_C;
+        case 'd':
+            return GLFW_KEY_D;
+        case 'e':
+            return GLFW_KEY_E;
+        case 'f':
+            return GLFW_KEY_F;
+        case 'g':
+            return GLFW_KEY_G;
+        case 'h':
+            return GLFW_KEY_H;
+        case 'i':
+            return GLFW_KEY_I;
+        case 'j':
+            return GLFW_KEY_J;
+        case 'k':
+            return GLFW_KEY_K;
+        case 'l':
+            return GLFW_KEY_L;
+        case 'm':
+            return GLFW_KEY_M;
+        case 'n':
+            return GLFW_KEY_N;
+        case 'o':
+            return GLFW_KEY_O;
+        case 'p':
+            return GLFW_KEY_P;
+        case 'q':
+            return GLFW_KEY_Q;
+        case 'r':
+            return GLFW_KEY_R;
+        case 's':
+            return GLFW_KEY_S;
+        case 't':
+            return GLFW_KEY_T;
+        case 'u':
+            return GLFW_KEY_U;
+        case 'v':
+            return GLFW_KEY_V;
+        case 'w':
+            return GLFW_KEY_W;
+        case 'x':
+            return GLFW_KEY_X;
+        case 'y':
+            return GLFW_KEY_Y;
+        case 'z':
+            return GLFW_KEY_Z;
+        case ' ':
+            return GLFW_KEY_SPACE;
+        default:
+            return std::nullopt;
+    }
+}
+#endif

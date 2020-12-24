@@ -3,14 +3,21 @@
 
 #include <vector>
 #include "Block.h"
+#include <memory>
 
 class BlockArrayData {
     public:
         BlockArrayData(int xSize, int ySize, int zSize);
 
         void updateBlockAtPosition(BlockPos pos);
+
+        void setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> block);
+
+        std::vector<std::shared_ptr<Block>> getRawBlockArray();
+
+        std::shared_ptr<Block> getBlockAtPosition(BlockPos pos);
     private:
-        std::vector<Block> rawBlockData;
+        std::vector<std::shared_ptr<Block>> rawBlockData;
         int size[3];
 };
 #endif

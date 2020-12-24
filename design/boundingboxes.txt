@@ -1,0 +1,2 @@
+player is .75m by .75m by 2m
+block is 1m by 1m by 1m
