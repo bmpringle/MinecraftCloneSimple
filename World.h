@@ -11,17 +11,20 @@ class World {
     public:
         World(GLFWwindow* window);
 
-        void updateGame();
-
-        void renderGame();
-
         void mainLoop();
 
         float getWorldGravity();
 
         BlockArrayData* getBlockData();
+
+        std::shared_ptr<Player> getPlayer();
+
     private:
         void generateWorld();
+
+        void updateGame();
+
+        void renderGame();
 
         void internalKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 

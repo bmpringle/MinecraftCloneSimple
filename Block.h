@@ -26,6 +26,8 @@ class Block : public Model {
         void setPos(BlockPos pos_);
 
         AABB getAABB();
+
+        RenderedModel getRenderedModel();
         
     private:
         BlockPos pos;

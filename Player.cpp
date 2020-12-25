@@ -39,7 +39,8 @@ void Player::updatePlayerInWorld(World* world) {
     }
 
     previousUpdate = std::chrono::system_clock::now();
-    std::cout << "x: " << pos.x << ", y: " << pos.y << ", z: " << pos.z << std::endl;
+    
+    //std::cout << "x: " << pos.x << ", y: " << pos.y << ", z: " << pos.z << std::endl;
 }
 
 void Player::listenTo(std::shared_ptr<Event> e) {
@@ -105,4 +106,12 @@ void Player::listenTo(std::shared_ptr<Event> e) {
 
 AABB Player::getAABB() {
     return AABB(0.25, 0, 0.25, 0.5, 2, 0.5);
+}
+
+RenderedModel Player::getRenderedModel() {
+    return RenderedModel(std::vector<RenderedTriangle>());
+}
+
+Pos Player::getPos() {
+    return pos;
 }

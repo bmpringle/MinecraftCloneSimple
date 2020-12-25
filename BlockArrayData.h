@@ -4,6 +4,7 @@
 #include <vector>
 #include "Block.h"
 #include <memory>
+#include "RenderInclude.h"
 
 class BlockArrayData {
     public:
@@ -16,6 +17,7 @@ class BlockArrayData {
         std::vector<std::shared_ptr<Block>> getRawBlockArray();
 
         std::shared_ptr<Block> getBlockAtPosition(BlockPos pos);
+
     private:
         std::vector<std::shared_ptr<Block>> rawBlockData;
         int size[3];

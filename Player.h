@@ -25,6 +25,8 @@ class Player : public Listener, public Model {
         void updatePlayerInWorld(World* world);
         void listenTo(std::shared_ptr<Event> e);
         AABB getAABB();
+        Pos getPos();
+        RenderedModel getRenderedModel();
 
     private:
         Pos pos;
