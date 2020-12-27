@@ -12,7 +12,7 @@
  */
 #define WORLDSIZE_CONST 100
 
-World::World(GLFWwindow* window_) : worldEventQueue(EventQueue()), input(InputHandler()), renderer(WorldRenderer()), thePlayer(std::shared_ptr<Player>(new Player(this))), internalBlockData(BlockArrayData(WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST)), window(window_) {
+World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler) : worldEventQueue(queue), input(inputHandler), renderer(WorldRenderer()), thePlayer(std::shared_ptr<Player>(new Player(this))), internalBlockData(BlockArrayData(WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST)), window(window_) {
     generateWorld();
     glfwSetWindowUserPointer(window, this);
 
@@ -22,7 +22,7 @@ World::World(GLFWwindow* window_) : worldEventQueue(EventQueue()), input(InputHa
 
     glfwSetKeyCallback(window, func);
 
-    worldEventQueue.addEventListener(thePlayer);
+    worldEventQueue->addEventListener(thePlayer);
 }
 
 void World::updateGame() {
@@ -34,7 +34,7 @@ void World::updateGame() {
             }
         }
     }*/
-    input.callRegularEvents(&worldEventQueue);
+    input->callRegularEvents(worldEventQueue);
     thePlayer->updatePlayerInWorld(this);
 }
 
@@ -64,14 +64,14 @@ void World::generateWorld() {
 }
 
 void World::internalKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    input.handleInput(window, key, scancode, action, mods, &worldEventQueue);
+    input->handleInput(window, key, scancode, action, mods, worldEventQueue);
 }
 
 void World::mainLoop() {
     glfwSwapInterval(1);
     glClearColor(0, 0, 1, 1);
 
-    while(!glfwWindowShouldClose(window)) {
+    while(!glfwWindowShouldClose(window) && !paused) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         updateGame();
@@ -80,8 +80,19 @@ void World::mainLoop() {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    glfwDestroyWindow(window);
-    glfwTerminate();
+}
+
+void World::pause() {
+    paused = true;
+}
+
+void World::resume() {
+    paused = false;
+    mainLoop();
+}
+
+bool World::isPaused() {
+    return paused;
 }
 
 BlockArrayData* World::getBlockData() {

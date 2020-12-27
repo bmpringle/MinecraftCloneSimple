@@ -1,4 +1,4 @@
-#include "World.h"
+#include "Game.h"
 #include <iostream>
 
 GLFWwindow* setup() {
@@ -30,7 +30,7 @@ GLFWwindow* setup() {
 
 int main() {
 
-    World world = World(setup());
+    Game game = Game(setup());
 
-    world.mainLoop();
+    game.start();
 }

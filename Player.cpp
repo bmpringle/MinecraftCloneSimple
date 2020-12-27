@@ -45,7 +45,6 @@ void Player::updatePlayerInWorld(World* world) {
 
 void Player::listenTo(std::shared_ptr<Event> e) {
     Pos previousPos = pos;
-
     if(e->getEventID() == "KEYHELD") {
         KeyHeldEvent keyEvent = *dynamic_cast<KeyHeldEvent*>(e.get());
 

@@ -9,7 +9,7 @@
 
 class World {
     public:
-        World(GLFWwindow* window);
+        World(GLFWwindow* window, EventQueue* queue, InputHandler* inputHandler);
 
         void mainLoop();
 
@@ -19,6 +19,11 @@ class World {
 
         std::shared_ptr<Player> getPlayer();
 
+        bool isPaused();
+
+        void resume();
+
+        void pause();
     private:
         void generateWorld();
 
@@ -28,12 +33,13 @@ class World {
 
         void internalKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-        EventQueue worldEventQueue;
-        InputHandler input;
+        EventQueue* worldEventQueue;
+        InputHandler* input;
         WorldRenderer renderer;
         BlockArrayData internalBlockData;
         GLFWwindow* window;
         std::shared_ptr<Player> thePlayer;
+        bool paused = false;
 
         //in meters/s^2
         float worldGravity = 2;
