@@ -1,10 +1,12 @@
 .vscode/settings.json
 lib/eventLib.a
 .vscode/launch.json
-TimerMapLib/TimerMap.h
 game.dSYM/Contents/Info.plist
 game.dSYM/Contents/Resources/DWARF/game
 lib/timerMapLib.a
 .vscode/settings.json
 lib/eventLib.a
 game
+.vscode/settings.json
+game
+lib/eventLib.a
