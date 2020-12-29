@@ -5,22 +5,13 @@
 #include "RenderInclude.h"
 #include <vector>
 #include <chrono>
-
-struct CharTime {
-    public:
-        CharTime(char _c) : c(_c), lastTimeCalled(std::chrono::system_clock::now()) {
-
-        }
-
-        char c;
-        std::chrono::system_clock::time_point lastTimeCalled;
-};
+#include "TimerMapLib/TimerMap.h"
 
 class InputHandler {
     public:
-        void handleInput(GLFWwindow* window, int key, int scancode, int action, int mods, EventQueue* e);
-        void callRegularEvents(EventQueue* e);
+        void handleInput(GLFWwindow* window, int key, int scancode, int action, int mods, EventQueue* e, TimerMap* timerMap);
+        void callRegularEvents(EventQueue* e, TimerMap* timerMap);
     private:
-        std::vector<CharTime> held = std::vector<CharTime>();
+        std::vector<char> held = std::vector<char>();
 };
 #endif

@@ -3,21 +3,22 @@
 #include <memory>
 #include "GLFWKeyCodeConverter.h"
 #include <iostream>
+#include <string>
 
-void safeRemoveFromVector(std::vector<CharTime>* vector, CharTime remove) {
+void safeRemoveFromVector(std::vector<char>* vector, char remove) {
     for(int i = 0; i < vector->size(); ++i) {
-        if(vector->at(i).c == remove.c) {
-            vector->erase(vector->begin() + i - 1);
+        if(vector->at(i) == remove) {
+            vector->erase(vector->begin() + i);
         }
     }
 }
 
-void safeAddToVector(std::vector<CharTime>* vector, CharTime add) {
+void safeAddToVector(std::vector<char>* vector, char add) {
     safeRemoveFromVector(vector, add);
     vector->push_back(add);
 }
 
-void InputHandler::handleInput(GLFWwindow* window, int key, int scancode, int action, int mods, EventQueue* e) {
+void InputHandler::handleInput(GLFWwindow* window, int key, int scancode, int action, int mods, EventQueue* e, TimerMap* timerMap) {
     std::optional<char> cOptional = fromKeyCode(key);
     if(!cOptional.has_value()) {
         return;
@@ -28,32 +29,33 @@ void InputHandler::handleInput(GLFWwindow* window, int key, int scancode, int ac
     switch(action) {
         case GLFW_PRESS:
             e->callEvent(std::shared_ptr<KeyPressedEvent>(new KeyPressedEvent(c)));
-            safeAddToVector(&held, CharTime(c));
+            if(timerMap->getTimerDuration(std::string(1, c)).count() == 0) {
+                timerMap->addTimerToMap(std::string(1, c));
+            }
+            safeAddToVector(&held, c);
             break;
         case GLFW_RELEASE:
             e->callEvent(std::shared_ptr<KeyReleasedEvent>(new KeyReleasedEvent(c)));
-            safeRemoveFromVector(&held, CharTime(c));
+            timerMap->removeTimerFromMap(std::string(1, c));
+            safeRemoveFromVector(&held, c);
             break;
         default:
             break;
     }
 
     for(int i = 0; i < held.size(); ++i) {
-        CharTime keyHeld = held.at(i);
-        std::optional<int> intOptional = toKeyCode(keyHeld.c);
+        std::optional<int> intOptional = toKeyCode(held.at(i));
         if(intOptional.has_value()) {
             if(glfwGetKey(window, intOptional.value()) == GLFW_RELEASE) {
-                held.erase(held.begin() + i - 1);
+                held.erase(held.begin() + i);
             }
         }
     }
 }
 
-void InputHandler::callRegularEvents(EventQueue* e) {
+void InputHandler::callRegularEvents(EventQueue* e, TimerMap* timerMap) {
     for(int i = 0; i < held.size(); ++i) {
-        CharTime keyHeld = held.at(i);
-        std::chrono::system_clock::duration duration = std::chrono::system_clock::now() - keyHeld.lastTimeCalled;
-        e->callEvent(std::shared_ptr<KeyHeldEvent>(new KeyHeldEvent(keyHeld.c, duration)));
-        held.at(i).lastTimeCalled = std::chrono::system_clock::now();
+        std::chrono::system_clock::duration duration = timerMap->getTimerDurationAndReset(std::string(1, held.at(i)));
+        e->callEvent(std::shared_ptr<KeyHeldEvent>(new KeyHeldEvent(held.at(i), duration)));
     }
 }

@@ -8,7 +8,7 @@ Game::Game(GLFWwindow* _window) : window(_window), eventQueue(EventQueue()), inp
 void Game::start() {
     world.resume();
     while(!glfwWindowShouldClose(window)) {
-        input.callRegularEvents(&eventQueue);
+        input.callRegularEvents(&eventQueue, world.getTimerMap());
         glfwPollEvents();
     }
     glfwDestroyWindow(window);

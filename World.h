@@ -6,6 +6,7 @@
 #include "BlockArrayData.h"
 #include "Player.h"
 #include "RenderInclude.h"
+#include "TimerMapLib/TimerMap.h"
 
 class World {
     public:
@@ -18,6 +19,8 @@ class World {
         BlockArrayData* getBlockData();
 
         std::shared_ptr<Player> getPlayer();
+
+        TimerMap* getTimerMap();
 
         bool isPaused();
 
@@ -39,6 +42,7 @@ class World {
         BlockArrayData internalBlockData;
         GLFWwindow* window;
         std::shared_ptr<Player> thePlayer;
+        TimerMap timerMap;
         bool paused = false;
 
         //in meters/s^2
