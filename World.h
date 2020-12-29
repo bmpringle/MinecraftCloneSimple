@@ -36,13 +36,13 @@ class World {
 
         void internalKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
+        TimerMap timerMap;
         EventQueue* worldEventQueue;
         InputHandler* input;
         WorldRenderer renderer;
         BlockArrayData internalBlockData;
         GLFWwindow* window;
         std::shared_ptr<Player> thePlayer;
-        TimerMap timerMap;
         bool paused = false;
 
         //in meters/s^2

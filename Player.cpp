@@ -4,11 +4,11 @@
 #include "Events.h"
 
 Player::Player(World* _world) : pos(Pos(0, 5, 0)), world(_world) {
-
+    world->getTimerMap()->addTimerToMap("playerUpdateTimer");
 }
 
 void Player::updatePlayerInWorld(World* world) {
-    long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - previousUpdate).count();
+    long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDurationAndReset("playerUpdateTimer")).count();
 
     currentYSpeed -= (world->getWorldGravity() / 1000.0 * milliseconds);
 
@@ -36,10 +36,7 @@ void Player::updatePlayerInWorld(World* world) {
             currentYSpeed = 0;
             break;
         }
-    }
-
-    previousUpdate = std::chrono::system_clock::now();
-    
+    }    
     //std::cout << "x: " << pos.x << ", y: " << pos.y << ", z: " << pos.z << std::endl;
 }
 

@@ -32,7 +32,6 @@ class Player : public Listener, public Model {
         Pos pos;
         float metersPerSecond = 3;
         World* world;
-        std::chrono::system_clock::time_point previousUpdate = std::chrono::system_clock::now();
         float currentYSpeed = 0;
 };
 #endif
