@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include "BlockArrayData.h"
+#include "simd/simd.h"
 
 class World;
 
@@ -29,6 +30,10 @@ class WorldRenderer {
             0.5f, -0.5f, 0.0f, /*color*/ 1.0f, 1.0f, 0.0f,
             0.0f,  0.5f, 0.0f, /*color*/ 1.0f, 1.0f, 0.0f
         }; 
+
+        matrix_float4x4 calculatePerspectiveMatrix(double FOV, double zNear, double zFar);
+
+        matrix_float3x3 calculateRotationMatrix(double xRotation, double yRotation);
 
         unsigned int VAO;
         unsigned int shaderProgram;

@@ -42,4 +42,18 @@ class KeyReleasedEvent : public Event {
 
         char key;
 };
+
+class MouseMovedEvent : public Event {
+    public:
+        KeyReleasedEvent(double _xOffset, double _yOffset) : xOffset(_xOffset), yOffset(_yOffset) {
+
+        }
+
+        std::string getEventID() {
+            return "MOUSEMOVED";
+        }
+
+        double xOffset;
+        double yOffset;
+}
 #endif

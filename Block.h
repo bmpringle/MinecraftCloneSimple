@@ -13,6 +13,11 @@ struct BlockPos {
         int x = 0;
         int y = 0;
         int z = 0;
+
+        friend BlockPos operator+(BlockPos lhs, BlockPos rhs) {
+            BlockPos res = BlockPos(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+            return res;
+        }
 };
 
 class Block : public Model {

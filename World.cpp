@@ -47,6 +47,7 @@ void World::generateWorld() {
     }*/
 
     internalBlockData.setBlockAtPosition(BlockPos(0, 1, 10), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(0, 2, 10), std::shared_ptr<Block>(new Block()));
 
     internalBlockData.setBlockAtPosition(BlockPos(0, 0, 0), std::shared_ptr<Block>(new Block()));
     internalBlockData.setBlockAtPosition(BlockPos(0, 0, 1), std::shared_ptr<Block>(new Block()));
@@ -59,6 +60,15 @@ void World::generateWorld() {
     internalBlockData.setBlockAtPosition(BlockPos(0, 0, 8), std::shared_ptr<Block>(new Block()));
     internalBlockData.setBlockAtPosition(BlockPos(0, 0, 9), std::shared_ptr<Block>(new Block()));
     internalBlockData.setBlockAtPosition(BlockPos(0, 0, 10), std::shared_ptr<Block>(new Block()));
+
+    internalBlockData.setBlockAtPosition(BlockPos(1, -1, 10), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(1, -1, 9), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(2, -1, 10), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(2, -1, 9), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(3, -1, 10), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(3, -1, 9), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(-1, -1, 10), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(-1, -1, 9), std::shared_ptr<Block>(new Block()));
 }
 
 void World::internalKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -86,11 +96,14 @@ void World::mainLoop() {
 
 void World::pause() {
     paused = true;
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);  
 }
 
 void World::resume() {
     paused = false;
     timerMap.resetAllTimers();
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
+
     mainLoop();
 }
 

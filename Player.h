@@ -33,5 +33,9 @@ class Player : public Listener, public Model {
         float metersPerSecond = 3;
         World* world;
         float currentYSpeed = 0;
+
+        float yaw = 0;
+        float pitch = 0;
+        float roll = 0;
 };
 #endif

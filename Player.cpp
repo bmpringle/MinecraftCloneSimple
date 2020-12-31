@@ -101,11 +101,40 @@ void Player::listenTo(std::shared_ptr<Event> e) {
 }
 
 AABB Player::getAABB() {
-    return AABB(0.25, 0, 0.25, 0.5, 2, 0.5);
+    return AABB(0, 0, 0, 0.5, 2, 0.5);
 }
 
 RenderedModel Player::getRenderedModel() {
-    return RenderedModel(std::vector<RenderedTriangle>());
+    RenderedPoint p1 = RenderedPoint(0, 0, 0);
+    RenderedPoint p2 = RenderedPoint(0.5, 0, 0);
+    RenderedPoint p3 = RenderedPoint(0.5, 0, 0.5);
+    RenderedPoint p4 = RenderedPoint(0, 0, 0.5);
+    RenderedPoint p5 = RenderedPoint(0, 2, 0);
+    RenderedPoint p6 = RenderedPoint(0.5, 2, 0);
+    RenderedPoint p7 = RenderedPoint(0.5, 2, 0.5);
+    RenderedPoint p8 = RenderedPoint(0, 2, 0.5);
+
+    RenderedTriangle t1 = RenderedTriangle(p1, p2, p3);
+    RenderedTriangle t2 = RenderedTriangle(p1, p4, p3);
+    RenderedTriangle t3 = RenderedTriangle(p5, p6, p7);
+    RenderedTriangle t4 = RenderedTriangle(p5, p8, p7);
+    RenderedTriangle t5 = RenderedTriangle(p1, p4, p8);
+    RenderedTriangle t6 = RenderedTriangle(p1, p5, p8);
+    RenderedTriangle t7 = RenderedTriangle(p2, p3, p7);
+    RenderedTriangle t8 = RenderedTriangle(p2, p6, p7);
+    RenderedTriangle t9 = RenderedTriangle(p1, p2, p5);
+    RenderedTriangle t10 = RenderedTriangle(p2, p5, p6);
+    RenderedTriangle t11 = RenderedTriangle(p3, p4, p8);
+    RenderedTriangle t12 = RenderedTriangle(p3, p7, p8);
+
+    RenderedTriangle triangleArray[12] = {t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12};
+    std::vector<RenderedTriangle> triangles = std::vector<RenderedTriangle>();
+
+    for(RenderedTriangle triangle : triangleArray) {
+        triangles.push_back(triangle);
+    }
+
+    return RenderedModel(triangles);
 }
 
 Pos Player::getPos() {

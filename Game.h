@@ -3,17 +3,7 @@
 
 #include "World.h"
 #include "RenderInclude.h"
-
-class Game;
-
-class GameEventHandler : public Listener {
-    public:
-        GameEventHandler(Game* game);
-
-        void listenTo(std::shared_ptr<Event> e);
-    private:
-        Game* game;
-};
+#include "GameEventHandler.h"
 
 class Game {
     public:
