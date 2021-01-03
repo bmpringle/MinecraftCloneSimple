@@ -33,7 +33,8 @@ class WorldRenderer {
 
         matrix_float4x4 calculatePerspectiveMatrix(double FOV, double zNear, double zFar);
 
-        matrix_float3x3 calculateRotationMatrix(double xRotation, double yRotation);
+        matrix_float3x3 calculateXRotationMatrix(double xRotation);
+        matrix_float3x3 calculateYRotationMatrix(double yRotation);
 
         unsigned int VAO;
         unsigned int shaderProgram;

@@ -45,7 +45,7 @@ class KeyReleasedEvent : public Event {
 
 class MouseMovedEvent : public Event {
     public:
-        KeyReleasedEvent(double _xOffset, double _yOffset) : xOffset(_xOffset), yOffset(_yOffset) {
+        MouseMovedEvent(double _xOffset, double _yOffset) : xOffset(_xOffset), yOffset(_yOffset) {
 
         }
 
@@ -55,5 +55,5 @@ class MouseMovedEvent : public Event {
 
         double xOffset;
         double yOffset;
-}
+};
 #endif

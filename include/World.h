@@ -36,6 +36,8 @@ class World {
 
         void internalKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
+        void internalMouseCallback(GLFWwindow* window, double xpos, double ypos);
+        
         TimerMap timerMap;
         EventQueue* worldEventQueue;
         InputHandler* input;
@@ -46,7 +48,7 @@ class World {
         bool paused = false;
 
         //in meters/s^2
-        float worldGravity = 2;
+        float worldGravity = 32;
 };
 
 bool AABBIntersectedByAABB(AABB box1, AABB box2);

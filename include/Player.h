@@ -19,6 +19,15 @@ struct Pos {
     float z = 0;
 };
 
+struct MoveVec2 {
+    MoveVec2() {
+
+    }
+    float relativeX = 0;
+    float relativeZ = 0;
+    double durationInMilliseconds = 0;
+};
+
 class Player : public Listener, public Model {
     public:
         Player(World* _world);
@@ -27,15 +36,22 @@ class Player : public Listener, public Model {
         AABB getAABB();
         Pos getPos();
         RenderedModel getRenderedModel();
+        double getXRotation();
+        double getYRotation();
 
     private:
         Pos pos;
-        float metersPerSecond = 3;
+
+        //in m/s
+        float speed = 4.3;
         World* world;
         float currentYSpeed = 0;
 
         float yaw = 0;
         float pitch = 0;
         float roll = 0;
+
+        MoveVec2 moveVector = MoveVec2();
+
 };
 #endif

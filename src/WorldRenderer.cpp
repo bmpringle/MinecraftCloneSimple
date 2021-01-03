@@ -106,7 +106,7 @@ void WorldRenderer::renderFrame(World* world) {
 
     int perspectiveMatrixLocation = glGetUniformLocation(shaderProgram, "perspectiveMatrix");
     
-    matrix_float4x4 perspectiveMatrix = calculatePerspectiveMatrix(100, 0.001, 100);
+    matrix_float4x4 perspectiveMatrix = calculatePerspectiveMatrix(90, 0.001, 100);
 
     GLfloat matrixFloat [16] = {0};
 
@@ -117,27 +117,25 @@ void WorldRenderer::renderFrame(World* world) {
     glUniformMatrix4fv(perspectiveMatrixLocation, 1, GL_FALSE, &matrixFloat[0]);
 
     
-    int rotationMatrixLocation = glGetUniformLocation(shaderProgram, "rotationMatrix");
+    int rotationMatrixXLocation = glGetUniformLocation(shaderProgram, "rotationMatrixX");
+    int rotationMatrixYLocation = glGetUniformLocation(shaderProgram, "rotationMatrixY");
 
-    matrix_float3x3 rotationMatrix = calculateRotationMatrix(20, 0);
+    matrix_float3x3 rotationMatrixX = calculateXRotationMatrix(world->getPlayer()->getXRotation());
+    matrix_float3x3 rotationMatrixY = calculateYRotationMatrix(world->getPlayer()->getYRotation());
 
     GLfloat rotationMatrixFloat [9] = {0};
 
     for(int i = 0; i < 9; ++i) {
-        rotationMatrixFloat[i] = rotationMatrix.columns[i/3][i % 3];
+        rotationMatrixFloat[i] = rotationMatrixX.columns[i/3][i % 3];
     }
 
-    /*std::cout << "-------------" << std::endl;
+    glUniformMatrix3fv(rotationMatrixXLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);
+    
     for(int i = 0; i < 9; ++i) {
-        if(i % 3 == 0) {
-            std::cout << std::endl;
-        }
-        std::cout << rotationMatrixFloat[i] << " ";
+        rotationMatrixFloat[i] = rotationMatrixY.columns[i/3][i % 3];
     }
-    std::cout << std::endl;*/
 
-    glUniformMatrix3fv(rotationMatrixLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);
-
+    glUniformMatrix3fv(rotationMatrixYLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);
 
     BlockArrayData* data = world->getBlockData();
     std::vector<std::shared_ptr<Block>> rawData = data->getRawBlockArray();
@@ -173,7 +171,7 @@ void WorldRenderer::renderFrame(World* world) {
         appendVectorWithVector(&trianglesToRender, model.renderedModel);
     }
 
-    RenderedModel model = world->getPlayer()->getRenderedModel();
+    /*RenderedModel model = world->getPlayer()->getRenderedModel();
     Pos pos = world->getPlayer()->getPos();
 
     for(int j = 0; j < model.renderedModel.size(); ++j) {
@@ -197,7 +195,7 @@ void WorldRenderer::renderFrame(World* world) {
         model.renderedModel[j] = RenderedTriangle(pointa, pointb, pointc);
     }
 
-    appendVectorWithVector(&trianglesToRender, model.renderedModel);
+    appendVectorWithVector(&trianglesToRender, model.renderedModel);*/
 
     std::vector<float> vectorWithColors = std::vector<float>();
 
@@ -317,11 +315,34 @@ matrix_float3x3 multiplyTwo3x3Matrices(matrix_float3x3 m1, matrix_float3x3 m2) {
     return result;
 }
 
-matrix_float3x3 WorldRenderer::calculateRotationMatrix(double xRotation, double yRotation) {
+matrix_float3x3 addTwo3x3Matrices(matrix_float3x3 m1, matrix_float3x3 m2) {
+    matrix_float3x3 result = matrix_float3x3();
+    simd_float3 col1 = simd_float3();
+    simd_float3 col2 = simd_float3();
+    simd_float3 col3 = simd_float3();
+
+    col1[0] = m1.columns[0][0] + m2.columns[0][0];
+    col1[1] = m1.columns[0][1] * m2.columns[0][1];
+    col1[2] = m1.columns[0][2] * m2.columns[0][2];
+
+    col2[0] = m1.columns[1][0] + m2.columns[1][0];
+    col2[1] = m1.columns[1][1] * m2.columns[1][1];
+    col2[2] = m1.columns[1][2] * m2.columns[1][2];    
+
+    col3[0] = m1.columns[2][0] + m2.columns[2][0];
+    col3[1] = m1.columns[2][1] * m2.columns[2][1];
+    col3[2] = m1.columns[2][2] * m2.columns[2][2]; 
+    
+    result.columns[0] = col1;
+    result.columns[1] = col2;
+    result.columns[2] = col3;
+    return result;
+}
+
+matrix_float3x3 WorldRenderer::calculateXRotationMatrix(double xRotation) {
     matrix_float3x3 rotationMatrix = matrix_float3x3();
 
     double xRads = xRotation * M_PI / 180;
-    double yRads = yRotation * M_PI / 180;
 
     simd_float3 column1 = simd_float3();
     column1[0] = cos(xRads);
@@ -342,23 +363,33 @@ matrix_float3x3 WorldRenderer::calculateRotationMatrix(double xRotation, double 
     rotationMatrix.columns[1] = column2;
     rotationMatrix.columns[2] = column3;
 
-    matrix_float3x3 rotationMatrix2 = matrix_float3x3();
+    return rotationMatrix;
+}
 
+matrix_float3x3 WorldRenderer::calculateYRotationMatrix(double yRotation) {
+
+    matrix_float3x3 rotationMatrix = matrix_float3x3();
+
+    double yRads = yRotation * M_PI / 180;
+
+    simd_float3 column1 = simd_float3();
     column1[0] = 1;
     column1[1] = 0;
     column1[2] = 0;
 
+    simd_float3 column2 = simd_float3();
     column2[0] = 0;
     column2[1] = cos(yRads);
     column2[2] = sin(yRads);
 
+    simd_float3 column3 = simd_float3();
     column3[0] = 0;
     column3[1] = -sin(yRads);
     column3[2] = cos(yRads);
 
-    rotationMatrix2.columns[0] = column1;
-    rotationMatrix2.columns[1] = column2;
-    rotationMatrix2.columns[2] = column3;
+    rotationMatrix.columns[0] = column1;
+    rotationMatrix.columns[1] = column2;
+    rotationMatrix.columns[2] = column3;
 
-    return multiplyTwo3x3Matrices(rotationMatrix, rotationMatrix2);
+    return rotationMatrix;
 }

@@ -20,9 +20,14 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler)
         static_cast<World*>(glfwGetWindowUserPointer(w))->internalKeyCallback(w, key, scancode, action, mods);
     };
 
-    glfwSetKeyCallback(window, func);
-}
+    auto func2 = [](GLFWwindow* w, double xpos, double ypos) {
+        static_cast<World*>(glfwGetWindowUserPointer(w))->internalMouseCallback(w, xpos, ypos);
+    };
 
+    glfwSetKeyCallback(window, func);
+    glfwSetCursorPosCallback(window, func2);
+}
+    
 void World::updateGame() {
     //too slow need to impl better system for this and collision
     /*for(int x = -WORLDSIZE_CONST; x < WORLDSIZE_CONST; ++x) {
@@ -75,6 +80,10 @@ void World::internalKeyCallback(GLFWwindow* window, int key, int scancode, int a
     input->handleInput(window, key, scancode, action, mods, worldEventQueue, &timerMap);
 }
 
+void World::internalMouseCallback(GLFWwindow* window, double xpos, double ypos) {
+    input->handleMouseInput(window, xpos, ypos, worldEventQueue, &timerMap);
+}
+
 void World::mainLoop() {
     glfwSwapInterval(1);
     glClearColor(0, 0, 1, 1);
@@ -102,6 +111,7 @@ void World::pause() {
 void World::resume() {
     paused = false;
     timerMap.resetAllTimers();
+    input->setFirstMouse();
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
 
     mainLoop();
@@ -120,9 +130,9 @@ float World::getWorldGravity() {
 }
 
 bool AABBIntersectedByPoint(AABB box, float x, float y, float z) {
-    if(box.startX < x && box.startX + box.xSize > x) {
-        if(box.startY < y && box.startY + box.ySize > y) {
-            if(box.startZ < z && box.startZ + box.zSize > z) {
+    if(box.startX <= x && box.startX + box.xSize >= x) {
+        if(box.startY <= y && box.startY + box.ySize >= y) {
+            if(box.startZ <= z && box.startZ + box.zSize >= z) {
                 return true;
             }
         }   

@@ -5,16 +5,17 @@ layout (location = 1) in vec3 aColor;
 uniform vec3 bounds;
 uniform vec3 playerPos;
 uniform mat4x4 perspectiveMatrix;
-uniform mat3x3 rotationMatrix;
+uniform mat3x3 rotationMatrixX;
+uniform mat3x3 rotationMatrixY;
 
 out vec3 color;
 
 
 void main()
 {
-    vec3 posRotation = rotationMatrix * aPos;
+    vec3 posRotation = rotationMatrixY * (rotationMatrixX * aPos);
 
-    vec3 playerPosRotation = rotationMatrix * playerPos;
+    vec3 playerPosRotation = rotationMatrixY * (rotationMatrixX * playerPos);
 
     vec3 posPlayer = vec3(posRotation.x - playerPosRotation.x, posRotation.y - playerPosRotation.y, posRotation.z - playerPosRotation.z);
 
