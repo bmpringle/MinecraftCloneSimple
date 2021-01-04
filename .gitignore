@@ -1,12 +1,3 @@
-.vscode/settings.json
-lib/eventLib.a
-.vscode/launch.json
-game.dSYM/Contents/Info.plist
-game.dSYM/Contents/Resources/DWARF/game
-lib/timerMapLib.a
-.vscode/settings.json
-lib/eventLib.a
+.vscode/*
+game.dSYM/*
 game
-.vscode/settings.json
-game
-lib/eventLib.a
