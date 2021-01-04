@@ -6,6 +6,7 @@
 #include "Block.h"
 #include "Model.h"
 #include <chrono>
+#include "BlockArrayData.h"
 
 class World;
 
@@ -40,6 +41,9 @@ class Player : public Listener, public Model {
         double getYRotation();
 
     private:
+        bool validatePosition(Pos newPosition, BlockArrayData data);
+        bool validatePosition(Pos newPosition, BlockArrayData data, float* yToSnapTo);
+
         Pos pos;
 
         //in m/s

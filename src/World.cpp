@@ -43,37 +43,25 @@ void World::updateGame() {
 
 void World::generateWorld() {
     //generate a 20x20x3 layer of blocks for now, will change later
-    /*for(int x = 0; x < 20; ++x) {
-        for(int y = 0; y < 3; ++y) {
+    for(int x = 0; x < 20; ++x) {
+        for(int y = 0; y < 1; ++y) {
             for(int z = 0; z < 20; ++z) {
                 internalBlockData.setBlockAtPosition(BlockPos(x, y, z), std::shared_ptr<Block>(new Block()));
             }
         } 
-    }*/
+    }
 
     internalBlockData.setBlockAtPosition(BlockPos(0, 1, 10), std::shared_ptr<Block>(new Block()));
     internalBlockData.setBlockAtPosition(BlockPos(0, 2, 10), std::shared_ptr<Block>(new Block()));
 
-    internalBlockData.setBlockAtPosition(BlockPos(0, 0, 0), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(0, 0, 1), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(0, 0, 2), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(0, 0, 3), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(0, 0, 4), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(0, 0, 5), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(0, 0, 6), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(0, 0, 7), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(0, 0, 8), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(0, 0, 9), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(0, 0, 10), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(4, 1, 10), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(5, 2, 10), std::shared_ptr<Block>(new Block()));
 
-    internalBlockData.setBlockAtPosition(BlockPos(1, -1, 10), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(1, -1, 9), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(2, -1, 10), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(2, -1, 9), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(3, -1, 10), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(3, -1, 9), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(-1, -1, 10), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(-1, -1, 9), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(0, 1, 10), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(7, 2, 10), std::shared_ptr<Block>(new Block()));
+
+    internalBlockData.setBlockAtPosition(BlockPos(15, 3, 2), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(15, 3, 2), std::shared_ptr<Block>(new Block()));
 }
 
 void World::internalKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -129,42 +117,19 @@ float World::getWorldGravity() {
     return worldGravity;
 }
 
-bool AABBIntersectedByPoint(AABB box, float x, float y, float z) {
-    if(box.startX <= x && box.startX + box.xSize >= x) {
-        if(box.startY <= y && box.startY + box.ySize >= y) {
-            if(box.startZ <= z && box.startZ + box.zSize >= z) {
-                return true;
-            }
-        }   
-    }
-    return false;
+bool rangesOverlap(float startA, float endA, float startB, float endB) {
+    return (startA < endB && endA > startB);
 }
 
 bool AABBIntersectedByAABB(AABB box1, AABB box2) {
-    int i = 0;
-
-    i += (AABBIntersectedByPoint(box1, box2.startX, box2.startY, box2.startZ) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box1, box2.startX, box2.startY, box2.startZ + box2.zSize) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box1, box2.startX, box2.startY + box2.ySize, box2.startZ) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box1, box2.startX, box2.startY + box2.ySize, box2.startZ + box2.zSize) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box1, box2.startX + box2.xSize, box2.startY, box2.startZ) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box1, box2.startX + box2.xSize, box2.startY, box2.startZ + box2.zSize) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box1, box2.startX + box2.xSize, box2.startY + box2.ySize, box2.startZ) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box1, box2.startX + box2.xSize, box2.startY + box2.ySize, box2.startZ + box2.zSize) ? 1 : 0);
-
-    i += (AABBIntersectedByPoint(box2, box1.startX, box1.startY, box1.startZ) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box2, box1.startX, box1.startY, box1.startZ + box1.zSize) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box2, box1.startX, box1.startY + box1.ySize, box1.startZ) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box2, box1.startX, box1.startY + box1.ySize, box1.startZ + box1.zSize) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box2, box1.startX + box1.xSize, box1.startY, box1.startZ) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box2, box1.startX + box1.xSize, box1.startY, box1.startZ + box1.zSize) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box2, box1.startX + box1.xSize, box1.startY + box1.ySize, box1.startZ) ? 1 : 0);
-    i += (AABBIntersectedByPoint(box2, box1.startX + box1.xSize, box1.startY + box1.ySize, box1.startZ + box1.zSize) ? 1 : 0);
-
-    if(i == 0) {
-        return false;
+    if(rangesOverlap(box1.startX, box1.startX + box1.xSize, box2.startX, box2.startX + box2.xSize)) {
+        if(rangesOverlap(box1.startY, box1.startY + box1.ySize, box2.startY, box2.startY + box2.ySize)) {
+            if(rangesOverlap(box1.startZ, box1.startZ + box1.zSize, box2.startZ, box2.startZ + box2.zSize)) {
+                return true;
+            }       
+        }       
     }
-    return true;
+    return false;
 } 
 
 void World::renderGame() {

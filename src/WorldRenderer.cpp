@@ -106,7 +106,7 @@ void WorldRenderer::renderFrame(World* world) {
 
     int perspectiveMatrixLocation = glGetUniformLocation(shaderProgram, "perspectiveMatrix");
     
-    matrix_float4x4 perspectiveMatrix = calculatePerspectiveMatrix(90, 0.001, 100);
+    matrix_float4x4 perspectiveMatrix = calculatePerspectiveMatrix(90, 0.0001, 100);
 
     GLfloat matrixFloat [16] = {0};
 
@@ -171,6 +171,8 @@ void WorldRenderer::renderFrame(World* world) {
         appendVectorWithVector(&trianglesToRender, model.renderedModel);
     }
 
+
+    //renders player model. keep commented until model can be rotated with camera
     /*RenderedModel model = world->getPlayer()->getRenderedModel();
     Pos pos = world->getPlayer()->getPos();
 
@@ -235,10 +237,11 @@ void WorldRenderer::renderFrame(World* world) {
         vertexAndColorData[i] = vectorWithColors[i];
     }
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexAndColorData), vertexAndColorData, GL_DYNAMIC_DRAW);
-
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexAndColorData), vertexAndColorData, GL_DYNAMIC_DRAW);
+
     glDrawArrays(GL_TRIANGLES, 0, vectorWithColors.size() / 6);
 }
 

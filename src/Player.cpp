@@ -9,6 +9,8 @@ Player::Player(World* _world) : pos(Pos(0, 5, 0)), world(_world) {
 }
 
 void Player::updatePlayerInWorld(World* world) {  
+    Pos previousPos = pos;
+
     //handle space bar and gravity from events
     long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDurationAndReset("playerUpdateTimer")).count();
 
@@ -18,29 +20,18 @@ void Player::updatePlayerInWorld(World* world) {
 
     pos.y += (currentYSpeed / 1000.0 * milliseconds);
 
-    AABB playerAABB = getAABB();
+    float yPosToSnapTo[1] = {pos.y};
 
-    playerAABB.startX += pos.x;
-    playerAABB.startY += pos.y;
-    playerAABB.startZ += pos.z;
-
-    for(int i = 0; i < world->getBlockData()->getRawBlockArray().size(); ++i) {
-        std::shared_ptr<Block> block = world->getBlockData()->getRawBlockArray().at(i);
-        AABB blockAABB = block->getAABB();
-        blockAABB.startX += block->getPos().x;
-        blockAABB.startY += block->getPos().y;
-        blockAABB.startZ += block->getPos().z;
-
-        bool colliding = AABBIntersectedByAABB(playerAABB, blockAABB);
-
-        if(colliding) {
-            pos.y -= (currentYSpeed / 1000.0 * milliseconds);
-            currentYSpeed = 0;
-            break;
+    if(!this->validatePosition(pos, *world->getBlockData(), yPosToSnapTo)) {
+        pos = previousPos;
+        if(currentYSpeed < 0) {
+            pos.y = yPosToSnapTo[0];
         }
-    }  
+        currentYSpeed = 0;
+    }
 
-    Pos previousPos = pos;
+
+    previousPos = pos;
 
     //handle WASD movement input grabbed during events
     double duration = moveVector.durationInMilliseconds;
@@ -102,49 +93,29 @@ void Player::updatePlayerInWorld(World* world) {
     double zMovAbs = zMovRel * cos(degRADS) + xMovRel * sin(degRADS);
 
     pos.x += xMovAbs;
+
+    if(!this->validatePosition(pos, *world->getBlockData())) {
+        pos = previousPos;
+    }
+
+    previousPos = pos;
+
     pos.z += zMovAbs;
+
+    if(!this->validatePosition(pos, *world->getBlockData())) {
+        pos = previousPos;
+    }else {
+        //std::cout << "pos to get through block is: " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
+    }
 
     moveVector.durationInMilliseconds = 0;
     moveVector.relativeX = 0;
     moveVector.relativeZ = 0;
 
-
-    //handle collision
-    playerAABB = getAABB();
-
-    playerAABB.startX += pos.x;
-    playerAABB.startY += pos.y;
-    playerAABB.startZ += pos.z;
-
-    for(int i = 0; i < world->getBlockData()->getRawBlockArray().size(); ++i) {
-        std::shared_ptr<Block> block = world->getBlockData()->getRawBlockArray().at(i);
-        AABB blockAABB = block->getAABB();
-        blockAABB.startX += block->getPos().x;
-        blockAABB.startY += block->getPos().y;
-        blockAABB.startZ += block->getPos().z;
-
-        bool colliding = AABBIntersectedByAABB(playerAABB, blockAABB);
-
-        if(colliding) {
-            pos = previousPos;
-            break;
-        }
-    }
     //std::cout << "x: " << pos.x << ", y: " << pos.y << ", z: " << pos.z << std::endl;
 }
 
 void Player::listenTo(std::shared_ptr<Event> e) {
-
-    if(e->getEventID() == "KEYPRESSED") {
-        KeyPressedEvent keyEvent = *dynamic_cast<KeyPressedEvent*>(e.get());
-
-        if(keyEvent.key == ' ') {
-            if(currentYSpeed == 0) {
-                currentYSpeed = 10;
-            }
-        }
-    }
-
     if(e->getEventID() == "KEYHELD") {
         KeyHeldEvent keyEvent = *dynamic_cast<KeyHeldEvent*>(e.get());
 
@@ -180,6 +151,12 @@ void Player::listenTo(std::shared_ptr<Event> e) {
                 moveVector.durationInMilliseconds = milliseconds;
             }
             ++moveVector.relativeX;
+        }
+
+        if(keyEvent.key == ' ') {
+            if(currentYSpeed == 0) {
+                currentYSpeed = 10;
+            }
         }
     }
 
@@ -243,4 +220,37 @@ double Player::getXRotation() {
 }
 double Player::getYRotation() {
     return pitch;
+}
+
+bool Player::validatePosition(Pos newPosition, BlockArrayData data) {
+    AABB playerAABB = getAABB();
+    playerAABB.add(newPosition);
+
+    for(int i = 0; i < data.getRawBlockArray().size(); ++i) {
+        Block b = *data.getRawBlockArray().at(i);
+        AABB blockAABB = b.getAABB();
+        blockAABB.add(b.getPos());
+
+        if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Player::validatePosition(Pos newPosition, BlockArrayData data, float* yToSnapTo) {
+    AABB playerAABB = getAABB();
+    playerAABB.add(newPosition);
+
+    for(int i = 0; i < data.getRawBlockArray().size(); ++i) {
+        Block b = *data.getRawBlockArray().at(i);
+        AABB blockAABB = b.getAABB();
+        blockAABB.add(b.getPos());
+
+        if((blockAABB.startY < playerAABB.startY + playerAABB.ySize) && AABBIntersectedByAABB(playerAABB, blockAABB)) {
+            yToSnapTo[0] = blockAABB.startY + blockAABB.ySize;
+            return false;
+        }
+    }
+    return true;
 }

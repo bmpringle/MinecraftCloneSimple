@@ -14,7 +14,7 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
     for(int i = 0; i < rawBlockData.size(); ++i) {
         BlockPos p = rawBlockData.at(i)->getPos();
         if(p.x == pos.x && p.y == pos.y && p.z == pos.z) {
-            rawBlockData.erase(rawBlockData.begin() + i - 1);
+            rawBlockData.erase(rawBlockData.begin() + i);
         }
     }
     block->setPos(pos);
