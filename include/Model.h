@@ -25,24 +25,45 @@ struct AABB {
 
 class RenderedPoint {
     public:
-        RenderedPoint(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {
+        RenderedPoint(float _x, float _y, float _z, float _u, float _v) : x(_x), y(_y), z(_z), u(_u), v(_v) {
 
         }
 
         float x = 0;
         float y = 0;
         float z = 0;
+
+        float u = 0;
+        float v = 0;
 };
 
 class RenderedTriangle {
     public:
-        RenderedTriangle(RenderedPoint _a, RenderedPoint _b, RenderedPoint _c) : a(_a), b(_b), c(_c) {
+        RenderedTriangle(RenderedPoint _a, RenderedPoint _b, RenderedPoint _c, int uvFlag) : a(_a), b(_b), c(_c) {
+            if(uvFlag == 0) {
+                a.u = 0;
+                a.v = 0;
+                
+                b.u = 1;
+                b.v = 0;
 
+                c.u = 0;
+                c.v = 1;
+            }else if(uvFlag == 1){
+                a.u = 0;
+                a.v = 1;
+                
+                b.u = 1;
+                b.v = 0;
+
+                c.u = 1;
+                c.v = 1;                
+            }
         }
 
-        RenderedPoint a = RenderedPoint(0, 0, 0);
-        RenderedPoint b = RenderedPoint(0, 0, 0);
-        RenderedPoint c = RenderedPoint(0, 0, 0);  
+        RenderedPoint a = RenderedPoint(0, 0, 0, 0, 0);
+        RenderedPoint b = RenderedPoint(0, 0, 0, 0, 0);
+        RenderedPoint c = RenderedPoint(0, 0, 0, 0, 0);  
 };
 
 class RenderedModel {

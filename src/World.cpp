@@ -1,6 +1,7 @@
 #include "World.h"
 #include "Player.h"
 #include <iostream>
+#include "Blocks.h"
 
 /**
  * @brief 
@@ -46,22 +47,22 @@ void World::generateWorld() {
     for(int x = 0; x < 20; ++x) {
         for(int y = 0; y < 1; ++y) {
             for(int z = 0; z < 20; ++z) {
-                internalBlockData.setBlockAtPosition(BlockPos(x, y, z), std::shared_ptr<Block>(new Block()));
+                internalBlockData.setBlockAtPosition(BlockPos(x, y, z), std::shared_ptr<Block>(new BlockDirt()));
             }
         } 
     }
 
-    internalBlockData.setBlockAtPosition(BlockPos(0, 1, 10), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(0, 2, 10), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(0, 1, 10), std::shared_ptr<Block>(new BlockCobblestone()));
+    internalBlockData.setBlockAtPosition(BlockPos(0, 2, 10), std::shared_ptr<Block>(new BlockCobblestone()));
 
-    internalBlockData.setBlockAtPosition(BlockPos(4, 1, 10), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(5, 2, 10), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(4, 1, 10), std::shared_ptr<Block>(new BlockCobblestone()));
+    internalBlockData.setBlockAtPosition(BlockPos(5, 2, 10), std::shared_ptr<Block>(new BlockCobblestone()));
 
-    internalBlockData.setBlockAtPosition(BlockPos(0, 1, 10), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(7, 2, 10), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(0, 1, 10), std::shared_ptr<Block>(new BlockCobblestone()));
+    internalBlockData.setBlockAtPosition(BlockPos(7, 2, 10), std::shared_ptr<Block>(new BlockCobblestone()));
 
-    internalBlockData.setBlockAtPosition(BlockPos(15, 3, 2), std::shared_ptr<Block>(new Block()));
-    internalBlockData.setBlockAtPosition(BlockPos(15, 3, 2), std::shared_ptr<Block>(new Block()));
+    internalBlockData.setBlockAtPosition(BlockPos(15, 3, 2), std::shared_ptr<Block>(new BlockCobblestone()));
+    internalBlockData.setBlockAtPosition(BlockPos(15, 3, 2), std::shared_ptr<Block>(new BlockCobblestone()));
 }
 
 void World::internalKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {

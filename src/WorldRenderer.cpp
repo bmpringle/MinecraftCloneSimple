@@ -3,12 +3,12 @@
 
 #define WORLDSIZE_CONST 100
 
-WorldRenderer::WorldRenderer() {
+WorldRenderer::WorldRenderer() : textureFetcher(TextureFetcher()) {
     renderSetup();
 }
 
 unsigned int WorldRenderer::compileShaderProgramFromFiles(std::string vertexShaderPath, std::string fragmentShaderPath) {
-    unsigned int shaderProgram;
+    unsigned int _shaderProgram;
 
     std::ifstream filestream = std::ifstream(vertexShaderPath);
     
@@ -32,7 +32,7 @@ unsigned int WorldRenderer::compileShaderProgramFromFiles(std::string vertexShad
 
     unsigned int vertexShader, fragmentShader;
 
-    shaderProgram = glCreateProgram();
+    _shaderProgram = glCreateProgram();
 
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -54,24 +54,31 @@ unsigned int WorldRenderer::compileShaderProgramFromFiles(std::string vertexShad
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if(!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    glAttachShader(_shaderProgram, vertexShader);
+    glAttachShader(_shaderProgram, fragmentShader);
+    glLinkProgram(_shaderProgram);
+
+    glGetProgramiv(_shaderProgram, GL_LINK_STATUS, &success);
+    if(!success) {
+        glGetProgramInfoLog(_shaderProgram, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::VERTEX::LINK_FAILED\n" << infoLog << std::endl;
     }
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    return shaderProgram;
+    return _shaderProgram;
 }
 
 void WorldRenderer::renderSetup() {  
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);  
 
     glGenVertexArrays(1, &VAO);  
     glBindVertexArray(VAO);
@@ -82,66 +89,28 @@ void WorldRenderer::renderSetup() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);  
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    shaderProgram = compileShaderProgramFromFiles("./shaders/shaders.vert", "./shaders/shaders.frag");
+    shaderProgram[0] = compileShaderProgramFromFiles("./shaders/basic_shader.vert", "./shaders/basic_shader.frag");
+    shaderProgram[1] = compileShaderProgramFromFiles("./shaders/texture_shader.vert", "./shaders/texture_shader.frag");
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);  
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);  
 
-    glUseProgram(shaderProgram);
-
-    int boundsVec3Location = glGetUniformLocation(shaderProgram, "bounds");
-    glUniform3f(boundsVec3Location, WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 }
 
 void WorldRenderer::renderFrame(World* world) {
 
-    AABB playerAABB = world->getPlayer()->getAABB();
+    setUniforms(world, 0);
+    setUniforms(world, 1);
 
-    int playerPosLocation = glGetUniformLocation(shaderProgram, "playerPos");
-    //add 3*y/4 to y pos because eyes are at 75% of player height, add z length of AABB because eyes are at front, add half of x length of AABB to place at middle of player.
-    glUniform3f(playerPosLocation, world->getPlayer()->getPos().x + playerAABB.xSize / 2, world->getPlayer()->getPos().y + playerAABB.ySize * 3.0 / 4.0, world->getPlayer()->getPos().z + playerAABB.zSize);
-
-    int perspectiveMatrixLocation = glGetUniformLocation(shaderProgram, "perspectiveMatrix");
-    
-    matrix_float4x4 perspectiveMatrix = calculatePerspectiveMatrix(90, 0.0001, 100);
-
-    GLfloat matrixFloat [16] = {0};
-
-    for(int i = 0; i < 16; ++i) {
-        matrixFloat[i] = perspectiveMatrix.columns[i/4][i % 4];
-    }
-
-    glUniformMatrix4fv(perspectiveMatrixLocation, 1, GL_FALSE, &matrixFloat[0]);
-
-    
-    int rotationMatrixXLocation = glGetUniformLocation(shaderProgram, "rotationMatrixX");
-    int rotationMatrixYLocation = glGetUniformLocation(shaderProgram, "rotationMatrixY");
-
-    matrix_float3x3 rotationMatrixX = calculateXRotationMatrix(world->getPlayer()->getXRotation());
-    matrix_float3x3 rotationMatrixY = calculateYRotationMatrix(world->getPlayer()->getYRotation());
-
-    GLfloat rotationMatrixFloat [9] = {0};
-
-    for(int i = 0; i < 9; ++i) {
-        rotationMatrixFloat[i] = rotationMatrixX.columns[i/3][i % 3];
-    }
-
-    glUniformMatrix3fv(rotationMatrixXLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);
-    
-    for(int i = 0; i < 9; ++i) {
-        rotationMatrixFloat[i] = rotationMatrixY.columns[i/3][i % 3];
-    }
-
-    glUniformMatrix3fv(rotationMatrixYLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);
 
     BlockArrayData* data = world->getBlockData();
     std::vector<std::shared_ptr<Block>> rawData = data->getRawBlockArray();
     
-    std::vector<RenderedTriangle> trianglesToRender = std::vector<RenderedTriangle>();
-
     for(int i = 0; i < rawData.size(); ++i) {
         std::shared_ptr<Block> block = rawData.at(i);
         RenderedModel model = block->getRenderedModel();
@@ -165,10 +134,67 @@ void WorldRenderer::renderFrame(World* world) {
             pointc.y += pos.y;
             pointc.z += pos.z;
 
-            model.renderedModel[j] = RenderedTriangle(pointa, pointb, pointc);
+            model.renderedModel[j] = RenderedTriangle(pointa, pointb, pointc, -1);
         }
 
-        appendVectorWithVector(&trianglesToRender, model.renderedModel);
+        std::vector<float> vectorWithColors = std::vector<float>();
+
+        for(RenderedTriangle triangle : model.renderedModel) {
+            RenderedPoint point1 = triangle.a;
+            RenderedPoint point2 = triangle.b;
+            RenderedPoint point3 = triangle.c;
+
+            //point 1 red
+            vectorWithColors.push_back(point1.x);
+            vectorWithColors.push_back(point1.y);
+            vectorWithColors.push_back(point1.z);
+            vectorWithColors.push_back(1);
+            vectorWithColors.push_back(0);
+            vectorWithColors.push_back(0);
+            vectorWithColors.push_back(point1.u);
+            vectorWithColors.push_back(point1.v);
+
+            //point 2 green
+            vectorWithColors.push_back(point2.x);
+            vectorWithColors.push_back(point2.y);
+            vectorWithColors.push_back(point2.z);
+            vectorWithColors.push_back(0);
+            vectorWithColors.push_back(1);
+            vectorWithColors.push_back(0);
+            vectorWithColors.push_back(point2.u);
+            vectorWithColors.push_back(point2.v);
+
+            //point 3 blue
+            vectorWithColors.push_back(point3.x);
+            vectorWithColors.push_back(point3.y);
+            vectorWithColors.push_back(point3.z);
+            vectorWithColors.push_back(0);
+            vectorWithColors.push_back(0);
+            vectorWithColors.push_back(1);
+            vectorWithColors.push_back(point3.u);
+            vectorWithColors.push_back(point3.v);
+        }
+
+        float vertexAndColorData[vectorWithColors.size()];
+
+        for(int i = 0; i < vectorWithColors.size(); ++i) {
+            vertexAndColorData[i] = vectorWithColors[i];
+        }
+
+        glBindVertexArray(VAO);
+
+        glUseProgram(shaderProgram[0]);
+
+        unsigned int TBO = textureFetcher.getOrLoadTexture(block->getTextureName());
+
+        if(TBO != -1) {
+            glBindTexture(GL_TEXTURE_2D, TBO);
+            glUseProgram(shaderProgram[1]);
+        }
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertexAndColorData), vertexAndColorData, GL_DYNAMIC_DRAW);
+
+        glDrawArrays(GL_TRIANGLES, 0, vectorWithColors.size() / 6);
     }
 
 
@@ -198,51 +224,6 @@ void WorldRenderer::renderFrame(World* world) {
     }
 
     appendVectorWithVector(&trianglesToRender, model.renderedModel);*/
-
-    std::vector<float> vectorWithColors = std::vector<float>();
-
-    for(RenderedTriangle triangle : trianglesToRender) {
-        RenderedPoint point1 = triangle.a;
-        RenderedPoint point2 = triangle.b;
-        RenderedPoint point3 = triangle.c;
-
-        //point 1 red
-        vectorWithColors.push_back(point1.x);
-        vectorWithColors.push_back(point1.y);
-        vectorWithColors.push_back(point1.z);
-        vectorWithColors.push_back(1);
-        vectorWithColors.push_back(0);
-        vectorWithColors.push_back(0);
-
-        //point 2 green
-        vectorWithColors.push_back(point2.x);
-        vectorWithColors.push_back(point2.y);
-        vectorWithColors.push_back(point2.z);
-        vectorWithColors.push_back(0);
-        vectorWithColors.push_back(1);
-        vectorWithColors.push_back(0);
-
-        //point 3 blue
-        vectorWithColors.push_back(point3.x);
-        vectorWithColors.push_back(point3.y);
-        vectorWithColors.push_back(point3.z);
-        vectorWithColors.push_back(0);
-        vectorWithColors.push_back(0);
-        vectorWithColors.push_back(1);
-    }
-
-    float vertexAndColorData[vectorWithColors.size()];
-
-    for(int i = 0; i < vectorWithColors.size(); ++i) {
-        vertexAndColorData[i] = vectorWithColors[i];
-    }
-
-    glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexAndColorData), vertexAndColorData, GL_DYNAMIC_DRAW);
-
-    glDrawArrays(GL_TRIANGLES, 0, vectorWithColors.size() / 6);
 }
 
 template<class T>
@@ -395,4 +376,51 @@ matrix_float3x3 WorldRenderer::calculateYRotationMatrix(double yRotation) {
     rotationMatrix.columns[2] = column3;
 
     return rotationMatrix;
+}
+
+void WorldRenderer::setUniforms(World* world, int programIndex) {
+
+    glUseProgram(shaderProgram[programIndex]);
+
+    int boundsVec3Location = glGetUniformLocation(shaderProgram[programIndex], "bounds");
+    glUniform3f(boundsVec3Location, WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST);
+
+    AABB playerAABB = world->getPlayer()->getAABB();
+
+    int playerPosLocation = glGetUniformLocation(shaderProgram[programIndex], "playerPos");
+    //add 3*y/4 to y pos because eyes are at 75% of player height, add z length of AABB because eyes are at front, add half of x length of AABB to place at middle of player.
+    glUniform3f(playerPosLocation, world->getPlayer()->getPos().x + playerAABB.xSize / 2, world->getPlayer()->getPos().y + playerAABB.ySize * 3.0 / 4.0, world->getPlayer()->getPos().z + playerAABB.zSize);
+
+    int perspectiveMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "perspectiveMatrix");
+    
+    matrix_float4x4 perspectiveMatrix = calculatePerspectiveMatrix(90, 0.0001, 100);
+
+    GLfloat matrixFloat [16] = {0};
+
+    for(int i = 0; i < 16; ++i) {
+        matrixFloat[i] = perspectiveMatrix.columns[i/4][i % 4];
+    }
+
+    glUniformMatrix4fv(perspectiveMatrixLocation, 1, GL_FALSE, &matrixFloat[0]);
+
+    
+    int rotationMatrixXLocation = glGetUniformLocation(shaderProgram[programIndex], "rotationMatrixX");
+    int rotationMatrixYLocation = glGetUniformLocation(shaderProgram[programIndex], "rotationMatrixY");
+
+    matrix_float3x3 rotationMatrixX = calculateXRotationMatrix(world->getPlayer()->getXRotation());
+    matrix_float3x3 rotationMatrixY = calculateYRotationMatrix(world->getPlayer()->getYRotation());
+
+    GLfloat rotationMatrixFloat [9] = {0};
+
+    for(int i = 0; i < 9; ++i) {
+        rotationMatrixFloat[i] = rotationMatrixX.columns[i/3][i % 3];
+    }
+
+    glUniformMatrix3fv(rotationMatrixXLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);
+    
+    for(int i = 0; i < 9; ++i) {
+        rotationMatrixFloat[i] = rotationMatrixY.columns[i/3][i % 3];
+    }
+
+    glUniformMatrix3fv(rotationMatrixYLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);
 }

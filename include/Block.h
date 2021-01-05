@@ -33,6 +33,8 @@ class Block : public Model {
         AABB getAABB();
 
         RenderedModel getRenderedModel();
+
+        virtual std::string getTextureName();
         
     private:
         BlockPos pos;
