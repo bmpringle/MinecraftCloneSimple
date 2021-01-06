@@ -8,6 +8,7 @@
 #include "BlockArrayData.h"
 #include "simd/simd.h"
 #include "TextureFetcher.h"
+#include "RenderInclude.h"
 
 class World;
 
@@ -16,6 +17,8 @@ class WorldRenderer {
         WorldRenderer();
 
         void renderFrame(World* world);
+        void renderOverlay(float rectangle[48], std::string texture);
+        void updateAspectRatio(GLFWwindow* window);
 
     private:
         void renderSetup();
@@ -31,6 +34,8 @@ class WorldRenderer {
             0.0f,  0.5f, 0.0f, /*color*/ 1.0f, 1.0f, 0.0f
         }; 
 
+        float aspectRatio = 1;
+
         matrix_float4x4 calculatePerspectiveMatrix(double FOV, double zNear, double zFar);
 
         matrix_float3x3 calculateXRotationMatrix(double xRotation);
@@ -39,7 +44,7 @@ class WorldRenderer {
         void setUniforms(World* world, int programIndex);
 
         unsigned int VAO;
-        unsigned int shaderProgram[2];
+        unsigned int shaderProgram[3];
 
         TextureFetcher textureFetcher;
 };

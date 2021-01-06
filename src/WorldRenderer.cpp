@@ -79,6 +79,9 @@ unsigned int WorldRenderer::compileShaderProgramFromFiles(std::string vertexShad
 void WorldRenderer::renderSetup() {  
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);  
+    glEnable(GL_CULL_FACE); 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 
     glGenVertexArrays(1, &VAO);  
     glBindVertexArray(VAO);
@@ -91,6 +94,7 @@ void WorldRenderer::renderSetup() {
 
     shaderProgram[0] = compileShaderProgramFromFiles("./shaders/basic_shader.vert", "./shaders/basic_shader.frag");
     shaderProgram[1] = compileShaderProgramFromFiles("./shaders/texture_shader.vert", "./shaders/texture_shader.frag");
+    shaderProgram[2] = compileShaderProgramFromFiles("./shaders/2d_shader.vert", "./shaders/2d_shader.frag");
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);  
@@ -226,6 +230,31 @@ void WorldRenderer::renderFrame(World* world) {
     appendVectorWithVector(&trianglesToRender, model.renderedModel);*/
 }
 
+void WorldRenderer::renderOverlay(float rectangle[48], std::string texture) {
+    float overlay[48] = {0};
+
+    for(int i = 0; i < 48; ++i) {
+        overlay[i] = rectangle[i] * ((i % 8 == 1) ? aspectRatio : 1);
+    }
+    
+    glBindVertexArray(VAO);
+
+    glUseProgram(shaderProgram[2]);
+
+    int boundsVec3Location = glGetUniformLocation(shaderProgram[2], "bounds");
+
+    glUniform3f(boundsVec3Location, 1000, 1000, 1000);
+
+
+    unsigned int TBO = textureFetcher.getOrLoadTexture(texture);
+
+    glBindTexture(GL_TEXTURE_2D, TBO);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(overlay), &overlay[0], GL_STATIC_DRAW);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
 template<class T>
 void WorldRenderer::appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T> vectorToAppend) {
     for(T item : vectorToAppend) {
@@ -237,7 +266,7 @@ matrix_float4x4 WorldRenderer::calculatePerspectiveMatrix(double FOV, double zNe
     float n = zNear, r = 0, l = 0, t = 0, b = 0, f = zFar;
     
     float scale = tan(FOV * 0.5 * M_PI / 180) * n;
-    r = 1 * scale;
+    r = aspectRatio * scale;
     l = -r; 
     t = scale;
     b = -t;
@@ -389,11 +418,11 @@ void WorldRenderer::setUniforms(World* world, int programIndex) {
 
     int playerPosLocation = glGetUniformLocation(shaderProgram[programIndex], "playerPos");
     //add 3*y/4 to y pos because eyes are at 75% of player height, add z length of AABB because eyes are at front, add half of x length of AABB to place at middle of player.
-    glUniform3f(playerPosLocation, world->getPlayer()->getPos().x + playerAABB.xSize / 2, world->getPlayer()->getPos().y + playerAABB.ySize * 3.0 / 4.0, world->getPlayer()->getPos().z + playerAABB.zSize);
+    glUniform3f(playerPosLocation, world->getPlayer()->getPos().x + playerAABB.xSize / 2, world->getPlayer()->getPos().y + playerAABB.ySize * 3.0 / 4.0, world->getPlayer()->getPos().z + playerAABB.zSize / 2);
 
     int perspectiveMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "perspectiveMatrix");
     
-    matrix_float4x4 perspectiveMatrix = calculatePerspectiveMatrix(90, 0.0001, 100);
+    matrix_float4x4 perspectiveMatrix = calculatePerspectiveMatrix(90, 0.1, 100);
 
     GLfloat matrixFloat [16] = {0};
 
@@ -423,4 +452,10 @@ void WorldRenderer::setUniforms(World* world, int programIndex) {
     }
 
     glUniformMatrix3fv(rotationMatrixYLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);
+}
+
+void WorldRenderer::updateAspectRatio(GLFWwindow* window) {
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    aspectRatio = (float)width/(float)height;
 }

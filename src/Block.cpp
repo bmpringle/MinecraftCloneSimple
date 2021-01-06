@@ -30,8 +30,8 @@ RenderedModel Block::getRenderedModel() {
     RenderedPoint p7 = RenderedPoint(1, 1, 1, /**uv coords*/ 0, 0);
     RenderedPoint p8 = RenderedPoint(0, 1, 1, /**uv coords*/ 0, 0);
 
-    RenderedTriangle t1 = RenderedTriangle(p1, p2, p4, 0);
-    RenderedTriangle t2 = RenderedTriangle(p4, p2, p3, 1);
+    RenderedTriangle t1 = RenderedTriangle(p4, p2, p1, 1);
+    RenderedTriangle t2 = RenderedTriangle(p3, p2, p4, 0);
     RenderedTriangle t3 = RenderedTriangle(p5, p6, p8, 0);
     RenderedTriangle t4 = RenderedTriangle(p8, p6, p7, 1);
     RenderedTriangle t5 = RenderedTriangle(p4, p1, p8, 0);

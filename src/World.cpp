@@ -134,7 +134,20 @@ bool AABBIntersectedByAABB(AABB box1, AABB box2) {
 } 
 
 void World::renderGame() {
+    renderer.updateAspectRatio(window);
     renderer.renderFrame(this);
+
+    float overlay[48] = {
+        -11, -11, 0, 0, 0, 1, 0, 0,
+        11, -11, 0, 0, 0, 1, 1, 0,
+        -11, 11, 0, 0, 0, 1, 0, 1,
+
+        -11, 11, 0, 0, 0, 1, 0, 1,
+        11, -11, 0, 0, 0, 1, 1, 0,
+        11, 11, 0, 0, 0, 1, 1, 1
+    };
+
+    renderer.renderOverlay(overlay, "crosshair.png");
 }
 
 std::shared_ptr<Player> World::getPlayer() {
