@@ -35,7 +35,6 @@ class Block : public Model {
         RenderedModel getRenderedModel();
 
         virtual std::string getTextureName();
-        
     private:
         BlockPos pos;
 };

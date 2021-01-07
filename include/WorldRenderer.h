@@ -18,15 +18,13 @@ class WorldRenderer {
 
         void renderFrame(World* world);
         void renderOverlay(float rectangle[48], std::string texture);
+        void renderBlockInWireframe(World* world, BlockPos pos);
         void updateAspectRatio(GLFWwindow* window);
-
+        
     private:
         void renderSetup();
 
         unsigned int compileShaderProgramFromFiles(std::string vertexShaderPath, std::string fragmentShaderPath);
-
-        template<class T>
-        void appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T> vectorToAppend);
 
         float vertices[18] = {
             -0.5f, -0.5f, 0.0f, /*color*/ 1.0f, 1.0f, 0.0f,
@@ -35,11 +33,6 @@ class WorldRenderer {
         }; 
 
         float aspectRatio = 1;
-
-        matrix_float4x4 calculatePerspectiveMatrix(double FOV, double zNear, double zFar);
-
-        matrix_float3x3 calculateXRotationMatrix(double xRotation);
-        matrix_float3x3 calculateYRotationMatrix(double yRotation);
 
         void setUniforms(World* world, int programIndex);
 

@@ -8,6 +8,10 @@ TextureFetcher::TextureFetcher() {
 }
 
 unsigned int TextureFetcher::getOrLoadTexture(std::string name) {
+    return getOrLoadTexture(name, GL_REPEAT, GL_NEAREST);
+}
+
+unsigned int TextureFetcher::getOrLoadTexture(std::string name, int gl_setting1, int gl_setting2) {
     if(textureIDs.find(name) != textureIDs.end()) {
         return textureIDs.at(name);
     }
@@ -25,10 +29,10 @@ unsigned int TextureFetcher::getOrLoadTexture(std::string name) {
 
     glBindTexture(GL_TEXTURE_2D, TBO); 
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
-    glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, gl_setting1);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, gl_setting1);
+    glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, gl_setting2); 
+    glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, gl_setting2);
     
     if(nrChannels == 3) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);

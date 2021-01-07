@@ -3,9 +3,12 @@
 #include <iostream>
 #include "Events.h"
 #include <math.h>
+#include "RenderHelper.h"
+#include <simd/matrix.h>
 
 Player::Player(World* _world) : pos(Pos(0, 5, 0)), world(_world) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
+    yaw = 45;
 }
 
 void Player::updatePlayerInWorld(World* world) {  
@@ -111,6 +114,8 @@ void Player::updatePlayerInWorld(World* world) {
     moveVector.durationInMilliseconds = 0;
     moveVector.relativeX = 0;
     moveVector.relativeZ = 0;
+
+    updatePlayerLookingAt(world);
 
     //std::cout << "x: " << pos.x << ", y: " << pos.y << ", z: " << pos.z << std::endl;
 }
@@ -253,4 +258,106 @@ bool Player::validatePosition(Pos newPosition, BlockArrayData data, float* yToSn
         }
     }
     return true;
+}
+
+Pos Player::getCameraPosition() {
+    return Pos(getPos().x + getAABB().xSize / 2, getPos().y + getAABB().ySize * 3.0 / 4.0, getPos().z + getAABB().zSize / 2);
+}
+
+void Player::updatePlayerLookingAt(World* world) {
+    bool isLooking = false;
+    float previousT = -1;
+
+    for(int i = 0; i < world->getBlockData()->getRawBlockArray().size(); ++i) {
+        std::shared_ptr<Block> block = world->getBlockData()->getRawBlockArray().at(i);
+        AABB aabb = block->getAABB();
+        aabb.add(block->getPos());
+
+        float t = raycast(aabb);
+
+        if(t != -1 && (t < previousT || previousT == -1)) {
+            //std::cout << t << std::endl;
+            Pos normal = getCameraNormal();
+            Pos lookVector = Pos(normal.x * t, normal.y * t, normal.z * t);
+            //Pos intersectVector = (getCameraPosition() + lookVector);
+            internalBlockLookingAt = block->getPos();//BlockPos((int)intersectVector.x, (int)intersectVector.y, (int)intersectVector.z);
+            isLooking = true;
+            previousT = t;
+        }
+    }
+
+    if(!isLooking) {
+        blockLookingAt = nullptr;
+    }else {
+        //std::cout << "x: " << internalBlockLookingAt.x << ", y:" << internalBlockLookingAt.y << ", z:" << internalBlockLookingAt.z << std::endl;
+        blockLookingAt = &internalBlockLookingAt;
+    }
+}
+
+BlockPos* Player::getBlockLookingAt() {
+    return blockLookingAt;
+}
+
+Pos Player::getCameraNormal() {
+    simd_float3 d = simd_float3();
+    d[0] = 0;
+    d[1] = 0;
+    d[2] = 1;
+
+    simd_float3 n1 = simd_mul(calculateYRotationMatrix(-getYRotation()), d);
+
+    //std::cout << "xDeg: " << getXRotation() << ", yDeg: " << getYRotation() << " " << n1.x << " " <<n1.y << " " << n1.z << std::endl;
+
+    simd_float3 n2 = simd_mul(calculateXRotationMatrix(-getXRotation()), n1);
+
+    //std::cout << "xDeg: " << getXRotation() << ", yDeg: " << getYRotation() << " " << n2.x << " " <<n2.y << " " << n2.z << std::endl;
+    return Pos(n2[0], n2[1], n2[2]);
+}
+
+float Player::raycast(AABB aabb) {
+    Pos cameraPos = getCameraPosition();
+    Pos cameraNormal = getCameraNormal();
+
+    if(cameraNormal.x == 0) {
+        if(cameraPos.x < aabb.startX || cameraPos.x > aabb.startX + aabb.xSize) {
+            return -1;
+        }
+    }
+
+    if(cameraNormal.y == 0) {
+        if(cameraPos.y < aabb.startX || cameraPos.y > aabb.startX + aabb.ySize) {
+            return -1;
+        }
+    }
+
+    if(cameraNormal.z == 0) {
+        if(cameraPos.z < aabb.startX || cameraPos.z > aabb.startX + aabb.zSize) {
+            return -1;
+        }
+    }
+
+    float t1 = (aabb.startX - cameraPos.x) / cameraNormal.x;
+    float t2 = (aabb.startX + aabb.xSize - cameraPos.x) / cameraNormal.x;
+    float t3 = (aabb.startY - cameraPos.y) / cameraNormal.y;
+    float t4 = (aabb.startY + aabb.ySize - cameraPos.y) / cameraNormal.y;
+    float t5 = (aabb.startZ - cameraPos.z) / cameraNormal.z;
+    float t6 = (aabb.startZ + aabb.zSize - cameraPos.z) / cameraNormal.z;
+
+    float tmin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
+    float tmax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
+
+    // if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
+    if (tmax < 0) {
+        return -1;
+    }
+
+    // if tmin > tmax, ray doesn't intersect AABB
+    if (tmin > tmax) {
+        return -1;
+    }
+
+    if (tmin < 0) {
+        return tmax;
+    }
+    return tmin;
 }

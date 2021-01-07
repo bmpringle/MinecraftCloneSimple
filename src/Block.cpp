@@ -51,8 +51,6 @@ RenderedModel Block::getRenderedModel() {
     }
 
     return RenderedModel(triangles);
-    
-
 }
 
 std::string Block::getTextureName() {

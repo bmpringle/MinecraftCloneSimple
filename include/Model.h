@@ -35,6 +35,10 @@ class RenderedPoint {
 
         float u = 0;
         float v = 0;
+
+        friend RenderedPoint operator*(RenderedPoint lhs, double rhs) {
+            return RenderedPoint(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs, lhs.u, lhs.v);
+        }
 };
 
 class RenderedTriangle {
