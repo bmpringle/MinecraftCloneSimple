@@ -12,6 +12,7 @@ class InputHandler {
         void handleInput(GLFWwindow* window, int key, int scancode, int action, int mods, EventQueue* e, TimerMap* timerMap);
         void callRegularEvents(EventQueue* e, TimerMap* timerMap);
         void handleMouseInput(GLFWwindow* window, double xpos, double ypos, EventQueue* e, TimerMap* timerMap);
+        void handleMouseButtonInput(GLFWwindow* window, int button, int action, int mods, EventQueue* e, TimerMap* timerMap);
         void setFirstMouse();
     private:
         std::vector<char> held = std::vector<char>();

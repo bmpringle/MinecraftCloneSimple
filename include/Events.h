@@ -56,4 +56,26 @@ class MouseMovedEvent : public Event {
         double xOffset;
         double yOffset;
 };
+
+class LeftMouseButtonPressedEvent : public Event {
+    public:
+        LeftMouseButtonPressedEvent() {
+
+        }
+
+        std::string getEventID() {
+            return "LEFTMOUSEBUTTONPRESSED";
+        }
+};
+
+class RightMouseButtonPressedEvent : public Event {
+    public:
+        RightMouseButtonPressedEvent() {
+
+        }
+
+        std::string getEventID() {
+            return "RIGHTMOUSEBUTTONPRESSED";
+        }
+};
 #endif

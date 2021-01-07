@@ -81,7 +81,7 @@ class Player : public Listener, public Model {
         bool validatePosition(Pos newPosition, BlockArrayData data);
         bool validatePosition(Pos newPosition, BlockArrayData data, float* yToSnapTo);
         void updatePlayerLookingAt(World* world);
-        float raycast(AABB box);
+        float raycast(AABB box, int* side);
 
         Pos pos;
 
@@ -101,5 +101,9 @@ class Player : public Listener, public Model {
         //this exists to prevent the pointer you should use from going stale DO NOT READ THIS POINTER
         BlockPos internalBlockLookingAt = BlockPos(0, 0, 0);
 
+        //order 1: lowX, 2: highX, 3: bottomY, 4: topY, 5: lowZ, 6: highZ
+        int sideOFBlockLookingAt = 0;
+
+        std::shared_ptr<Block> blockInHand = nullptr;
 };
 #endif

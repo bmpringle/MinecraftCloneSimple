@@ -72,6 +72,23 @@ void InputHandler::handleMouseInput(GLFWwindow* window, double xpos, double ypos
     previousYPos = ypos;
 }
 
+void InputHandler::handleMouseButtonInput(GLFWwindow* window, int button, int action, int mods, EventQueue* e, TimerMap* timerMap) {
+    switch(button) {
+        case GLFW_MOUSE_BUTTON_LEFT:
+            switch(action) {
+                case GLFW_PRESS:
+                    e->callEvent(std::shared_ptr<LeftMouseButtonPressedEvent>(new LeftMouseButtonPressedEvent()));
+            }
+            break;
+        case GLFW_MOUSE_BUTTON_RIGHT:
+            switch(action) {
+                case GLFW_PRESS:
+                    e->callEvent(std::shared_ptr<RightMouseButtonPressedEvent>(new RightMouseButtonPressedEvent()));
+            }
+            break;
+    }
+}
+
 void InputHandler::setFirstMouse() {
     firstMouse = true;
 }

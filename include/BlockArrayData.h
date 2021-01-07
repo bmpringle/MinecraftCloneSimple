@@ -18,6 +18,8 @@ class BlockArrayData {
 
         std::shared_ptr<Block> getBlockAtPosition(BlockPos pos);
 
+        void removeBlockAtPosition(BlockPos pos);
+
     private:
         std::vector<std::shared_ptr<Block>> rawBlockData;
         int size[3];

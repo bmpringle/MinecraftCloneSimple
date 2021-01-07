@@ -21,6 +21,15 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
     rawBlockData.push_back(block);
 }
 
+void BlockArrayData::removeBlockAtPosition(BlockPos pos) {
+    for(int i = 0; i < rawBlockData.size(); ++i) {
+        BlockPos p = rawBlockData.at(i)->getPos();
+        if(p.x == pos.x && p.y == pos.y && p.z == pos.z) {
+            rawBlockData.erase(rawBlockData.begin() + i);
+        }
+    }
+}
+
 std::shared_ptr<Block> BlockArrayData::getBlockAtPosition(BlockPos pos) {
     for(int i = 0; i < rawBlockData.size(); ++i) {
         BlockPos p = rawBlockData.at(i)->getPos();

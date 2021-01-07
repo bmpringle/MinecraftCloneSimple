@@ -25,8 +25,13 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler)
         static_cast<World*>(glfwGetWindowUserPointer(w))->internalMouseCallback(w, xpos, ypos);
     };
 
+    auto func3 = [](GLFWwindow* w, int button, int action, int mods) {
+        static_cast<World*>(glfwGetWindowUserPointer(w))->internalMouseButtonCallback(w, button, action, mods);
+    };
+
     glfwSetKeyCallback(window, func);
     glfwSetCursorPosCallback(window, func2);
+    glfwSetMouseButtonCallback(window, func3);
 }
     
 void World::updateGame() {
@@ -71,6 +76,10 @@ void World::internalKeyCallback(GLFWwindow* window, int key, int scancode, int a
 
 void World::internalMouseCallback(GLFWwindow* window, double xpos, double ypos) {
     input->handleMouseInput(window, xpos, ypos, worldEventQueue, &timerMap);
+}
+
+void World::internalMouseButtonCallback(GLFWwindow* w, int button, int action, int mods) {
+    input->handleMouseButtonInput(w, button, action, mods, worldEventQueue, &timerMap);
 }
 
 void World::mainLoop() {
