@@ -8,7 +8,6 @@
 
 Player::Player(World* _world) : pos(Pos(0, 5, 0)), world(_world) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
-    yaw = 45;
 }
 
 void Player::updatePlayerInWorld(World* world) {  
@@ -107,8 +106,6 @@ void Player::updatePlayerInWorld(World* world) {
 
     if(!this->validatePosition(pos, *world->getBlockData())) {
         pos = previousPos;
-    }else {
-        //std::cout << "pos to get through block is: " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
     }
 
     moveVector.durationInMilliseconds = 0;
@@ -116,8 +113,6 @@ void Player::updatePlayerInWorld(World* world) {
     moveVector.relativeZ = 0;
 
     updatePlayerLookingAt(world);
-
-    //std::cout << "x: " << pos.x << ", y: " << pos.y << ", z: " << pos.z << std::endl;
 }
 
 void Player::listenTo(std::shared_ptr<Event> e) {
@@ -275,12 +270,10 @@ void Player::updatePlayerLookingAt(World* world) {
 
         float t = raycast(aabb);
 
-        if(t != -1 && (t < previousT || previousT == -1)) {
-            //std::cout << t << std::endl;
+        if(t != -1 && (t < previousT || previousT == -1) && t <= 5) {
             Pos normal = getCameraNormal();
             Pos lookVector = Pos(normal.x * t, normal.y * t, normal.z * t);
-            //Pos intersectVector = (getCameraPosition() + lookVector);
-            internalBlockLookingAt = block->getPos();//BlockPos((int)intersectVector.x, (int)intersectVector.y, (int)intersectVector.z);
+            internalBlockLookingAt = block->getPos();
             isLooking = true;
             previousT = t;
         }
@@ -289,7 +282,6 @@ void Player::updatePlayerLookingAt(World* world) {
     if(!isLooking) {
         blockLookingAt = nullptr;
     }else {
-        //std::cout << "x: " << internalBlockLookingAt.x << ", y:" << internalBlockLookingAt.y << ", z:" << internalBlockLookingAt.z << std::endl;
         blockLookingAt = &internalBlockLookingAt;
     }
 }
@@ -306,11 +298,8 @@ Pos Player::getCameraNormal() {
 
     simd_float3 n1 = simd_mul(calculateYRotationMatrix(-getYRotation()), d);
 
-    //std::cout << "xDeg: " << getXRotation() << ", yDeg: " << getYRotation() << " " << n1.x << " " <<n1.y << " " << n1.z << std::endl;
-
     simd_float3 n2 = simd_mul(calculateXRotationMatrix(-getXRotation()), n1);
 
-    //std::cout << "xDeg: " << getXRotation() << ", yDeg: " << getYRotation() << " " << n2.x << " " <<n2.y << " " << n2.z << std::endl;
     return Pos(n2[0], n2[1], n2[2]);
 }
 

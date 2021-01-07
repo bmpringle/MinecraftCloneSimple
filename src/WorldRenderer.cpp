@@ -83,7 +83,7 @@ void WorldRenderer::renderSetup() {
     glEnable(GL_CULL_FACE); 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
-
+    
     glGenVertexArrays(1, &VAO);  
     glBindVertexArray(VAO);
 
@@ -332,17 +332,19 @@ void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
         pointc.y -= 0.5;
         pointc.z -= 0.5;
 
-        pointa.x *= 1.1020000000949949026;
-        pointa.y *= 1.1020000000949949026;
-        pointa.z *= 1.1020000000949949026;
+        float scale = 1.001;
 
-        pointb.x *= 1.1020000000949949026;
-        pointb.y *= 1.1020000000949949026;
-        pointb.z *= 1.1020000000949949026;
+        pointa.x *= scale;
+        pointa.y *= scale;
+        pointa.z *= scale;
 
-        pointc.x *= 1.1020000000949949026;
-        pointc.y *= 1.1020000000949949026;
-        pointc.z *= 1.1020000000949949026;
+        pointb.x *= scale;
+        pointb.y *= scale;
+        pointb.z *= scale;
+
+        pointc.x *= scale;
+        pointc.y *= scale;
+        pointc.z *= scale;
 
         pointa.x += 0.5;
         pointa.y += 0.5;
@@ -356,8 +358,6 @@ void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
         pointc.y += 0.5;
         pointc.z += 0.5;
         
-        std::cout << pointa.x << " "  << pointa.y << " "  << pointa.z  << std::endl  << pointb.x << " "  << pointb.y << " "  << pointb.z << std::endl << pointc.x << " "  << pointc.y << " "  << pointc.z << std::endl;
-
         pointa.x += pos.x;
         pointa.y += pos.y;
         pointa.z += pos.z;
@@ -380,8 +380,8 @@ void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
 
     for(RenderedTriangle triangle : model.renderedModel) {
         RenderedPoint point1 = triangle.a;
-        RenderedPoint point2 = triangle.b * 1.0020000000949949026;
-        RenderedPoint point3 = triangle.c * 1.0020000000949949026;
+        RenderedPoint point2 = triangle.b;
+        RenderedPoint point3 = triangle.c;
 
         //point 1 black
         vectorWithColors.push_back(point1.x);
