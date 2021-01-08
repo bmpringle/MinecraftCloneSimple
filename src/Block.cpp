@@ -56,3 +56,7 @@ RenderedModel Block::getRenderedModel() {
 std::string Block::getTextureName() {
     return "notexture.png";
 }
+
+std::shared_ptr<Block> Block::create() {
+    return std::shared_ptr<Block>(new Block());
+};

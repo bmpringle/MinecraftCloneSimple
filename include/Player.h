@@ -9,6 +9,7 @@
 #include "BlockArrayData.h"
 #include <simd/simd.h>
 #include <simd/math.h>
+#include "ItemBlock.h"
 
 class World;
 
@@ -76,9 +77,10 @@ class Player : public Listener, public Model {
         Pos getCameraPosition();
         Pos getCameraNormal();
         BlockPos* getBlockLookingAt();
-
-    private:
+        int getSideOfBlockLookingAt();
+        void setItemInHand(std::unique_ptr<Item> item);
         bool validatePosition(Pos newPosition, BlockArrayData data);
+    private:
         bool validatePosition(Pos newPosition, BlockArrayData data, float* yToSnapTo);
         void updatePlayerLookingAt(World* world);
         float raycast(AABB box, int* side);
@@ -102,8 +104,8 @@ class Player : public Listener, public Model {
         BlockPos internalBlockLookingAt = BlockPos(0, 0, 0);
 
         //order 1: lowX, 2: highX, 3: bottomY, 4: topY, 5: lowZ, 6: highZ
-        int sideOFBlockLookingAt = 0;
+        int sideOfBlockLookingAt = 0;
 
-        std::shared_ptr<Block> blockInHand = nullptr;
+        std::unique_ptr<Item> itemInHand = nullptr;
 };
 #endif

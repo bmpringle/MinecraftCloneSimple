@@ -3,6 +3,7 @@
 
 #include <string>
 #include "Model.h"
+#include <memory>
 
 struct BlockPos {
     public:
@@ -24,11 +25,13 @@ class Block : public Model {
     public:
         Block();
 
-        std::string getName();
+        virtual std::string getName();
 
         BlockPos getPos();
 
         void setPos(BlockPos pos_);
+
+        virtual std::shared_ptr<Block> create();
 
         AABB getAABB();
 

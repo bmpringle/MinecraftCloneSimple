@@ -9,7 +9,7 @@
 
 Player::Player(World* _world) : pos(Pos(0, 5, 0)), world(_world) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
-    blockInHand = std::shared_ptr<Block>(new BlockDirt());
+    itemInHand = std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockDirt())));
 }
 
 void Player::updatePlayerInWorld(World* world) {  
@@ -118,6 +118,18 @@ void Player::updatePlayerInWorld(World* world) {
 }
 
 void Player::listenTo(std::shared_ptr<Event> e) {
+    if(e->getEventID() == "KEYPRESSED") {
+        KeyPressedEvent keyEvent = *dynamic_cast<KeyPressedEvent*>(e.get());
+
+        if(keyEvent.key == '1') {
+            setItemInHand(std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockDirt()))));
+        }
+
+        if(keyEvent.key == '2') {
+            setItemInHand(std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockCobblestone()))));
+        }
+    }
+    
     if(e->getEventID() == "KEYHELD") {
         KeyHeldEvent keyEvent = *dynamic_cast<KeyHeldEvent*>(e.get());
 
@@ -185,91 +197,7 @@ void Player::listenTo(std::shared_ptr<Event> e) {
 
     if(e->getEventID() == "RIGHTMOUSEBUTTONPRESSED") {
         RightMouseButtonPressedEvent mouseEvent = *dynamic_cast<RightMouseButtonPressedEvent*>(e.get());
-        if(this->blockLookingAt != nullptr) {
-            BlockPos location = BlockPos(0, 0, 0);
-
-            switch(sideOFBlockLookingAt) {
-                default:
-                    break;
-                case 1:
-                    location = BlockPos(blockLookingAt->x - 1, blockLookingAt->y, blockLookingAt->z);
-                    if(world->getBlockData()->getBlockAtPosition(location) == nullptr && blockInHand != nullptr) {
-                        world->getBlockData()->setBlockAtPosition(location, blockInHand);
-                        blockInHand = std::shared_ptr<Block>(new BlockDirt());
-                        bool valid = validatePosition(pos, *world->getBlockData());
-                        if(!valid) {
-                            world->getBlockData()->removeBlockAtPosition(location);
-                        }else {
-                            blockInHand = std::shared_ptr<Block>(new BlockDirt());
-                        }                        
-                    }
-                    break;
-                case 2:
-                    location = BlockPos(blockLookingAt->x + 1, blockLookingAt->y, blockLookingAt->z);
-                    if(world->getBlockData()->getBlockAtPosition(location) == nullptr && blockInHand != nullptr) {
-                        world->getBlockData()->setBlockAtPosition(location, blockInHand);
-                        blockInHand = std::shared_ptr<Block>(new BlockDirt());
-                        bool valid = validatePosition(pos, *world->getBlockData());
-                        if(!valid) {
-                            world->getBlockData()->removeBlockAtPosition(location);
-                        }else {
-                            blockInHand = std::shared_ptr<Block>(new BlockDirt());
-                        }                        
-                    }
-                    break;
-                case 3:
-                    location = BlockPos(blockLookingAt->x, blockLookingAt->y - 1, blockLookingAt->z);
-                    if(world->getBlockData()->getBlockAtPosition(location) == nullptr && blockInHand != nullptr) {
-                        world->getBlockData()->setBlockAtPosition(location, blockInHand);
-                        blockInHand = std::shared_ptr<Block>(new BlockDirt());
-                        bool valid = validatePosition(pos, *world->getBlockData());
-                        if(!valid) {
-                            world->getBlockData()->removeBlockAtPosition(location);
-                        }else {
-                            blockInHand = std::shared_ptr<Block>(new BlockDirt());
-                        }                        
-                    }
-                    break;
-                case 4:
-                    location = BlockPos(blockLookingAt->x, blockLookingAt->y + 1, blockLookingAt->z);
-                    if(world->getBlockData()->getBlockAtPosition(location) == nullptr && blockInHand != nullptr) {
-                        world->getBlockData()->setBlockAtPosition(location, blockInHand);
-                        bool valid = validatePosition(pos, *world->getBlockData());
-                        if(!valid) {
-                            world->getBlockData()->removeBlockAtPosition(location);
-                        }else {
-                            blockInHand = std::shared_ptr<Block>(new BlockDirt());
-                        }
-                    }
-                    break;
-                case 5:
-                    location = BlockPos(blockLookingAt->x, blockLookingAt->y, blockLookingAt->z - 1);
-                    if(world->getBlockData()->getBlockAtPosition(location) == nullptr && blockInHand != nullptr) {
-                        world->getBlockData()->setBlockAtPosition(location, blockInHand);
-                        blockInHand = std::shared_ptr<Block>(new BlockDirt());
-                        bool valid = validatePosition(pos, *world->getBlockData());
-                        if(!valid) {
-                            world->getBlockData()->removeBlockAtPosition(location);
-                        }else {
-                            blockInHand = std::shared_ptr<Block>(new BlockDirt());
-                        }                        
-                    }
-                    break;
-                case 6:
-                    location = BlockPos(blockLookingAt->x, blockLookingAt->y, blockLookingAt->z + 1);
-                    if(world->getBlockData()->getBlockAtPosition(location) == nullptr && blockInHand != nullptr) {
-                        world->getBlockData()->setBlockAtPosition(location, blockInHand);
-                        blockInHand = std::shared_ptr<Block>(new BlockDirt());
-                        bool valid = validatePosition(pos, *world->getBlockData());
-                        if(!valid) {
-                            world->getBlockData()->removeBlockAtPosition(location);
-                        }else {
-                            blockInHand = std::shared_ptr<Block>(new BlockDirt());
-                        }                        
-                    }
-                    break;
-            }
-        }
+        itemInHand->onRightClick(world);
     }
 }
 
@@ -387,10 +315,10 @@ void Player::updatePlayerLookingAt(World* world) {
 
     if(!isLooking) {
         blockLookingAt = nullptr;
-        sideOFBlockLookingAt = 0;
+        sideOfBlockLookingAt = 0;
     }else {
         blockLookingAt = &internalBlockLookingAt;
-        sideOFBlockLookingAt = side;
+        sideOfBlockLookingAt = side;
     }
 }
 
@@ -471,4 +399,12 @@ float Player::raycast(AABB aabb, int* side) {
         *side = 6;
     }
     return tmin;
+}
+
+int Player::getSideOfBlockLookingAt() {
+    return sideOfBlockLookingAt;
+}
+
+void Player::setItemInHand(std::unique_ptr<Item> item) {
+    itemInHand = std::move(item);
 }
