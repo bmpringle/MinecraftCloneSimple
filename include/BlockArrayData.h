@@ -5,6 +5,7 @@
 #include "Block.h"
 #include <memory>
 #include "RenderInclude.h"
+#include "Chunk.h"
 
 class BlockArrayData {
     public:
@@ -14,14 +15,16 @@ class BlockArrayData {
 
         void setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> block);
 
-        std::vector<std::shared_ptr<Block>> getRawBlockArray();
+        std::vector<Chunk> getRawChunkArray();
 
         std::shared_ptr<Block> getBlockAtPosition(BlockPos pos);
 
         void removeBlockAtPosition(BlockPos pos);
 
+        Chunk getChunkWithBlock(BlockPos pos);
+
     private:
-        std::vector<std::shared_ptr<Block>> rawBlockData;
+        std::vector<Chunk> rawBlockData;
         int size[3];
 };
 #endif

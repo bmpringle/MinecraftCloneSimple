@@ -7,7 +7,7 @@
 #include <simd/matrix.h>
 #include "Blocks.h"
 
-Player::Player(World* _world) : pos(Pos(0, 5, 0)), world(_world) {
+Player::Player(World* _world) : pos(Pos(0, 4, 0)), world(_world) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
     itemInHand = std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockDirt())));
 }
@@ -206,34 +206,34 @@ AABB Player::getAABB() {
 }
 
 RenderedModel Player::getRenderedModel() {
-    //RenderedPoint p1 = RenderedPoint(0, 0, 0, /**uv coords*/ 0, 0, 0);
-    //RenderedPoint p2 = RenderedPoint(0.5, 0, 0, /**uv coords*/ 0, 0, 0);
-    //RenderedPoint p3 = RenderedPoint(0.5, 0, 0.5, /**uv coords*/ 0, 0, 0);
-    //RenderedPoint p4 = RenderedPoint(0, 0, 0.5, /**uv coords*/ 0, 0, 0);
-    //RenderedPoint p5 = RenderedPoint(0, 2, 0, /**uv coords*/ 0, 0, 0);
-    //RenderedPoint p6 = RenderedPoint(0.5, 2, 0, /**uv coords*/ 0, 0, 0);
-    //RenderedPoint p7 = RenderedPoint(0.5, 2, 0.5, /**uv coords*/ 0, 0, 0);
-    //RenderedPoint p8 = RenderedPoint(0, 2, 0.5, /**uv coords*/ 0, 0, 0);
+    RenderedPoint p1 = RenderedPoint(0, 0, 0, /**uv coords*/ 0, 0);
+    RenderedPoint p2 = RenderedPoint(0.5, 0, 0, /**uv coords*/ 0, 0);
+    RenderedPoint p3 = RenderedPoint(0.5, 0, 0.5, /**uv coords*/ 0, 0);
+    RenderedPoint p4 = RenderedPoint(0, 0, 0.5, /**uv coords*/ 0, 0);
+    RenderedPoint p5 = RenderedPoint(0, 2, 0, /**uv coords*/ 0, 0);
+    RenderedPoint p6 = RenderedPoint(0.5, 2, 0, /**uv coords*/ 0, 0);
+    RenderedPoint p7 = RenderedPoint(0.5, 2, 0.5, /**uv coords*/ 0, 0);
+    RenderedPoint p8 = RenderedPoint(0, 2, 0.5, /**uv coords*/ 0, 0);
 
-    /*RenderedTriangle t1 = RenderedTriangle(p1, p2, p3);
-    RenderedTriangle t2 = RenderedTriangle(p1, p4, p3);
-    RenderedTriangle t3 = RenderedTriangle(p5, p6, p7);
-    RenderedTriangle t4 = RenderedTriangle(p5, p8, p7);
-    RenderedTriangle t5 = RenderedTriangle(p1, p4, p8);
-    RenderedTriangle t6 = RenderedTriangle(p1, p5, p8);
-    RenderedTriangle t7 = RenderedTriangle(p2, p3, p7);
-    RenderedTriangle t8 = RenderedTriangle(p2, p6, p7);
-    RenderedTriangle t9 = RenderedTriangle(p1, p2, p5);
-    RenderedTriangle t10 = RenderedTriangle(p2, p5, p6);
-    RenderedTriangle t11 = RenderedTriangle(p3, p4, p8);
-    RenderedTriangle t12 = RenderedTriangle(p3, p7, p8);
+    RenderedTriangle t1 = RenderedTriangle(p1, p2, p3, 1);
+    RenderedTriangle t2 = RenderedTriangle(p1, p4, p3, 0);
+    RenderedTriangle t3 = RenderedTriangle(p5, p6, p7, 1);
+    RenderedTriangle t4 = RenderedTriangle(p5, p8, p7, 0);
+    RenderedTriangle t5 = RenderedTriangle(p1, p4, p8, 1);
+    RenderedTriangle t6 = RenderedTriangle(p1, p5, p8, 1);
+    RenderedTriangle t7 = RenderedTriangle(p2, p3, p7, 0);
+    RenderedTriangle t8 = RenderedTriangle(p2, p6, p7, 1);
+    RenderedTriangle t9 = RenderedTriangle(p1, p2, p5, 0);
+    RenderedTriangle t10 = RenderedTriangle(p2, p5, p6, 1);
+    RenderedTriangle t11 = RenderedTriangle(p3, p4, p8, 0);
+    RenderedTriangle t12 = RenderedTriangle(p3, p7, p8, 1);
 
-    RenderedTriangle triangleArray[12] = {t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12};*/
+    RenderedTriangle triangleArray[12] = {t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12};
     std::vector<RenderedTriangle> triangles = std::vector<RenderedTriangle>();
 
-    /*for(RenderedTriangle triangle : triangleArray) {
+    for(RenderedTriangle triangle : triangleArray) {
         triangles.push_back(triangle);
-    }*/
+    }
 
     return RenderedModel(triangles);
 }
@@ -253,13 +253,23 @@ bool Player::validatePosition(Pos newPosition, BlockArrayData data) {
     AABB playerAABB = getAABB();
     playerAABB.add(newPosition);
 
-    for(int i = 0; i < data.getRawBlockArray().size(); ++i) {
-        Block b = *data.getRawBlockArray().at(i);
-        AABB blockAABB = b.getAABB();
-        blockAABB.add(b.getPos());
+    for(int i = 0; i < data.getRawChunkArray().size(); ++i) {
+        Chunk c = data.getRawChunkArray().at(i);
+        AABB chunkAABB = c.getChunkAABB();
 
-        if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
-            return false;
+        BlockPos chunkCoords = c.getChunkCoordinates();
+        chunkAABB.add(chunkCoords);
+
+        if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
+            for(int k = 0; k < c.getBlocksInChunk().size(); ++k) {
+                std::shared_ptr<Block> block = c.getBlocksInChunk().at(k);
+                AABB blockAABB = block->getAABB();
+                blockAABB.add(block->getPos());
+
+                if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
+                    return false;
+                }
+            }
         }
     }
     return true;
@@ -269,14 +279,24 @@ bool Player::validatePosition(Pos newPosition, BlockArrayData data, float* yToSn
     AABB playerAABB = getAABB();
     playerAABB.add(newPosition);
 
-    for(int i = 0; i < data.getRawBlockArray().size(); ++i) {
-        Block b = *data.getRawBlockArray().at(i);
-        AABB blockAABB = b.getAABB();
-        blockAABB.add(b.getPos());
+    for(int i = 0; i < data.getRawChunkArray().size(); ++i) {
+        Chunk c = data.getRawChunkArray().at(i);
+        AABB chunkAABB = c.getChunkAABB();
+        
+        BlockPos chunkCoords = c.getChunkCoordinates();
+        chunkAABB.add(chunkCoords);
+        
+        if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
+            for(int k = 0; k < c.getBlocksInChunk().size(); ++k) {
+                std::shared_ptr<Block> block = c.getBlocksInChunk().at(k);
+                AABB blockAABB = block->getAABB();
+                blockAABB.add(block->getPos());
 
-        if((blockAABB.startY < playerAABB.startY + playerAABB.ySize) && AABBIntersectedByAABB(playerAABB, blockAABB)) {
-            yToSnapTo[0] = blockAABB.startY + blockAABB.ySize;
-            return false;
+                if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
+                    yToSnapTo[0] = blockAABB.startY + blockAABB.ySize;
+                    return false;
+                }
+            }
         }
     }
     return true;
@@ -292,23 +312,42 @@ void Player::updatePlayerLookingAt(World* world) {
 
     int side = 0;
 
-    for(int i = 0; i < world->getBlockData()->getRawBlockArray().size(); ++i) {
-        std::shared_ptr<Block> block = world->getBlockData()->getRawBlockArray().at(i);
-        AABB aabb = block->getAABB();
-        aabb.add(block->getPos());
+    std::vector<Chunk> chunksCrossed = std::vector<Chunk>();
+
+    for(int i = 0; i < world->getBlockData()->getRawChunkArray().size(); ++i) {
+        Chunk chunk = world->getBlockData()->getRawChunkArray().at(i);
+        AABB aabb = chunk.getChunkAABB();
+        aabb.add(chunk.getChunkCoordinates());
 
         int sideIntersect = 0;
 
         float t = raycast(aabb, &sideIntersect);
 
-        if(t != -1 && (t < previousT || previousT == -1) && t <= 5) {
-            Pos normal = getCameraNormal();
-            Pos lookVector = Pos(normal.x * t, normal.y * t, normal.z * t);
-            internalBlockLookingAt = block->getPos();
-            isLooking = true;
-            previousT = t;
-            if(sideIntersect != 0) {
-                side = sideIntersect;
+        if(t != -1 && (t < previousT || previousT == -1) && t <= 10) {
+            chunksCrossed.push_back(chunk);
+        }
+    }
+
+    for(int j = 0; j < chunksCrossed.size(); ++j) {
+        for(int k = 0; k < chunksCrossed.at(j).getBlocksInChunk().size(); ++k) {
+            std::shared_ptr<Block> block = chunksCrossed.at(j).getBlocksInChunk().at(k);
+
+            AABB aabb = block->getAABB();
+            aabb.add(block->getPos());
+
+            int sideIntersect = 0;
+
+            float t = raycast(aabb, &sideIntersect);
+
+            if(t != -1 && (t < previousT || previousT == -1) && t <= 5) {
+                Pos normal = getCameraNormal();
+                Pos lookVector = Pos(normal.x * t, normal.y * t, normal.z * t);
+                internalBlockLookingAt = block->getPos();
+                isLooking = true;
+                previousT = t;
+                if(sideIntersect != 0) {
+                    side = sideIntersect;
+                }
             }
         }
     }

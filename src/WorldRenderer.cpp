@@ -114,8 +114,24 @@ void WorldRenderer::renderFrame(World* world) {
 
 
     BlockArrayData* data = world->getBlockData();
-    std::vector<std::shared_ptr<Block>> rawData = data->getRawBlockArray();
+
+    std::vector<std::shared_ptr<Block>> rawData = std::vector<std::shared_ptr<Block>>();
     
+    int renderDistance = world->getChunkRenderDistance();
+
+    for(float x = -(float)renderDistance/2.0; x < (float)renderDistance/2.0; ++x) {
+        for(float z = -(float)renderDistance/2.0; z < (float)renderDistance/2.0; ++z) {
+            Pos playerPos = world->getPlayer()->getPos();
+            BlockPos playerBlock = BlockPos((int)playerPos.x + 10*x, (int)playerPos.y, (int)playerPos.z + 10*z);
+
+            Chunk chunk = data->getChunkWithBlock(playerBlock);
+            for(int i = 0; i < chunk.getBlocksInChunk().size(); ++i) {
+                std::shared_ptr<Block> block = chunk.getBlocksInChunk().at(i);
+                rawData.push_back(block);
+            }
+        }
+    }
+
     for(int i = 0; i < rawData.size(); ++i) {
         std::shared_ptr<Block> block = rawData.at(i);
         RenderedModel model = block->getRenderedModel();
@@ -313,7 +329,7 @@ void WorldRenderer::updateAspectRatio(GLFWwindow* window) {
 void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
     std::shared_ptr<Block> block = world->getBlockData()->getBlockAtPosition(pos);
     RenderedModel model = block->getRenderedModel();
-    
+
     for(int j = 0; j < model.renderedModel.size(); ++j) {
         RenderedTriangle triangle = model.renderedModel[j];
         RenderedPoint pointa = triangle.a;

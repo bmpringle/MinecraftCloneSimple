@@ -27,6 +27,8 @@ class World {
         void resume();
 
         void pause();
+
+        int getChunkRenderDistance();
     private:
         void generateWorld();
 
@@ -51,6 +53,8 @@ class World {
 
         //in meters/s^2
         float worldGravity = 32;
+
+        int chunkRenderDistance = 8;
 };
 
 bool AABBIntersectedByAABB(AABB box1, AABB box2);

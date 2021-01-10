@@ -48,10 +48,10 @@ void World::updateGame() {
 }
 
 void World::generateWorld() {
-    //generate a 20x20x3 layer of blocks for now, will change later
-    for(int x = 0; x < 20; ++x) {
-        for(int y = 0; y < 1; ++y) {
-            for(int z = 0; z < 20; ++z) {
+    //generate a 40x3x40 layer of blocks for now, will change later
+    for(int x = 0; x < 40; ++x) {
+        for(int y = 0; y < 3; ++y) {
+            for(int z = 0; z < 40; ++z) {
                 internalBlockData.setBlockAtPosition(BlockPos(x, y, z), std::shared_ptr<Block>(new BlockDirt()));
             }
         } 
@@ -90,10 +90,8 @@ void World::mainLoop() {
 
     while(!glfwWindowShouldClose(window) && !paused) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
         updateGame();
         renderGame();
-
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -168,4 +166,8 @@ std::shared_ptr<Player> World::getPlayer() {
 
 TimerMap* World::getTimerMap() {
     return &timerMap;
+}
+
+int World::getChunkRenderDistance() {
+    return chunkRenderDistance;
 }
