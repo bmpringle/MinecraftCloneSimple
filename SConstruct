@@ -9,14 +9,16 @@
 import os
 
 DBG = int(ARGUMENTS.get('DBG', 0))
+ARM = int(ARGUMENTS.get('ARM', 1))
 
 env = Environment()
 
 if env['PLATFORM'] == 'darwin': #macos
     CLANG = int(ARGUMENTS.get('CLANG', 1))
     CXX='clang++' if CLANG==1 else "g++"
-    GLFW_DIR='/opt/homebrew/Cellar/glfw/3.3.2'
-    GLEW_DIR='/opt/homebrew/Cellar/glew/2.2.0'
+    HOMEBREW = '/opt/homebrew' if ARM else '/usr/local'
+    GLFW_DIR='{}/Cellar/glfw/3.3.2'.format(HOMEBREW)
+    GLEW_DIR='{}/Cellar/glew/2.2.0'.format(HOMEBREW)
     LIBS=['GLEW','GLFW','pthread']
     LINK='{} -framework OpenGL -framework GLUT'.format(CXX)
 elif env['PLATFORM'] == 'posix': #linux
@@ -67,11 +69,11 @@ GLEW_LIB=os.sep.join([GLEW_DIR,'lib'])
 BLD = 'dbg' if DBG == 1 else 'rel'
 OPT = 0 if DBG == 1 else 3
 
-CCFLAGS='-static -O{} -I {} -I {} -g -std=c++2a -DGLEW_STATIC'.format(OPT, GLFW_INCLUDE, GLEW_INCLUDE)
+CCFLAGS='-static -O{} -I {} -I {} -I {} -I {} -g -std=c++2a -DGLEW_STATIC'.format(OPT, './', './include/', GLFW_INCLUDE, GLEW_INCLUDE)
 
 VariantDir(os.sep.join(['obj', BLD]), "src", duplicate=0)
 tst = env.Program(os.sep.join(['bin', BLD, 'tstGame']),
-                    source=[Glob('*.cpp'), Glob(os.sep.join(['lib', '*.a']))],
+                    source=[Glob('{}/*.cpp'.format(os.sep.join(['obj', BLD]))), Glob(os.sep.join(['lib', '*.a']))],
                     CXX=CXX,
                     CCFLAGS=CCFLAGS,
                     LINK=LINK,
