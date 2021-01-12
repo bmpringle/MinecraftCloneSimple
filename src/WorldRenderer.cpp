@@ -122,7 +122,7 @@ void WorldRenderer::renderFrame(World* world) {
     for(float x = -(float)renderDistance/2.0; x < (float)renderDistance/2.0; ++x) {
         for(float z = -(float)renderDistance/2.0; z < (float)renderDistance/2.0; ++z) {
             Pos playerPos = world->getPlayer()->getPos();
-            BlockPos playerBlock = BlockPos((int)playerPos.x + 10*x, (int)playerPos.y, (int)playerPos.z + 10*z);
+            BlockPos playerBlock = BlockPos((int)playerPos.x + 10*x, 0, (int)playerPos.z + 10*z);
 
             Chunk chunk = data->getChunkWithBlock(playerBlock);
             for(int i = 0; i < chunk.getBlocksInChunk().size(); ++i) {
@@ -196,12 +196,6 @@ void WorldRenderer::renderFrame(World* world) {
             vectorWithColors.push_back(point3.v);
         }
 
-        float vertexAndColorData[vectorWithColors.size()];
-
-        for(int i = 0; i < vectorWithColors.size(); ++i) {
-            vertexAndColorData[i] = vectorWithColors[i];
-        }
-
         glBindVertexArray(VAO);
 
         glUseProgram(shaderProgram[0]);
@@ -213,7 +207,7 @@ void WorldRenderer::renderFrame(World* world) {
             glUseProgram(shaderProgram[1]);
         }
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertexAndColorData), vertexAndColorData, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vectorWithColors.size() * sizeof(float), vectorWithColors.data(), GL_DYNAMIC_DRAW);
 
         glDrawArrays(GL_TRIANGLES, 0, vectorWithColors.size() / 6);
     }
@@ -430,12 +424,6 @@ void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
         vectorWithColors.push_back(point3.v);
     }
 
-    float vertexAndColorData[vectorWithColors.size()];
-
-    for(int i = 0; i < vectorWithColors.size(); ++i) {
-        vertexAndColorData[i] = vectorWithColors[i];
-    }
-
     glBindVertexArray(VAO);
 
     glUseProgram(shaderProgram[0]);
@@ -447,7 +435,7 @@ void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
         glUseProgram(shaderProgram[1]);
     }
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexAndColorData), vertexAndColorData, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vectorWithColors.size() * sizeof(float), vectorWithColors.data(), GL_DYNAMIC_DRAW);
 
     glDrawArrays(GL_TRIANGLES, 0, vectorWithColors.size() / 6);
 }
