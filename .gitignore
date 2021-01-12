@@ -1,3 +1,5 @@
 .vscode/*
 game.dSYM/*
 game
+obj/*
+bin/*
