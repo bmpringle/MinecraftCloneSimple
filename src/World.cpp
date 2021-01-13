@@ -57,6 +57,8 @@ void World::generateWorld() {
         } 
     }
 
+    internalBlockData.setBlockAtPosition(BlockPos(-1, 4, 0), std::shared_ptr<Block>(new BlockCobblestone()));
+
     internalBlockData.setBlockAtPosition(BlockPos(0, 1, 10), std::shared_ptr<Block>(new BlockCobblestone()));
     internalBlockData.setBlockAtPosition(BlockPos(0, 2, 10), std::shared_ptr<Block>(new BlockCobblestone()));
 

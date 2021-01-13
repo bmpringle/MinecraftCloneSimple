@@ -26,9 +26,9 @@ class Chunk {
     private:
         bool doesBlockHaveCoordinates(BlockPos pos, std::shared_ptr<Block> block);
 
-        static const int X = 10;
-        static const int Y = 100;
-        static const int Z = 10;
+        static const int X = 16;
+        static const int Y = 256;
+        static const int Z = 16;
         BlockPos chunkCoordinates; 
         AABB chunkAABB;
         std::vector<std::shared_ptr<Block>> blocksInChunk;

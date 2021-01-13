@@ -118,13 +118,15 @@ void WorldRenderer::renderFrame(World* world) {
     std::vector<std::shared_ptr<Block>> rawData = std::vector<std::shared_ptr<Block>>();
     
     int renderDistance = world->getChunkRenderDistance();
+    std::array<int, 3> size = Chunk::getChunkSize();
+
 
     for(float x = -(float)renderDistance/2.0; x < (float)renderDistance/2.0; ++x) {
         for(float z = -(float)renderDistance/2.0; z < (float)renderDistance/2.0; ++z) {
             Pos playerPos = world->getPlayer()->getPos();
-            BlockPos playerBlock = BlockPos((int)playerPos.x + 10*x, 0, (int)playerPos.z + 10*z);
-
+            BlockPos playerBlock = BlockPos((int)playerPos.x + size[0] * x, 0, (int)playerPos.z + size[2] * z);
             Chunk chunk = data->getChunkWithBlock(playerBlock);
+
             for(int i = 0; i < chunk.getBlocksInChunk().size(); ++i) {
                 std::shared_ptr<Block> block = chunk.getBlocksInChunk().at(i);
                 rawData.push_back(block);
