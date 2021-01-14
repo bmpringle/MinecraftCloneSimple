@@ -66,7 +66,7 @@ std::vector<std::shared_ptr<Block>> Chunk::getBlocksInChunk() {
 }
 
 std::array<int, 3> Chunk::getChunkSize() {
-    std::array<int, 3> result = {10, 100, 10};
+    std::array<int, 3> result = {X, Y, Z};
     return result;
 }
 

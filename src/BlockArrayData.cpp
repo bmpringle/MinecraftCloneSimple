@@ -31,8 +31,8 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
             }        
         }
     }
-
-    Chunk c = Chunk(floor((float)pos.x / (float)size[0]), floor((float)pos.z / (float)size[2]));; 
+    
+    Chunk c = Chunk(floor((float)pos.x / (float)size[0]), floor((float)pos.z / (float)size[2]));
     c.setBlockAtRelativeLocation(relativeBlockPos(pos, size), block);
     rawBlockData.push_back(c);
 }

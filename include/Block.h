@@ -4,6 +4,7 @@
 #include <string>
 #include "Model.h"
 #include <memory>
+#include <iostream>
 
 struct BlockPos {
     public:
@@ -18,6 +19,10 @@ struct BlockPos {
         friend BlockPos operator+(BlockPos lhs, BlockPos rhs) {
             BlockPos res = BlockPos(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
             return res;
+        }
+
+        void print() {
+            std::cout << "pos: " << x << " " << y << " " << z << std::endl;
         }
 };
 

@@ -213,34 +213,6 @@ void WorldRenderer::renderFrame(World* world) {
 
         glDrawArrays(GL_TRIANGLES, 0, vectorWithColors.size() / 6);
     }
-
-
-    //renders player model. keep commented until model can be rotated with camera
-    /*RenderedModel model = world->getPlayer()->getRenderedModel();
-    Pos pos = world->getPlayer()->getPos();
-
-    for(int j = 0; j < model.renderedModel.size(); ++j) {
-        RenderedTriangle triangle = model.renderedModel[j];
-        RenderedPoint pointa = triangle.a;
-        RenderedPoint pointb = triangle.b;
-        RenderedPoint pointc = triangle.c;
-
-        pointa.x += pos.x;
-        pointa.y += pos.y;
-        pointa.z += pos.z;
-
-        pointb.x += pos.x;
-        pointb.y += pos.y;
-        pointb.z += pos.z;
-
-        pointc.x += pos.x;
-        pointc.y += pos.y;
-        pointc.z += pos.z;
-
-        model.renderedModel[j] = RenderedTriangle(pointa, pointb, pointc);
-    }
-
-    appendVectorWithVector(&trianglesToRender, model.renderedModel);*/
 }
 
 void WorldRenderer::renderOverlay(float rectangle[48], std::string texture) {
