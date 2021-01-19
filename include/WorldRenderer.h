@@ -45,13 +45,10 @@ class WorldRenderer {
 
         void setUniforms(World* world, int programIndex);
 
-        unsigned int VAO;
+        unsigned int VAO[3];
+        unsigned int VBO[3];
+        
         unsigned int shaderProgram[3];
-
-        /*unsigned int worldVBO;
-        int blockCount = 0;
-        std::vector<std::string> textures;
-        std::vector<int> textureIndices;*/
 
         TextureFetcher textureFetcher;
 };

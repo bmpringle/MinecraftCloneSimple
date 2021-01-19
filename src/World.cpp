@@ -92,10 +92,6 @@ void World::mainLoop() {
 
     worldEventQueue->addEventListener(thePlayer);
 
-    std::cout << (!glfwWindowShouldClose(window) && !paused) << std::endl;
-    std::cout << !glfwWindowShouldClose(window) << std::endl;
-    std::cout << !paused << std::endl;
-
     while(!glfwWindowShouldClose(window) && !paused) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         updateGame();

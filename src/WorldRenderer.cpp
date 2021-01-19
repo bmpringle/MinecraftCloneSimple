@@ -4,8 +4,6 @@
 #define WORLDSIZE_CONST 100
 
 WorldRenderer::WorldRenderer() : textureFetcher(TextureFetcher()) {
-    //textures = std::vector<std::string>();
-    //textureIndices = std::vector<int>();
     renderSetup();
 }
 
@@ -85,18 +83,46 @@ void WorldRenderer::renderSetup() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
     
-    glGenVertexArrays(1, &VAO);  
-    glBindVertexArray(VAO);
-
-    unsigned int VBO;
-
-    glGenBuffers(1, &VBO); 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);  
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
     shaderProgram[0] = compileShaderProgramFromFiles("./shaders/basic_shader.vert", "./shaders/basic_shader.frag");
     shaderProgram[1] = compileShaderProgramFromFiles("./shaders/texture_shader.vert", "./shaders/texture_shader.frag");
     shaderProgram[2] = compileShaderProgramFromFiles("./shaders/2d_shader.vert", "./shaders/2d_shader.frag");
+
+    glGenVertexArrays(3, &VAO[0]);  
+    glGenBuffers(3, &VBO[0]); 
+
+    //world VAO
+    glBindVertexArray(VAO[0]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);  
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);  
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);  
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    //overlay VAO
+    glBindVertexArray(VAO[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);  
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);  
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);  
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    //highlight VAO
+    glBindVertexArray(VAO[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);  
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);  
@@ -117,6 +143,8 @@ void WorldRenderer::renderFrame(World* world) {
     setUniforms(world, 0);
     setUniforms(world, 1);
 
+    glBindVertexArray(VAO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
 
     BlockArrayData* data = world->getBlockData();
 
@@ -203,8 +231,6 @@ void WorldRenderer::renderFrame(World* world) {
             vectorWithColors.push_back(point3.v);
         }
 
-        glBindVertexArray(VAO);
-
         glUseProgram(shaderProgram[0]);
 
         unsigned int TBO = textureFetcher.getOrLoadTexture(block->getTextureName());
@@ -216,7 +242,7 @@ void WorldRenderer::renderFrame(World* world) {
 
         glBufferData(GL_ARRAY_BUFFER, vectorWithColors.size() * sizeof(float), vectorWithColors.data(), GL_DYNAMIC_DRAW);
 
-        glDrawArrays(GL_TRIANGLES, 0, vectorWithColors.size() / 6);
+        glDrawArrays(GL_TRIANGLES, 0, vectorWithColors.size() / 8);
     }
 }
 
@@ -227,7 +253,8 @@ void WorldRenderer::renderOverlay(float rectangle[48], std::string texture) {
         overlay[i] = rectangle[i] * ((i % 8 == 1) ? aspectRatio : 1);
     }
     
-    glBindVertexArray(VAO);
+    glBindVertexArray(VAO[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
 
     glUseProgram(shaderProgram[2]);
 
@@ -401,7 +428,8 @@ void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
         vectorWithColors.push_back(point3.v);
     }
 
-    glBindVertexArray(VAO);
+    glBindVertexArray(VAO[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
 
     glUseProgram(shaderProgram[0]);
 
@@ -414,7 +442,7 @@ void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
 
     glBufferData(GL_ARRAY_BUFFER, vectorWithColors.size() * sizeof(float), vectorWithColors.data(), GL_DYNAMIC_DRAW);
 
-    glDrawArrays(GL_TRIANGLES, 0, vectorWithColors.size() / 6);
+    glDrawArrays(GL_TRIANGLES, 0, vectorWithColors.size() / 8);
 }
 
 template<class T>
