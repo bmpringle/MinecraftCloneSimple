@@ -47,9 +47,12 @@ class WorldRenderer {
 
         unsigned int VAO[3];
         unsigned int VBO[3];
-        
+
         unsigned int shaderProgram[3];
 
         TextureFetcher textureFetcher;
+
+        long worldBufferSize = 0;
+
 };
 #endif

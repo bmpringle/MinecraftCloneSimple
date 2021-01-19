@@ -135,17 +135,6 @@ void WorldRenderer::renderSetup() {
 }
 
 void WorldRenderer::updateWorldVBO(World* world) {
-    
-}
-
-void WorldRenderer::renderFrame(World* world) {
-
-    setUniforms(world, 0);
-    setUniforms(world, 1);
-
-    glBindVertexArray(VAO[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-
     BlockArrayData* data = world->getBlockData();
 
     std::vector<std::shared_ptr<Block>> rawData = std::vector<std::shared_ptr<Block>>();
@@ -166,6 +155,8 @@ void WorldRenderer::renderFrame(World* world) {
             }
         }
     }
+
+    std::vector<float> vectorWithColors = std::vector<float>();
 
     for(int i = 0; i < rawData.size(); ++i) {
         std::shared_ptr<Block> block = rawData.at(i);
@@ -192,8 +183,6 @@ void WorldRenderer::renderFrame(World* world) {
 
             model.renderedModel[j] = RenderedTriangle(pointa, pointb, pointc, -1);
         }
-
-        std::vector<float> vectorWithColors = std::vector<float>();
 
         for(RenderedTriangle triangle : model.renderedModel) {
             RenderedPoint point1 = triangle.a;
@@ -230,20 +219,33 @@ void WorldRenderer::renderFrame(World* world) {
             vectorWithColors.push_back(point3.u);
             vectorWithColors.push_back(point3.v);
         }
-
-        glUseProgram(shaderProgram[0]);
-
-        unsigned int TBO = textureFetcher.getOrLoadTexture(block->getTextureName());
-
-        if(TBO != -1) {
-            glBindTexture(GL_TEXTURE_2D, TBO);
-            glUseProgram(shaderProgram[1]);
-        }
-
-        glBufferData(GL_ARRAY_BUFFER, vectorWithColors.size() * sizeof(float), vectorWithColors.data(), GL_DYNAMIC_DRAW);
-
-        glDrawArrays(GL_TRIANGLES, 0, vectorWithColors.size() / 8);
     }
+
+    worldBufferSize = vectorWithColors.size();
+
+    glBindVertexArray(VAO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, vectorWithColors.size() * sizeof(float), vectorWithColors.data(), GL_DYNAMIC_DRAW);
+}
+
+void WorldRenderer::renderFrame(World* world) {
+
+    setUniforms(world, 0);
+    setUniforms(world, 1);
+
+    glBindVertexArray(VAO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+
+    glUseProgram(shaderProgram[0]);
+
+    unsigned int TBO = textureFetcher.getOrLoadTexture("cobblestone.png");
+
+    if(TBO != -1) {
+        glBindTexture(GL_TEXTURE_2D, TBO);
+        glUseProgram(shaderProgram[1]);
+    }
+
+    glDrawArrays(GL_TRIANGLES, 0, worldBufferSize / 8);
 }
 
 void WorldRenderer::renderOverlay(float rectangle[48], std::string texture) {
