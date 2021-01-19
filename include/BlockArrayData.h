@@ -23,8 +23,15 @@ class BlockArrayData {
 
         Chunk getChunkWithBlock(BlockPos pos);
 
+        //checks if rendererupdate flag is set
+        bool shouldUpdateRenderer();
+
+        //tells object to reset rendererupdate flag
+        void hasUpdatedRenderer();
+
     private:
         std::vector<Chunk> rawBlockData;
         int size[3];
+        bool updateRenderer = false;
 };
 #endif

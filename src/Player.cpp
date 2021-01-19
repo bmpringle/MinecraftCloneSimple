@@ -3,7 +3,6 @@
 #include <iostream>
 #include "Events.h"
 #include <math.h>
-#include "RenderHelper.h"
 #include <simd/matrix.h>
 #include "Blocks.h"
 
@@ -371,9 +370,9 @@ Pos Player::getCameraNormal() {
     d[1] = 0;
     d[2] = 1;
 
-    simd_float3 n1 = simd_mul(calculateYRotationMatrix(-getYRotation()), d);
+    simd_float3 n1 = simd_mul(WorldRenderer::calculateYRotationMatrix(-getYRotation()), d);
 
-    simd_float3 n2 = simd_mul(calculateXRotationMatrix(-getXRotation()), n1);
+    simd_float3 n2 = simd_mul(WorldRenderer::calculateXRotationMatrix(-getXRotation()), n1);
 
     return Pos(n2[0], n2[1], n2[2]);
 }

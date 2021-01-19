@@ -1,5 +1,6 @@
 #include "BlockArrayData.h"
 #include <iostream>
+#include <math.h>
 
 BlockPos relativeBlockPos(BlockPos pos, std::array<int, 3> size) {
     return BlockPos(((size[0] - (-1 * pos.x) % size[0]) % size[0]), ((size[1] - (-1 * pos.y) % size[1]) % size[1]), ((size[2] - (-1 * pos.z) % size[2]) % size[2]));
@@ -26,6 +27,7 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
             if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
                     rawBlockData.at(i).setBlockAtRelativeLocation(relativeBlockPos(pos, size), block);
+                    updateRenderer = true;
                     return;
                 }
             }        
@@ -35,6 +37,7 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
     Chunk c = Chunk(floor((float)pos.x / (float)size[0]), floor((float)pos.z / (float)size[2]));
     c.setBlockAtRelativeLocation(relativeBlockPos(pos, size), block);
     rawBlockData.push_back(c);
+    updateRenderer = true;
 }
 
 void BlockArrayData::removeBlockAtPosition(BlockPos pos) {
@@ -47,12 +50,14 @@ void BlockArrayData::removeBlockAtPosition(BlockPos pos) {
             if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
                     rawBlockData.at(i).removeBlockAtRelativeLocation(relativeBlockPos(pos, size));
+                    updateRenderer = true;
                 }
             }
         }
     }
 }
 
+//do not modify data
 std::shared_ptr<Block> BlockArrayData::getBlockAtPosition(BlockPos pos) {
     for(int i = 0; i < rawBlockData.size(); ++i) {
         Chunk c = rawBlockData.at(i);
@@ -70,10 +75,12 @@ std::shared_ptr<Block> BlockArrayData::getBlockAtPosition(BlockPos pos) {
     return nullptr;
 }
 
+//do not modify data
 std::vector<Chunk> BlockArrayData::getRawChunkArray() {
     return rawBlockData;
 }
 
+//do not modify data
 Chunk BlockArrayData::getChunkWithBlock(BlockPos pos) {
     std::array<int, 3> size = Chunk::getChunkSize();
 
@@ -91,4 +98,12 @@ Chunk BlockArrayData::getChunkWithBlock(BlockPos pos) {
     }
     //this is maybe not the best idea but i'm lazy right now
     return Chunk(0, 0);
+}
+
+bool BlockArrayData::shouldUpdateRenderer() {
+    return updateRenderer;
+}
+
+void BlockArrayData::hasUpdatedRenderer() {
+    updateRenderer = false;
 }

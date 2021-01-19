@@ -6,7 +6,7 @@
 #include <memory>
 #include <iostream>
 
-struct BlockPos {
+class BlockPos {
     public:
         BlockPos(int _x, int _y, int _z) : x(_x), y(_y), z(_z) {
 
@@ -43,6 +43,8 @@ class Block : public Model {
         RenderedModel getRenderedModel();
 
         virtual std::string getTextureName();
+
+        virtual ~Block() = default;
     private:
         BlockPos pos;
 };

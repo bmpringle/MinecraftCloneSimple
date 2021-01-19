@@ -13,7 +13,7 @@
  */
 #define WORLDSIZE_CONST 100
 
-World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler) : worldEventQueue(queue), input(inputHandler), renderer(WorldRenderer()), thePlayer(std::shared_ptr<Player>(new Player(this))), internalBlockData(BlockArrayData(WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST)), window(window_), timerMap(TimerMap()) {
+World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler) : timerMap(TimerMap()), worldEventQueue(queue), input(inputHandler), renderer(WorldRenderer()), internalBlockData(BlockArrayData(WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST)), window(window_), thePlayer(std::shared_ptr<Player>(new Player(this))) {
     generateWorld();
     glfwSetWindowUserPointer(window, this);
 
@@ -32,6 +32,8 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler)
     glfwSetKeyCallback(window, func);
     glfwSetCursorPosCallback(window, func2);
     glfwSetMouseButtonCallback(window, func3);
+
+    renderer.updateWorldVBO(this);
 }
     
 void World::updateGame() {
@@ -90,6 +92,10 @@ void World::mainLoop() {
 
     worldEventQueue->addEventListener(thePlayer);
 
+    std::cout << (!glfwWindowShouldClose(window) && !paused) << std::endl;
+    std::cout << !glfwWindowShouldClose(window) << std::endl;
+    std::cout << !paused << std::endl;
+
     while(!glfwWindowShouldClose(window) && !paused) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         updateGame();
@@ -143,6 +149,10 @@ bool AABBIntersectedByAABB(AABB box1, AABB box2) {
 } 
 
 void World::renderGame() {
+    if(internalBlockData.shouldUpdateRenderer()) {
+        renderer.updateWorldVBO(this);
+        internalBlockData.hasUpdatedRenderer();
+    }
     renderer.updateAspectRatio(window);
     renderer.renderFrame(this);
     if(thePlayer->getBlockLookingAt() != nullptr) {

@@ -69,7 +69,7 @@ GLEW_LIB=os.sep.join([GLEW_DIR,'lib'])
 BLD = 'dbg' if DBG == 1 else 'rel'
 OPT = 0 if DBG == 1 else 3
 
-CCFLAGS='-static -O{} -I {} -I {} -I {} -I {} -g -std=c++2a -DGLEW_STATIC'.format(OPT, './', './include/', GLFW_INCLUDE, GLEW_INCLUDE)
+CCFLAGS='-static -O{} -I {} -I {} -I {} -I {} -Wall -g -std=c++2a -DGLEW_STATIC'.format(OPT, './', './include/', GLFW_INCLUDE, GLEW_INCLUDE)
 
 VariantDir(os.sep.join(['obj', BLD]), "src", duplicate=0)
 tst = env.Program(os.sep.join(['bin', BLD, 'tstGame']),

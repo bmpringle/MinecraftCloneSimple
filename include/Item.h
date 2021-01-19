@@ -10,6 +10,8 @@ class Item {
         virtual std::string getItemName();
 
         virtual void onRightClick(World* world);
+
+        virtual ~Item() = default;
     private:
 };
 #endif

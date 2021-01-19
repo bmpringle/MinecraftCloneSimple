@@ -5,7 +5,7 @@
 
 class Game;
 
-class GameEventHandler : public Listener {
+class GameEventHandler final : public Listener {
     public:
         GameEventHandler(Game* game);
 

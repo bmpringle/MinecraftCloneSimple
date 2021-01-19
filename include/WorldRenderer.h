@@ -20,7 +20,16 @@ class WorldRenderer {
         void renderOverlay(float rectangle[48], std::string texture);
         void renderBlockInWireframe(World* world, BlockPos pos);
         void updateAspectRatio(GLFWwindow* window);
-        
+        void updateWorldVBO(World* world);
+
+        template<class T>
+        static void appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T> vectorToAppend);
+
+        static matrix_float3x3 calculateXRotationMatrix(double xRotation);
+        static matrix_float3x3 calculateYRotationMatrix(double yRotation);
+
+        static matrix_float4x4 calculatePerspectiveMatrix(double FOV, double aspectRatio, double zNear, double zFar);
+
     private:
         void renderSetup();
 
@@ -38,6 +47,11 @@ class WorldRenderer {
 
         unsigned int VAO;
         unsigned int shaderProgram[3];
+
+        /*unsigned int worldVBO;
+        int blockCount = 0;
+        std::vector<std::string> textures;
+        std::vector<int> textureIndices;*/
 
         TextureFetcher textureFetcher;
 };

@@ -49,7 +49,7 @@ RenderedModel Block::getRenderedModel() {
     for(RenderedTriangle triangle : triangleArray) {
         triangles.push_back(triangle);
     }
-
+    
     return RenderedModel(triangles);
 }
 

@@ -6,5 +6,7 @@
 class Event {
     public:
         virtual std::string getEventID() = 0;
+
+        virtual ~Event() = default;
 };
 #endif
