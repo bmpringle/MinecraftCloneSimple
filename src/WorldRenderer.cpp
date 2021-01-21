@@ -86,6 +86,7 @@ void WorldRenderer::renderSetup() {
     shaderProgram[0] = compileShaderProgramFromFiles("./shaders/basic_shader.vert", "./shaders/basic_shader.frag");
     shaderProgram[1] = compileShaderProgramFromFiles("./shaders/texture_shader.vert", "./shaders/texture_shader.frag");
     shaderProgram[2] = compileShaderProgramFromFiles("./shaders/2d_shader.vert", "./shaders/2d_shader.frag");
+    shaderProgram[3] = compileShaderProgramFromFiles("./shaders/world_shader.vert", "./shaders/world_shader.frag");
 
     glGenVertexArrays(3, &VAO[0]);  
     glGenBuffers(3, &VBO[0]); 
@@ -96,14 +97,17 @@ void WorldRenderer::renderSetup() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);  
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);  
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);  
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(8 * sizeof(float)));
+    glEnableVertexAttribArray(3);
 
     //overlay VAO
     glBindVertexArray(VAO[1]);
@@ -163,27 +167,6 @@ void WorldRenderer::updateWorldVBO(World* world) {
         RenderedModel model = block->getRenderedModel();
         BlockPos pos = block->getPos();
 
-        for(int j = 0; j < model.renderedModel.size(); ++j) {
-            RenderedTriangle triangle = model.renderedModel[j];
-            RenderedPoint pointa = triangle.a;
-            RenderedPoint pointb = triangle.b;
-            RenderedPoint pointc = triangle.c;
-
-            pointa.x += pos.x;
-            pointa.y += pos.y;
-            pointa.z += pos.z;
-
-            pointb.x += pos.x;
-            pointb.y += pos.y;
-            pointb.z += pos.z;
-
-            pointc.x += pos.x;
-            pointc.y += pos.y;
-            pointc.z += pos.z;
-
-            model.renderedModel[j] = RenderedTriangle(pointa, pointb, pointc, -1);
-        }
-
         for(RenderedTriangle triangle : model.renderedModel) {
             RenderedPoint point1 = triangle.a;
             RenderedPoint point2 = triangle.b;
@@ -198,6 +181,9 @@ void WorldRenderer::updateWorldVBO(World* world) {
             vectorWithColors.push_back(0);
             vectorWithColors.push_back(point1.u);
             vectorWithColors.push_back(point1.v);
+            vectorWithColors.push_back(pos.x);
+            vectorWithColors.push_back(pos.y);
+            vectorWithColors.push_back(pos.z);
 
             //point 2 green
             vectorWithColors.push_back(point2.x);
@@ -208,6 +194,9 @@ void WorldRenderer::updateWorldVBO(World* world) {
             vectorWithColors.push_back(0);
             vectorWithColors.push_back(point2.u);
             vectorWithColors.push_back(point2.v);
+            vectorWithColors.push_back(pos.x);
+            vectorWithColors.push_back(pos.y);
+            vectorWithColors.push_back(pos.z);
 
             //point 3 blue
             vectorWithColors.push_back(point3.x);
@@ -218,7 +207,10 @@ void WorldRenderer::updateWorldVBO(World* world) {
             vectorWithColors.push_back(1);
             vectorWithColors.push_back(point3.u);
             vectorWithColors.push_back(point3.v);
-        }
+            vectorWithColors.push_back(pos.x);
+            vectorWithColors.push_back(pos.y);
+            vectorWithColors.push_back(pos.z);
+       }
     }
 
     worldBufferSize = vectorWithColors.size();
@@ -232,6 +224,7 @@ void WorldRenderer::renderFrame(World* world) {
 
     setUniforms(world, 0);
     setUniforms(world, 1);
+    setUniforms(world, 3);
 
     glBindVertexArray(VAO[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
@@ -242,10 +235,10 @@ void WorldRenderer::renderFrame(World* world) {
 
     if(TBO != -1) {
         glBindTexture(GL_TEXTURE_2D, TBO);
-        glUseProgram(shaderProgram[1]);
+        glUseProgram(shaderProgram[3]);
     }
 
-    glDrawArrays(GL_TRIANGLES, 0, worldBufferSize / 8);
+    glDrawArrays(GL_TRIANGLES, 0, worldBufferSize / 11);
 }
 
 void WorldRenderer::renderOverlay(float rectangle[48], std::string texture) {
