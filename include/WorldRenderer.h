@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include "BlockArrayData.h"
-#include "simd/simd.h"
+#include "glm/glm.hpp"
 #include "TextureFetcher.h"
 #include "RenderInclude.h"
 #include "TextureArrayCreator.h"
@@ -26,10 +26,10 @@ class WorldRenderer {
         template<class T>
         static void appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T> vectorToAppend);
 
-        static matrix_float3x3 calculateXRotationMatrix(double xRotation);
-        static matrix_float3x3 calculateYRotationMatrix(double yRotation);
+        static glm::mat3x3 calculateXRotationMatrix(double xRotation);
+        static glm::mat3x3 calculateYRotationMatrix(double yRotation);
 
-        static matrix_float4x4 calculatePerspectiveMatrix(double FOV, double aspectRatio, double zNear, double zFar);
+        static glm::mat4x4 calculatePerspectiveMatrix(double FOV, double aspectRatio, double zNear, double zFar);
 
     private:
         void renderSetup();

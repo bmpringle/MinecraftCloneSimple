@@ -13,8 +13,12 @@ class TextureArrayCreator {
         unsigned int generateTextureArray();
 
         unsigned int getGeneratedTextureArray();
+
+        int getTextureLayer(std::string tex);
+
     private:
         std::vector<std::string> texturePaths = std::vector<std::string>();
+        std::vector<int> textureDepths = std::vector<int>();
 
         unsigned int arrayID = -1;
 };

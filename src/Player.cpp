@@ -3,7 +3,6 @@
 #include <iostream>
 #include "Events.h"
 #include <math.h>
-#include <simd/matrix.h>
 #include "Blocks.h"
 
 Player::Player(World* _world) : pos(Pos(0, 4, 0)), world(_world) {
@@ -365,14 +364,14 @@ BlockPos* Player::getBlockLookingAt() {
 }
 
 Pos Player::getCameraNormal() {
-    simd_float3 d = simd_float3();
+    glm::vec3 d = glm::vec3();
     d[0] = 0;
     d[1] = 0;
     d[2] = 1;
 
-    simd_float3 n1 = simd_mul(WorldRenderer::calculateYRotationMatrix(-getYRotation()), d);
+    glm::vec3 n1 = WorldRenderer::calculateYRotationMatrix(-getYRotation()) * d;
 
-    simd_float3 n2 = simd_mul(WorldRenderer::calculateXRotationMatrix(-getXRotation()), n1);
+    glm::vec3 n2 = WorldRenderer::calculateXRotationMatrix(-getXRotation()) * n1;
 
     return Pos(n2[0], n2[1], n2[2]);
 }

@@ -1,7 +1,10 @@
 #include "Game.h"
 #include <iostream>
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+} 
 
-GLFWwindow* setup() {
+GLFWwindow* setup(int x, int y) {
 
     if (!glfwInit()) {
         // Initialization failed
@@ -14,12 +17,14 @@ GLFWwindow* setup() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 4);
     
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Minecraft Clone Simple", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(x, y, "Minecraft Clone Simple", NULL, NULL);
 
     if(!window) {
         std::cout << "window == nullptr, something has gone very wrong." << std::endl;
         abort();
     }
+
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     glfwMakeContextCurrent(window);
     
@@ -29,9 +34,15 @@ GLFWwindow* setup() {
     return window;
 }
 
-int main() {
+int main(int argc, char** argv) {
+    int x = 640;
+    int y = 480;
 
-    Game game = Game(setup());
+    if(argc == 3) {
+        x = std::stoi(argv[1]);
+        y = std::stoi(argv[2]);
+    }
+    Game game = Game(setup(x, y));
 
     game.start();
 }

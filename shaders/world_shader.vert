@@ -1,7 +1,7 @@
 #version 330 core
 layout (location = 0) in vec3 modelPos;
 layout (location = 1) in vec3 aColor;
-layout (location = 2) in vec2 aUV;
+layout (location = 2) in vec3 aUV;
 layout (location = 3) in vec3 blockPos;
 
 uniform vec3 bounds;
@@ -11,7 +11,7 @@ uniform mat3x3 rotationMatrixX;
 uniform mat3x3 rotationMatrixY;
 
 out vec3 color;
-out vec2 uv;
+out vec3 uv;
 
 void main()
 {
