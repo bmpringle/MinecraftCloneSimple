@@ -9,6 +9,7 @@
 #include "simd/simd.h"
 #include "TextureFetcher.h"
 #include "RenderInclude.h"
+#include "TextureArrayCreator.h"
 
 class World;
 
@@ -51,6 +52,8 @@ class WorldRenderer {
         unsigned int shaderProgram[4];
 
         TextureFetcher textureFetcher;
+
+        TextureArrayCreator textureArrayCreator;
 
         long worldBufferSize = 0;
 

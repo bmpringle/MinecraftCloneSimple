@@ -3,7 +3,11 @@
 
 #define WORLDSIZE_CONST 100
 
-WorldRenderer::WorldRenderer() : textureFetcher(TextureFetcher()) {
+WorldRenderer::WorldRenderer() : textureFetcher(TextureFetcher()), textureArrayCreator(TextureArrayCreator()) {
+    textureArrayCreator.addTextureToList("dirt.png");
+    textureArrayCreator.addTextureToList("cobblestone.png");
+    textureArrayCreator.generateTextureArray();
+
     renderSetup();
 }
 
@@ -229,14 +233,9 @@ void WorldRenderer::renderFrame(World* world) {
     glBindVertexArray(VAO[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
 
-    glUseProgram(shaderProgram[0]);
+    glUseProgram(shaderProgram[3]);
 
-    unsigned int TBO = textureFetcher.getOrLoadTexture("cobblestone.png");
-
-    if(TBO != -1) {
-        glBindTexture(GL_TEXTURE_2D, TBO);
-        glUseProgram(shaderProgram[3]);
-    }
+    glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayCreator.getGeneratedTextureArray());
 
     glDrawArrays(GL_TRIANGLES, 0, worldBufferSize / 11);
 }
