@@ -7,11 +7,77 @@
 #   brew install glfw
 #   brew install glew
 import os
+import subprocess
 
 DBG = int(ARGUMENTS.get('DBG', 0))
 ARM = int(ARGUMENTS.get('ARM', 1))
+COMPILE_LIBS = int(ARGUMENTS.get('COMPILE_LIBS', 0))
 
 env = Environment()
+
+
+if COMPILE_LIBS == 1 and env['PLATFORM'] != 'win32' and env['PLATFORM'] != 'msys': 
+    command1 = 'mkdir -p ./temp/'
+    command1a = 'mkdir -p ./TimerMapLib/'
+    command1b = 'mkdir -p ./EventLib/'
+    command1c = 'mkdir -p ./lib/'
+    command2 = 'git clone https://github.com/bmpringle/EventQueue.git'
+    command3 = 'git clone https://github.com/bmpringle/TimerMap.git'
+    command4 = 'make library' #run twice (one for each lib)
+    command5 = 'mv ./TimerMap/lib/timerMapLib.a ../lib/timerMapLib.a'
+    command5a = 'mv ./TimerMap/TimerMap.h ../TimerMapLib/TimerMap.h'
+    command6 = 'mv ./EventQueue/lib/eventLib.a ../lib/eventLib.a'
+    command6a = 'mv ./EventQueue/Event.h ../EventLib/'
+    command6b = 'mv ./EventQueue/EventQueue.h ../EventLib/'
+    command6c = 'mv ./EventQueue/Listener.h ../EventLib/'
+    command7 = 'rm -rf temp/'
+    
+    process1 = subprocess.Popen(shell='true', cwd='./', args=command1, stdout=subprocess.PIPE)
+    output, error = process1.communicate()
+
+    process1a = subprocess.Popen(shell='true', cwd='./', args=command1a, stdout=subprocess.PIPE)
+    output, error = process1a.communicate()
+
+    process1b = subprocess.Popen(shell='true', cwd='./', args=command1b, stdout=subprocess.PIPE)
+    output, error = process1b.communicate()
+
+    process1c = subprocess.Popen(shell='true', cwd='./', args=command1c, stdout=subprocess.PIPE)
+    output, error = process1c.communicate()
+
+    process2 = subprocess.Popen(shell='true', cwd='./temp/', args=command2, stdout=subprocess.PIPE)
+    output, error = process2.communicate()
+
+    process3 = subprocess.Popen(shell='true', cwd='./temp/', args=command3, stdout=subprocess.PIPE)
+    output, error = process3.communicate()
+
+    process4a = subprocess.Popen(shell='true', cwd='./temp/EventQueue/', args=command4, stdout=subprocess.PIPE)
+    output, error = process4a.communicate()
+
+    process4b = subprocess.Popen(shell='true', cwd='./temp/TimerMap/', args=command4, stdout=subprocess.PIPE)
+    output, error = process4b.communicate()
+
+    process5 = subprocess.Popen(shell='true', cwd='./temp/', args=command5, stdout=subprocess.PIPE)
+    output, error = process5.communicate()
+
+    process5a = subprocess.Popen(shell='true', cwd='./temp/', args=command5a, stdout=subprocess.PIPE)
+    output, error = process5a.communicate()
+
+    process6 = subprocess.Popen(shell='true', cwd='./temp/',args=command6, stdout=subprocess.PIPE)
+    output, error = process6.communicate()
+
+    process6a = subprocess.Popen(shell='true', cwd='./temp/',args=command6a, stdout=subprocess.PIPE)
+    output, error = process6a.communicate()
+
+    process6b = subprocess.Popen(shell='true', cwd='./temp/',args=command6b, stdout=subprocess.PIPE)
+    output, error = process6b.communicate()
+
+    process6c = subprocess.Popen(shell='true', cwd='./temp/',args=command6c, stdout=subprocess.PIPE)
+    output, error = process6c.communicate()
+
+    process7 = subprocess.Popen(shell='true', cwd='./',args=command7, stdout=subprocess.PIPE)
+    output, error = process7.communicate()
+else:
+    print("auto-compilation not supported for non-unix platforms.")
 
 if env['PLATFORM'] == 'darwin': #macos
     CLANG = int(ARGUMENTS.get('CLANG', 1))
