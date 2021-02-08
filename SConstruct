@@ -21,6 +21,7 @@ if COMPILE_LIBS == 1 and env['PLATFORM'] != 'win32' and env['PLATFORM'] != 'msys
     command1a = 'mkdir -p ./TimerMapLib/'
     command1b = 'mkdir -p ./EventLib/'
     command1c = 'mkdir -p ./lib/'
+    command1d = 'mkdir -p ./stbi/'
     command2 = 'git clone https://github.com/bmpringle/EventQueue.git'
     command3 = 'git clone https://github.com/bmpringle/TimerMap.git'
     command4 = 'make library' #run twice (one for each lib)
@@ -31,6 +32,8 @@ if COMPILE_LIBS == 1 and env['PLATFORM'] != 'win32' and env['PLATFORM'] != 'msys
     command6b = 'mv ./EventQueue/EventQueue.h ../EventLib/'
     command6c = 'mv ./EventQueue/Listener.h ../EventLib/'
     command7 = 'rm -rf temp/'
+    command8 = 'git clone https://github.com/g-truc/glm'
+    command9 = 'curl https://raw.githubusercontent.com/nothings/stb/master/stb_image.h -o stb_image.h'
     
     process1 = subprocess.Popen(shell='true', cwd='./', args=command1, stdout=subprocess.PIPE)
     output, error = process1.communicate()
@@ -43,6 +46,9 @@ if COMPILE_LIBS == 1 and env['PLATFORM'] != 'win32' and env['PLATFORM'] != 'msys
 
     process1c = subprocess.Popen(shell='true', cwd='./', args=command1c, stdout=subprocess.PIPE)
     output, error = process1c.communicate()
+
+    process1d = subprocess.Popen(shell='true', cwd='./', args=command1d, stdout=subprocess.PIPE)
+    output, error = process1d.communicate()
 
     process2 = subprocess.Popen(shell='true', cwd='./temp/', args=command2, stdout=subprocess.PIPE)
     output, error = process2.communicate()
@@ -62,21 +68,28 @@ if COMPILE_LIBS == 1 and env['PLATFORM'] != 'win32' and env['PLATFORM'] != 'msys
     process5a = subprocess.Popen(shell='true', cwd='./temp/', args=command5a, stdout=subprocess.PIPE)
     output, error = process5a.communicate()
 
-    process6 = subprocess.Popen(shell='true', cwd='./temp/',args=command6, stdout=subprocess.PIPE)
+    process6 = subprocess.Popen(shell='true', cwd='./temp/', args=command6, stdout=subprocess.PIPE)
     output, error = process6.communicate()
 
-    process6a = subprocess.Popen(shell='true', cwd='./temp/',args=command6a, stdout=subprocess.PIPE)
+    process6a = subprocess.Popen(shell='true', cwd='./temp/', args=command6a, stdout=subprocess.PIPE)
     output, error = process6a.communicate()
 
-    process6b = subprocess.Popen(shell='true', cwd='./temp/',args=command6b, stdout=subprocess.PIPE)
+    process6b = subprocess.Popen(shell='true', cwd='./temp/', args=command6b, stdout=subprocess.PIPE)
     output, error = process6b.communicate()
 
-    process6c = subprocess.Popen(shell='true', cwd='./temp/',args=command6c, stdout=subprocess.PIPE)
+    process6c = subprocess.Popen(shell='true', cwd='./temp/', args=command6c, stdout=subprocess.PIPE)
     output, error = process6c.communicate()
 
-    process7 = subprocess.Popen(shell='true', cwd='./',args=command7, stdout=subprocess.PIPE)
+    process7 = subprocess.Popen(shell='true', cwd='./', args=command7, stdout=subprocess.PIPE)
     output, error = process7.communicate()
-else:
+
+    process8 = subprocess.Popen(shell='true', cwd='./', args=command8, stdout=subprocess.PIPE)
+    output, error = process8.communicate()
+
+    process9 = subprocess.Popen(shell='true', cwd='./stbi/', args=command9, stdout=subprocess.PIPE)
+    output, error = process9.communicate()
+
+elif COMPILE_LIBS == 1:
     print("auto-compilation not supported for non-unix platforms.")
 
 if env['PLATFORM'] == 'darwin': #macos

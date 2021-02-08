@@ -1,5 +1,10 @@
-.vscode/*
-game.dSYM/*
+.vscode/**
+*.dSYM/**
 game
-obj/*
-bin/*
+obj/**
+bin/**
+stbi/**
+TimerMapLib/**
+EventLib/**
+lib/**
+glm/**
