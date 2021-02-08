@@ -24,6 +24,10 @@ class Pos {
         friend Pos operator+(Pos lhs, Pos rhs) {
             return Pos(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
         }
+
+        BlockPos toBlockPos() {
+            return BlockPos((x >= 0) ? (int)x : (int)(x-1), (y >= 0) ? (int)y : (int)(y-1), (z >= 0) ? (int)z : (int)(z-1));
+        }
 };
 
 class MoveVec2 {
@@ -52,6 +56,7 @@ class Player final : public Listener, public Model {
         int getSideOfBlockLookingAt();
         void setItemInHand(std::unique_ptr<Item> item);
         bool validatePosition(Pos newPosition, BlockArrayData data);
+        void setBufferedChunkLocation(BlockPos pos);
     private:
         bool validatePosition(Pos newPosition, BlockArrayData data, float* yToSnapTo);
         void updatePlayerLookingAt(World* world);
@@ -78,5 +83,7 @@ class Player final : public Listener, public Model {
         int sideOfBlockLookingAt = 0;
 
         std::unique_ptr<Item> itemInHand = nullptr;
+
+        BlockPos bufferedChunkLocation = BlockPos(0, 0, 0);
 };
 #endif

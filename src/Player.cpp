@@ -5,7 +5,7 @@
 #include <math.h>
 #include "Blocks.h"
 
-Player::Player(World* _world) : pos(Pos(0, 4, 0)), world(_world) {
+Player::Player(World* _world) : pos(Pos(0, 250, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
     itemInHand = std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockDirt())));
 }
@@ -113,8 +113,15 @@ void Player::updatePlayerInWorld(World* world) {
     moveVector.relativeZ = 0;
 
     updatePlayerLookingAt(world);
-}
 
+    if(bufferedChunkLocation != world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).getChunkCoordinates() && !world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).isFakeChunk()) {
+        setBufferedChunkLocation(world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).getChunkCoordinates());
+        world->getBlockData()->updateLoadedChunks(bufferedChunkLocation, world);
+    }else if(!world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).isFakeChunk()){
+        setBufferedChunkLocation(world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).getChunkCoordinates());
+    }
+}
+//todo -> speed up validation checks and lookat checks
 void Player::listenTo(std::shared_ptr<Event> e) {
     if(e->getEventID() == "KEYPRESSED") {
         KeyPressedEvent keyEvent = *dynamic_cast<KeyPressedEvent*>(e.get());
@@ -187,15 +194,12 @@ void Player::listenTo(std::shared_ptr<Event> e) {
 
     if(e->getEventID() == "LEFTMOUSEBUTTONPRESSED") {
         LeftMouseButtonPressedEvent mouseEvent = *dynamic_cast<LeftMouseButtonPressedEvent*>(e.get());
-        if(this->blockLookingAt != nullptr) {
-            BlockPos selected = *blockLookingAt;
-            world->getBlockData()->removeBlockAtPosition(selected);
-        }
+        itemInHand->onLeftClick(world, mouseEvent, blockLookingAt);
     }
 
     if(e->getEventID() == "RIGHTMOUSEBUTTONPRESSED") {
         RightMouseButtonPressedEvent mouseEvent = *dynamic_cast<RightMouseButtonPressedEvent*>(e.get());
-        itemInHand->onRightClick(world);
+        itemInHand->onRightClick(world, mouseEvent);
     }
 }
 
@@ -251,14 +255,14 @@ bool Player::validatePosition(Pos newPosition, BlockArrayData data) {
     AABB playerAABB = getAABB();
     playerAABB.add(newPosition);
 
-    for(int i = 0; i < data.getRawChunkArray().size(); ++i) {
-        Chunk c = data.getRawChunkArray().at(i);
+    for(int i = 0; i < data.getLoadedChunkLocations().size(); ++i) {
+        Chunk c = data.getChunkWithBlock(data.getLoadedChunkLocations().at(i).chunkLocation);
         AABB chunkAABB = c.getChunkAABB();
 
         BlockPos chunkCoords = c.getChunkCoordinates();
         chunkAABB.add(chunkCoords);
 
-        if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
+        if(AABBIntersectedByAABB(playerAABB, chunkAABB) && !c.isFakeChunk()) {
             for(int k = 0; k < c.getBlocksInChunk().size(); ++k) {
                 std::shared_ptr<Block> block = c.getBlocksInChunk().at(k);
                 AABB blockAABB = block->getAABB();
@@ -277,14 +281,14 @@ bool Player::validatePosition(Pos newPosition, BlockArrayData data, float* yToSn
     AABB playerAABB = getAABB();
     playerAABB.add(newPosition);
 
-    for(int i = 0; i < data.getRawChunkArray().size(); ++i) {
-        Chunk c = data.getRawChunkArray().at(i);
+    for(int i = 0; i < data.getLoadedChunkLocations().size(); ++i) {
+        Chunk c = data.getChunkWithBlock(data.getLoadedChunkLocations().at(i).chunkLocation);
         AABB chunkAABB = c.getChunkAABB();
         
         BlockPos chunkCoords = c.getChunkCoordinates();
         chunkAABB.add(chunkCoords);
         
-        if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
+        if(AABBIntersectedByAABB(playerAABB, chunkAABB) && !c.isFakeChunk()) {
             for(int k = 0; k < c.getBlocksInChunk().size(); ++k) {
                 std::shared_ptr<Block> block = c.getBlocksInChunk().at(k);
                 AABB blockAABB = block->getAABB();
@@ -301,7 +305,10 @@ bool Player::validatePosition(Pos newPosition, BlockArrayData data, float* yToSn
 }
 
 Pos Player::getCameraPosition() {
-    return Pos(getPos().x + getAABB().xSize / 2, getPos().y + getAABB().ySize * 3.0 / 4.0, getPos().z + getAABB().zSize / 2);
+    glm::vec3 nonRotatedPos = glm::vec3(getPos().x + getAABB().xSize / 2, getPos().y + getAABB().ySize * 3.0 / 4.0, getPos().z + getAABB().zSize / 2);
+    glm::vec3 rotatedPos = (WorldRenderer::calculateXRotationMatrix(-getXRotation()) * glm::vec3(0, 0, 0));
+    
+    return Pos(rotatedPos.x + nonRotatedPos.x, rotatedPos.y + nonRotatedPos.y, rotatedPos.z + nonRotatedPos.z);
 }
 
 void Player::updatePlayerLookingAt(World* world) {
@@ -312,17 +319,19 @@ void Player::updatePlayerLookingAt(World* world) {
 
     std::vector<Chunk> chunksCrossed = std::vector<Chunk>();
 
-    for(int i = 0; i < world->getBlockData()->getRawChunkArray().size(); ++i) {
-        Chunk chunk = world->getBlockData()->getRawChunkArray().at(i);
-        AABB aabb = chunk.getChunkAABB();
-        aabb.add(chunk.getChunkCoordinates());
+    for(int i = 0; i < world->getBlockData()->getLoadedChunkLocations().size(); ++i) {
+        Chunk chunk = world->getBlockData()->getChunkWithBlock(world->getBlockData()->getLoadedChunkLocations().at(i).chunkLocation);
+        if(!chunk.isFakeChunk()) {
+            AABB aabb = chunk.getChunkAABB();
+            aabb.add(chunk.getChunkCoordinates());
 
-        int sideIntersect = 0;
+            int sideIntersect = 0;
 
-        float t = raycast(aabb, &sideIntersect);
+            float t = raycast(aabb, &sideIntersect);
 
-        if(t != -1 && (t < previousT || previousT == -1) && t <= 10) {
-            chunksCrossed.push_back(chunk);
+            if(t != -1 && (t < previousT || previousT == -1) && t <= 10) {
+                chunksCrossed.push_back(chunk);
+            }
         }
     }
 
@@ -444,4 +453,8 @@ int Player::getSideOfBlockLookingAt() {
 
 void Player::setItemInHand(std::unique_ptr<Item> item) {
     itemInHand = std::move(item);
+}
+
+void Player::setBufferedChunkLocation(BlockPos pos) {
+    this->bufferedChunkLocation = pos;
 }

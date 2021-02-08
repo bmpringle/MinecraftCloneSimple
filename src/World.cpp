@@ -34,6 +34,9 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler)
     glfwSetMouseButtonCallback(window, func3);
 
     renderer.updateWorldVBO(this);
+
+    thePlayer->setBufferedChunkLocation(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos()).getChunkCoordinates());
+    internalBlockData.updateLoadedChunks(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos()).getChunkCoordinates(), this);
 }
     
 void World::updateGame() {
@@ -51,9 +54,9 @@ void World::updateGame() {
 
 void World::generateWorld() {
     //generate a 40x3x40 layer of blocks for now, will change later
-    for(int x = 0; x < 40; ++x) {
-        for(int y = 0; y < 3; ++y) {
-            for(int z = 0; z < 40; ++z) {
+    for(int x = 0; x < 100; ++x) {
+        for(int y = 0; y < 1; ++y) {
+            for(int z = 0; z < 100; ++z) {
                 internalBlockData.setBlockAtPosition(BlockPos(x, y, z), std::shared_ptr<Block>(new BlockDirt()));
             }
         } 

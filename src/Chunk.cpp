@@ -6,6 +6,10 @@ Chunk::Chunk(int xLoc, int zLoc) : chunkCoordinates(BlockPos(xLoc, 0, zLoc)), ch
 
 }
 
+Chunk::Chunk(int xLoc, int zLoc, bool _isFakeChunk) : chunkCoordinates(BlockPos(xLoc, 0, zLoc)), chunkAABB(0, 0, 0, X, Y, Z) {
+    isFake = _isFakeChunk;
+}
+
 bool Chunk::doesBlockHaveCoordinates(BlockPos pos, std::shared_ptr<Block> block) {
     BlockPos bPos = block->getPos();
     if(bPos.x == pos.x && bPos.y == pos.y && bPos.z == pos.z) {
@@ -53,7 +57,7 @@ void Chunk::setBlockAtRelativeLocation(BlockPos pos, std::shared_ptr<Block> bloc
     }
 }
 
-BlockPos Chunk::getChunkCoordinates() {
+BlockPos Chunk::getChunkCoordinates() const {
     return BlockPos(chunkCoordinates.x * X, chunkCoordinates.y * Y, chunkCoordinates.z * Z);
 }
 
@@ -84,4 +88,8 @@ void Chunk::removeBlockAtRelativeLocation(BlockPos pos) {
             }
         }
     }
+}
+
+bool Chunk::isFakeChunk() {
+    return isFake;
 }

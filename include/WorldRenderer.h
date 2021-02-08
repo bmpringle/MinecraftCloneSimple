@@ -6,10 +6,11 @@
 #include <fstream>
 #include <iostream>
 #include "BlockArrayData.h"
-#include "glm/glm.hpp"
+#include "glmh.h"
 #include "TextureFetcher.h"
 #include "RenderInclude.h"
 #include "TextureArrayCreator.h"
+#include "RenderChunkBuffer.h"
 
 class World;
 
@@ -55,7 +56,6 @@ class WorldRenderer {
 
         TextureArrayCreator textureArrayCreator;
 
-        long worldBufferSize = 0;
-
+        std::vector<RenderChunkBuffer> renderChunkBuffers = std::vector<RenderChunkBuffer>();
 };
 #endif

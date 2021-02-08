@@ -21,6 +21,14 @@ class BlockPos {
             return res;
         }
 
+        friend bool operator==(BlockPos lhs, BlockPos rhs) {
+            return (lhs.x == rhs.x) && (lhs.y == rhs.y) && (lhs.z == rhs.z);
+        }
+
+        friend bool operator!=(BlockPos lhs, BlockPos rhs) {
+            return !((lhs.x == rhs.x) && (lhs.y == rhs.y) && (lhs.z == rhs.z));
+        }
+
         void print() {
             std::cout << "pos: " << x << " " << y << " " << z << std::endl;
         }

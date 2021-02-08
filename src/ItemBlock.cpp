@@ -9,7 +9,7 @@ std::string ItemBlock::getItemName() {
     return block->getName();
 }
 
-void ItemBlock::onRightClick(World* world) {
+void ItemBlock::onRightClick(World* world, RightMouseButtonPressedEvent event) {
     if(world->getPlayer()->getBlockLookingAt() != nullptr) {
         BlockPos location = BlockPos(0, 0, 0);
         BlockPos* blockLookingAt = world->getPlayer()->getBlockLookingAt();

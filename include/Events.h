@@ -2,6 +2,7 @@
 #define EVENTS_H
 
 #include "EventLib/Event.h"
+#include <chrono>
 
 class KeyPressedEvent : public Event {
     public:

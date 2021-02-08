@@ -11,7 +11,7 @@ class ItemBlock : public Item {
 
         std::string getItemName() override;
 
-        void onRightClick(World* world) override;
+        void onRightClick(World* world, RightMouseButtonPressedEvent event) override;
 
     private:
         std::shared_ptr<Block> block;

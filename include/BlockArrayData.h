@@ -6,6 +6,9 @@
 #include <memory>
 #include "RenderInclude.h"
 #include "Chunk.h"
+#include "LoadedChunkInfo.h"
+
+class World;
 
 class BlockArrayData {
     public:
@@ -29,9 +32,21 @@ class BlockArrayData {
         //tells object to reset rendererupdate flag
         void hasUpdatedRenderer();
 
+        void updateLoadedChunks(BlockPos pos, World* world);
+
+        const std::vector<LoadedChunkInfo> getLoadedChunkLocations();
+
+        const std::vector<bool> getChunkLocationsToUpdate();
+
+        bool isChunkLoaded(Chunk c);
+
+        void setAllLoadedChunksToBeUpdated();
+
     private:
         std::vector<Chunk> rawBlockData;
         int size[3];
         bool updateRenderer = false;
+
+        std::vector<LoadedChunkInfo> loadedChunkLocations = std::vector<LoadedChunkInfo>();
 };
 #endif
