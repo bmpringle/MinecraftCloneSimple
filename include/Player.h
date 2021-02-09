@@ -85,5 +85,7 @@ class Player final : public Listener, public Model {
         std::unique_ptr<Item> itemInHand = nullptr;
 
         BlockPos bufferedChunkLocation = BlockPos(0, 0, 0);
+
+        bool isGrounded = false;
 };
 #endif

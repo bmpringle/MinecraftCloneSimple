@@ -5,7 +5,7 @@
 #include <math.h>
 #include "Blocks.h"
 
-Player::Player(World* _world) : pos(Pos(0, 250, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
+Player::Player(World* _world) : pos(Pos(0, 5, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
     itemInHand = std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockDirt())));
 }
@@ -28,6 +28,7 @@ void Player::updatePlayerInWorld(World* world) {
         pos = previousPos;
         if(currentYSpeed < 0) {
             pos.y = yPosToSnapTo[0];
+            isGrounded = true;
         }
         currentYSpeed = 0;
     }
@@ -173,7 +174,8 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         }
 
         if(keyEvent.key == ' ') {
-            if(currentYSpeed == 0) {
+            if(currentYSpeed == 0 && isGrounded) {
+                isGrounded = false;
                 currentYSpeed = 10;
             }
         }
@@ -204,18 +206,18 @@ void Player::listenTo(std::shared_ptr<Event> e) {
 }
 
 AABB Player::getAABB() {
-    return AABB(0, 0, 0, 0.5, 2, 0.5);
+    return AABB(0, 0, 0, 0.6, 1.8, 0.6);
 }
 
 RenderedModel Player::getRenderedModel() {
     RenderedPoint p1 = RenderedPoint(0, 0, 0, /**uv coords*/ 0, 0);
-    RenderedPoint p2 = RenderedPoint(0.5, 0, 0, /**uv coords*/ 0, 0);
-    RenderedPoint p3 = RenderedPoint(0.5, 0, 0.5, /**uv coords*/ 0, 0);
-    RenderedPoint p4 = RenderedPoint(0, 0, 0.5, /**uv coords*/ 0, 0);
-    RenderedPoint p5 = RenderedPoint(0, 2, 0, /**uv coords*/ 0, 0);
-    RenderedPoint p6 = RenderedPoint(0.5, 2, 0, /**uv coords*/ 0, 0);
-    RenderedPoint p7 = RenderedPoint(0.5, 2, 0.5, /**uv coords*/ 0, 0);
-    RenderedPoint p8 = RenderedPoint(0, 2, 0.5, /**uv coords*/ 0, 0);
+    RenderedPoint p2 = RenderedPoint(0.6, 0, 0, /**uv coords*/ 0, 0);
+    RenderedPoint p3 = RenderedPoint(0.6, 0, 0.6, /**uv coords*/ 0, 0);
+    RenderedPoint p4 = RenderedPoint(0, 0, 0.6, /**uv coords*/ 0, 0);
+    RenderedPoint p5 = RenderedPoint(0, 1.8, 0, /**uv coords*/ 0, 0);
+    RenderedPoint p6 = RenderedPoint(0.6, 1.8, 0, /**uv coords*/ 0, 0);
+    RenderedPoint p7 = RenderedPoint(0.6, 1.8, 0.6, /**uv coords*/ 0, 0);
+    RenderedPoint p8 = RenderedPoint(0, 2, 0.6, /**uv coords*/ 0, 0);
 
     RenderedTriangle t1 = RenderedTriangle(p1, p2, p3, 1);
     RenderedTriangle t2 = RenderedTriangle(p1, p4, p3, 0);
@@ -329,7 +331,7 @@ void Player::updatePlayerLookingAt(World* world) {
 
             float t = raycast(aabb, &sideIntersect);
 
-            if(t != -1 && (t < previousT || previousT == -1) && t <= 10) {
+            if(t != -1 && (t < previousT || previousT == -1)) {
                 chunksCrossed.push_back(chunk);
             }
         }
