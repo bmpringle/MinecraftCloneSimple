@@ -3,10 +3,11 @@
 
 #include "EventLib/Event.h"
 #include <chrono>
+#include <string>
 
 class KeyPressedEvent : public Event {
     public:
-        KeyPressedEvent(char _key) : key(_key) {
+        KeyPressedEvent(std::string _key) : key(_key) {
 
         }
 
@@ -14,12 +15,12 @@ class KeyPressedEvent : public Event {
             return "KEYPRESSED";
         }
 
-        char key;
+        std::string key;
 };
 
 class KeyHeldEvent : public Event {
     public:
-        KeyHeldEvent(char _key, std::chrono::system_clock::duration _duration) : key(_key), duration(_duration) {
+        KeyHeldEvent(std::string _key, std::chrono::system_clock::duration _duration) : key(_key), duration(_duration) {
 
         }
 
@@ -27,13 +28,13 @@ class KeyHeldEvent : public Event {
             return "KEYHELD";
         }
 
-        char key;
+        std::string key;
         std::chrono::system_clock::duration duration;
 };
 
 class KeyReleasedEvent : public Event {
     public:
-        KeyReleasedEvent(char _key) : key(_key) {
+        KeyReleasedEvent(std::string _key) : key(_key) {
 
         }
 
@@ -41,7 +42,7 @@ class KeyReleasedEvent : public Event {
             return "KEYRELEASED";
         }
 
-        char key;
+        std::string key;
 };
 
 class MouseMovedEvent : public Event {

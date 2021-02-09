@@ -3,165 +3,120 @@
 
 #include "RenderInclude.h"
 #include <optional>
+#include <unordered_map>
+#include <functional>
 
-std::optional<char> fromKeyCode(int keycode) {
-    switch(keycode) {
-        case GLFW_KEY_0:
-            return '0';
-        case GLFW_KEY_1:
-            return '1';
-        case GLFW_KEY_2:
-            return '2';
-        case GLFW_KEY_3:
-            return '3';
-        case GLFW_KEY_4:
-            return '4';
-        case GLFW_KEY_5:
-            return '5';
-        case GLFW_KEY_6:
-            return '6';
-        case GLFW_KEY_7:
-            return '7';
-        case GLFW_KEY_8:
-            return '8';
-        case GLFW_KEY_9:
-            return '9';
-        case GLFW_KEY_A:
-            return 'a';
-        case GLFW_KEY_B:
-            return 'b';
-        case GLFW_KEY_C:
-            return 'c';
-        case GLFW_KEY_D:
-            return 'd';
-        case GLFW_KEY_E:
-            return 'e';
-        case GLFW_KEY_F:
-            return 'f';
-        case GLFW_KEY_G:
-            return 'g';
-        case GLFW_KEY_H:
-            return 'h';
-        case GLFW_KEY_I:
-            return 'i';
-        case GLFW_KEY_J:
-            return 'j';
-        case GLFW_KEY_K:
-            return 'k';
-        case GLFW_KEY_L:
-            return 'l';
-        case GLFW_KEY_M:
-            return 'm';
-        case GLFW_KEY_N:
-            return 'n';
-        case GLFW_KEY_O:
-            return 'o';
-        case GLFW_KEY_P:
-            return 'p';
-        case GLFW_KEY_Q:
-            return 'q';
-        case GLFW_KEY_R:
-            return 'r';
-        case GLFW_KEY_S:
-            return 's';
-        case GLFW_KEY_T:
-            return 't';
-        case GLFW_KEY_U:
-            return 'u';
-        case GLFW_KEY_V:
-            return 'v';
-        case GLFW_KEY_W:
-            return 'w';
-        case GLFW_KEY_X:
-            return 'x';
-        case GLFW_KEY_Y:
-            return 'y';
-        case GLFW_KEY_Z:
-            return 'z';
-        case GLFW_KEY_SPACE:
-            return ' ';
-        default:
-            return std::nullopt;
+std::optional<std::string> fromKeyCode(int keycode) {
+    static const std::unordered_map<int,std::function<void(std::string&)>> keyMap{
+        {GLFW_KEY_0, [](std::string& result){ result = "0"; }},
+        {GLFW_KEY_1, [](std::string& result){ result = "1"; }},
+        {GLFW_KEY_2, [](std::string& result){ result = "2"; }},
+        {GLFW_KEY_3, [](std::string& result){ result = "3"; }},
+        {GLFW_KEY_4, [](std::string& result){ result = "4"; }},
+        {GLFW_KEY_5, [](std::string& result){ result = "5"; }},
+        {GLFW_KEY_6, [](std::string& result){ result = "6"; }},
+        {GLFW_KEY_7, [](std::string& result){ result = "7"; }},
+        {GLFW_KEY_8, [](std::string& result){ result = "8"; }},
+        {GLFW_KEY_9, [](std::string& result){ result = "9"; }},
+        {GLFW_KEY_A, [](std::string& result){ result = "a"; }},
+        {GLFW_KEY_B, [](std::string& result){ result = "b"; }},
+        {GLFW_KEY_C, [](std::string& result){ result = "c"; }},
+        {GLFW_KEY_D, [](std::string& result){ result = "d"; }},
+        {GLFW_KEY_E, [](std::string& result){ result = "e"; }},
+        {GLFW_KEY_F, [](std::string& result){ result = "f"; }},
+        {GLFW_KEY_G, [](std::string& result){ result = "g"; }},
+        {GLFW_KEY_H, [](std::string& result){ result = "h"; }},
+        {GLFW_KEY_I, [](std::string& result){ result = "i"; }},
+        {GLFW_KEY_J, [](std::string& result){ result = "j"; }},
+        {GLFW_KEY_K, [](std::string& result){ result = "k"; }},
+        {GLFW_KEY_L, [](std::string& result){ result = "l"; }},
+        {GLFW_KEY_M, [](std::string& result){ result = "m"; }},
+        {GLFW_KEY_N, [](std::string& result){ result = "n"; }},
+        {GLFW_KEY_O, [](std::string& result){ result = "o"; }},
+        {GLFW_KEY_P, [](std::string& result){ result = "p"; }},
+        {GLFW_KEY_Q, [](std::string& result){ result = "q"; }},
+        {GLFW_KEY_R, [](std::string& result){ result = "r"; }},
+        {GLFW_KEY_S, [](std::string& result){ result = "s"; }},
+        {GLFW_KEY_T, [](std::string& result){ result = "t"; }},
+        {GLFW_KEY_U, [](std::string& result){ result = "u"; }},
+        {GLFW_KEY_V, [](std::string& result){ result = "v"; }},
+        {GLFW_KEY_W, [](std::string& result){ result = "w"; }},
+        {GLFW_KEY_X, [](std::string& result){ result = "x"; }},
+        {GLFW_KEY_Y, [](std::string& result){ result = "y"; }},
+        {GLFW_KEY_Z, [](std::string& result){ result = "z"; }},
+        {GLFW_KEY_SPACE, [](std::string& result){ result = " "; }},
+        {GLFW_KEY_LEFT_SHIFT, [](std::string& result){ result = "LEFT_SHIFT"; }},
+        {GLFW_KEY_RIGHT_SHIFT, [](std::string& result){ result = "RIGHT_SHIFT"; }} 
+    };
+    static const auto end = keyMap.end();
+    auto it = keyMap.find(keycode);
+
+    std::optional<std::string> result;
+    std::string resultBuffer = "";
+
+    if (it != end) {
+        it->second(resultBuffer);
+        result = resultBuffer;
+    } else {
+        result = std::nullopt;
     }
+    return result;
 }
-std::optional<int> toKeyCode(char c) {
-    switch(c) {
-        case '0':
-            return GLFW_KEY_0;
-        case '1':
-            return GLFW_KEY_1;
-        case '2':
-            return GLFW_KEY_2;
-        case '3':
-            return GLFW_KEY_3;
-        case '4':
-            return GLFW_KEY_4;
-        case '5':
-            return GLFW_KEY_5;
-        case '6':
-            return GLFW_KEY_6;
-        case '7':
-            return GLFW_KEY_7;
-        case '8':
-            return GLFW_KEY_8;
-        case '9':
-            return GLFW_KEY_9;
-        case 'a':
-            return GLFW_KEY_A;
-        case 'b':
-            return GLFW_KEY_B;
-        case 'c':
-            return GLFW_KEY_C;
-        case 'd':
-            return GLFW_KEY_D;
-        case 'e':
-            return GLFW_KEY_E;
-        case 'f':
-            return GLFW_KEY_F;
-        case 'g':
-            return GLFW_KEY_G;
-        case 'h':
-            return GLFW_KEY_H;
-        case 'i':
-            return GLFW_KEY_I;
-        case 'j':
-            return GLFW_KEY_J;
-        case 'k':
-            return GLFW_KEY_K;
-        case 'l':
-            return GLFW_KEY_L;
-        case 'm':
-            return GLFW_KEY_M;
-        case 'n':
-            return GLFW_KEY_N;
-        case 'o':
-            return GLFW_KEY_O;
-        case 'p':
-            return GLFW_KEY_P;
-        case 'q':
-            return GLFW_KEY_Q;
-        case 'r':
-            return GLFW_KEY_R;
-        case 's':
-            return GLFW_KEY_S;
-        case 't':
-            return GLFW_KEY_T;
-        case 'u':
-            return GLFW_KEY_U;
-        case 'v':
-            return GLFW_KEY_V;
-        case 'w':
-            return GLFW_KEY_W;
-        case 'x':
-            return GLFW_KEY_X;
-        case 'y':
-            return GLFW_KEY_Y;
-        case 'z':
-            return GLFW_KEY_Z;
-        case ' ':
-            return GLFW_KEY_SPACE;
-        default:
-            return std::nullopt;
+
+std::optional<int> toKeyCode(std::string c) {
+    static const std::unordered_map<std::string,std::function<void(int&)>> keyMap{
+        {"0", [](int& result){ result = GLFW_KEY_0; }},
+        {"1", [](int& result){ result = GLFW_KEY_1; }},
+        {"2", [](int& result){ result = GLFW_KEY_2; }},
+        {"3", [](int& result){ result = GLFW_KEY_3; }},
+        {"4", [](int& result){ result = GLFW_KEY_4; }},
+        {"5", [](int& result){ result = GLFW_KEY_5; }},
+        {"6", [](int& result){ result = GLFW_KEY_6; }},
+        {"7", [](int& result){ result = GLFW_KEY_7; }},
+        {"8", [](int& result){ result = GLFW_KEY_8; }},
+        {"9", [](int& result){ result = GLFW_KEY_9; }},
+        {"a", [](int& result){ result = GLFW_KEY_A; }},
+        {"b", [](int& result){ result = GLFW_KEY_B; }},
+        {"c", [](int& result){ result = GLFW_KEY_C; }},
+        {"d", [](int& result){ result = GLFW_KEY_D; }},
+        {"e", [](int& result){ result = GLFW_KEY_E; }},
+        {"f", [](int& result){ result = GLFW_KEY_F; }},
+        {"g", [](int& result){ result = GLFW_KEY_G; }},
+        {"h", [](int& result){ result = GLFW_KEY_H; }},
+        {"i", [](int& result){ result = GLFW_KEY_I; }},
+        {"j", [](int& result){ result = GLFW_KEY_J; }},
+        {"k", [](int& result){ result = GLFW_KEY_K; }},
+        {"l", [](int& result){ result = GLFW_KEY_L; }},
+        {"m", [](int& result){ result = GLFW_KEY_M; }},
+        {"n", [](int& result){ result = GLFW_KEY_N; }},
+        {"o", [](int& result){ result = GLFW_KEY_O; }},
+        {"p", [](int& result){ result = GLFW_KEY_P; }},
+        {"q", [](int& result){ result = GLFW_KEY_Q; }},
+        {"r", [](int& result){ result = GLFW_KEY_R; }},
+        {"s", [](int& result){ result = GLFW_KEY_S; }},
+        {"t", [](int& result){ result = GLFW_KEY_T; }},
+        {"u", [](int& result){ result = GLFW_KEY_U; }},
+        {"v", [](int& result){ result = GLFW_KEY_V; }},
+        {"w", [](int& result){ result = GLFW_KEY_W; }},
+        {"x", [](int& result){ result = GLFW_KEY_X; }},
+        {"y", [](int& result){ result = GLFW_KEY_Y; }},
+        {"z", [](int& result){ result = GLFW_KEY_Z; }},
+        {" ", [](int& result){ result = GLFW_KEY_SPACE; }},
+        {"LEFT_SHIFT", [](int& result){ result = GLFW_KEY_LEFT_SHIFT; }},
+        {"RIGHT_SHIFT", [](int& result){ result = GLFW_KEY_RIGHT_SHIFT; }} 
+    };
+    static const auto end = keyMap.end();
+    auto it = keyMap.find(c);
+
+    std::optional<int> result;
+    int resultBuffer;
+
+    if (it != end) {
+        it->second(resultBuffer);
+        result = resultBuffer;
+    } else {
+        result = std::nullopt;
     }
+    return result;
 }
 #endif

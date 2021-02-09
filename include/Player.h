@@ -87,5 +87,10 @@ class Player final : public Listener, public Model {
         BlockPos bufferedChunkLocation = BlockPos(0, 0, 0);
 
         bool isGrounded = false;
+
+        bool isSneaking = false;
+        
+        float standingHeight = 1.8;
+        float sneakingHeight = 1.65;
 };
 #endif

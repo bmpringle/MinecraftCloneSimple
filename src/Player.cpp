@@ -127,11 +127,11 @@ void Player::listenTo(std::shared_ptr<Event> e) {
     if(e->getEventID() == "KEYPRESSED") {
         KeyPressedEvent keyEvent = *dynamic_cast<KeyPressedEvent*>(e.get());
 
-        if(keyEvent.key == '1') {
+        if(keyEvent.key == "1") {
             setItemInHand(std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockDirt()))));
         }
 
-        if(keyEvent.key == '2') {
+        if(keyEvent.key == "2") {
             setItemInHand(std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockCobblestone()))));
         }
     }
@@ -141,43 +141,50 @@ void Player::listenTo(std::shared_ptr<Event> e) {
 
         long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(keyEvent.duration).count();
 
-        if(!keyEvent.key) {
-            return;
-        }
-
-        if(keyEvent.key == 'w') {
+        if(keyEvent.key == "w") {
             if(moveVector.durationInMilliseconds == 0) {
                 moveVector.durationInMilliseconds = milliseconds;
             }
             ++moveVector.relativeZ;
         }
 
-        if(keyEvent.key == 'a') {
+        if(keyEvent.key == "a") {
             if(moveVector.durationInMilliseconds == 0) {
                 moveVector.durationInMilliseconds = milliseconds;
             }
             --moveVector.relativeX;
         }
 
-        if(keyEvent.key == 's') {
+        if(keyEvent.key == "s") {
             if(moveVector.durationInMilliseconds == 0) {
                 moveVector.durationInMilliseconds = milliseconds;
             }
             --moveVector.relativeZ;
         }
 
-        if(keyEvent.key == 'd') {
+        if(keyEvent.key == "d") {
             if(moveVector.durationInMilliseconds == 0) {
                 moveVector.durationInMilliseconds = milliseconds;
             }
             ++moveVector.relativeX;
         }
 
-        if(keyEvent.key == ' ') {
+        if(keyEvent.key == " ") {
             if(currentYSpeed == 0 && isGrounded) {
                 isGrounded = false;
                 currentYSpeed = 10;
             }
+        }
+
+        if(keyEvent.key == "RIGHT_SHIFT") {
+            isSneaking = true;
+        }
+    }
+
+    if(e->getEventID() == "KEYRELEASED") {
+        KeyReleasedEvent keyEvent = *dynamic_cast<KeyReleasedEvent*>(e.get());
+        if(keyEvent.key == "RIGHT_SHIFT") {
+            isSneaking = false;
         }
     }
 
@@ -206,7 +213,7 @@ void Player::listenTo(std::shared_ptr<Event> e) {
 }
 
 AABB Player::getAABB() {
-    return AABB(0, 0, 0, 0.6, 1.8, 0.6);
+    return AABB(0, 0, 0, 0.6, (isSneaking) ? sneakingHeight : standingHeight, 0.6);
 }
 
 RenderedModel Player::getRenderedModel() {

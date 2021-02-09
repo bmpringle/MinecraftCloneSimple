@@ -6,6 +6,7 @@
 #include <vector>
 #include <chrono>
 #include "TimerMapLib/TimerMap.h"
+#include <string>
 
 class InputHandler {
     public:
@@ -15,7 +16,7 @@ class InputHandler {
         void handleMouseButtonInput(GLFWwindow* window, int button, int action, int mods, EventQueue* e, TimerMap* timerMap);
         void setFirstMouse();
     private:
-        std::vector<char> held = std::vector<char>();
+        std::vector<std::string> held = std::vector<std::string>();
 
         bool firstMouse = true;
         double previousXPos = 0;
