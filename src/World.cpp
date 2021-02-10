@@ -38,7 +38,7 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler)
     thePlayer->setBufferedChunkLocation(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos()).getChunkCoordinates());
     internalBlockData.updateLoadedChunks(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos()).getChunkCoordinates(), this);
 }
-    
+
 void World::updateGame() {
     //too slow need to impl better system for this and collision
     /*for(int x = -WORLDSIZE_CONST; x < WORLDSIZE_CONST; ++x) {
@@ -49,7 +49,9 @@ void World::updateGame() {
         }
     }*/
     input->callRegularEvents(worldEventQueue, &timerMap);
-    thePlayer->updatePlayerInWorld(this);
+
+    thePlayer->updateClient(this);
+    thePlayer->updateServer(this);
 }
 
 void World::generateWorld() {

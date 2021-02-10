@@ -7,113 +7,44 @@
 
 Player::Player(World* _world) : pos(Pos(0, 5, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
+    world->getTimerMap()->addTimerToMap("itemUseTimer");
     itemInHand = std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockDirt())));
 }
 
-void Player::updatePlayerInWorld(World* world) {  
+void Player::updateClient(World* world) {  
     Pos previousPos = pos;
 
     //handle space bar and gravity from events
     long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDurationAndReset("playerUpdateTimer")).count();
 
-    currentYSpeed -= (world->getWorldGravity() / 1000.0 * milliseconds);
-
-    currentYSpeed = (currentYSpeed < -78.4) ? -78.4 : currentYSpeed;
-
-    pos.y += (currentYSpeed / 1000.0 * milliseconds);
-
-    float yPosToSnapTo[1] = {pos.y};
-
-    if(!this->validatePosition(pos, *world->getBlockData(), yPosToSnapTo)) {
-        pos = previousPos;
-        if(currentYSpeed < 0) {
-            pos.y = yPosToSnapTo[0];
-            isGrounded = true;
-        }
-        currentYSpeed = 0;
+    if(isGrounded) {
+        updateHorizontalMotion(milliseconds);
     }
 
-
-    previousPos = pos;
-
-    //handle WASD movement input grabbed during events
-    double duration = moveVector.durationInMilliseconds;
-
-    float unitX = 0;
-    float unitZ = 0;
-
-    if(moveVector.relativeZ > 0) {
-        if(moveVector.relativeX > 0) {
-            unitX = sqrt(2)/2;
-            unitZ = sqrt(2)/2;
-        }
-
-        if(moveVector.relativeX == 0) {
-            unitZ = 1;
-        }
-
-        if(moveVector.relativeX < 0) {
-            unitX = -sqrt(2)/2;
-            unitZ = sqrt(2)/2;
-        }
-    }
-
-    if(moveVector.relativeZ == 0) {
-        if(moveVector.relativeX > 0) {
-            unitX = 1;
-        }
-
-        if(moveVector.relativeX == 0) {
-            //dont move at all
-        }
-
-        if(moveVector.relativeX < 0) {
-            unitX = -1;
-        }
-    }
-
-    if(moveVector.relativeZ < 0) {
-        if(moveVector.relativeX > 0) {
-            unitX = sqrt(2)/2;
-            unitZ = -sqrt(2)/2;
-        }
-
-        if(moveVector.relativeX == 0) {
-            unitZ = -1;
-        }
-
-        if(moveVector.relativeX < 0) {
-            unitX = -sqrt(2)/2;
-            unitZ = -sqrt(2)/2;            
-        }
-    }
-
-    double xMovRel = duration / 1000.0 * speed * unitX;
-    double zMovRel = duration / 1000.0 * speed * unitZ;
-
-    double degRADS = yaw/180.0*M_PI;
-    double xMovAbs = xMovRel * cos(degRADS) - zMovRel * sin(degRADS);
-    double zMovAbs = zMovRel * cos(degRADS) + xMovRel * sin(degRADS);
-
-    pos.x += xMovAbs;
-
-    if(!this->validatePosition(pos, *world->getBlockData())) {
-        pos = previousPos;
-    }
-
-    previousPos = pos;
-
-    pos.z += zMovAbs;
-
-    if(!this->validatePosition(pos, *world->getBlockData())) {
-        pos = previousPos;
-    }
-
-    moveVector.durationInMilliseconds = 0;
-    moveVector.relativeX = 0;
-    moveVector.relativeZ = 0;
+    move(&motion);
 
     updatePlayerLookingAt(world);
+}
+
+void Player::updateServer(World* _world) {
+    long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("playerUpdateTimer")).count();
+
+    if(!isBlockUnderPlayer()) {
+        motion[1] -= 0.038;
+        motion[1] *= 0.98;
+    }
+
+    if(abs(motion[0]) < 0.005) {
+        motion[0] = 0;
+    }else {
+        motion[0] *= 0.98;
+    }
+
+    if(abs(motion[2]) < 0.005) {
+        motion[2] = 0;
+    }else {
+        motion[2] *= 0.98;
+    }
 
     if(bufferedChunkLocation != world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).getChunkCoordinates() && !world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).isFakeChunk()) {
         setBufferedChunkLocation(world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).getChunkCoordinates());
@@ -122,6 +53,7 @@ void Player::updatePlayerInWorld(World* world) {
         setBufferedChunkLocation(world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).getChunkCoordinates());
     }
 }
+
 //todo -> speed up validation checks and lookat checks
 void Player::listenTo(std::shared_ptr<Event> e) {
     if(e->getEventID() == "KEYPRESSED") {
@@ -134,6 +66,11 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         if(keyEvent.key == "2") {
             setItemInHand(std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockCobblestone()))));
         }
+
+        if(keyEvent.key == "u") {
+            itemInHand->onRightClick(world);
+            world->getTimerMap()->resetTimer("itemUseTimer");
+        }
     }
     
     if(e->getEventID() == "KEYHELD") {
@@ -142,49 +79,54 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(keyEvent.duration).count();
 
         if(keyEvent.key == "w") {
-            if(moveVector.durationInMilliseconds == 0) {
-                moveVector.durationInMilliseconds = milliseconds;
-            }
-            ++moveVector.relativeZ;
+            ++zInputDirection;
         }
 
         if(keyEvent.key == "a") {
-            if(moveVector.durationInMilliseconds == 0) {
-                moveVector.durationInMilliseconds = milliseconds;
-            }
-            --moveVector.relativeX;
+            --xInputDirection;
         }
 
         if(keyEvent.key == "s") {
-            if(moveVector.durationInMilliseconds == 0) {
-                moveVector.durationInMilliseconds = milliseconds;
-            }
-            --moveVector.relativeZ;
+            --zInputDirection;
         }
 
         if(keyEvent.key == "d") {
-            if(moveVector.durationInMilliseconds == 0) {
-                moveVector.durationInMilliseconds = milliseconds;
+            ++xInputDirection;
+        }
+
+        if(keyEvent.key == "u") {
+            if(std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("itemUseTimer")).count() > 150) {
+                itemInHand->onRightClick(world);
+                world->getTimerMap()->resetTimer("itemUseTimer");
+
             }
-            ++moveVector.relativeX;
         }
 
         if(keyEvent.key == " ") {
-            if(currentYSpeed == 0 && isGrounded) {
-                isGrounded = false;
-                currentYSpeed = 10;
+            if(isGrounded) {
+                isJumping = true;
+                motion[1] = 0.38;
             }
         }
 
         if(keyEvent.key == "RIGHT_SHIFT") {
             isSneaking = true;
         }
+
+        if(keyEvent.key == "LEFT_SHIFT") {
+            isSprinting = true;
+        }
     }
 
     if(e->getEventID() == "KEYRELEASED") {
         KeyReleasedEvent keyEvent = *dynamic_cast<KeyReleasedEvent*>(e.get());
+
         if(keyEvent.key == "RIGHT_SHIFT") {
             isSneaking = false;
+        }
+
+        if(keyEvent.key == "LEFT_SHIFT") {
+            isSprinting = false;
         }
     }
 
@@ -203,12 +145,12 @@ void Player::listenTo(std::shared_ptr<Event> e) {
 
     if(e->getEventID() == "LEFTMOUSEBUTTONPRESSED") {
         LeftMouseButtonPressedEvent mouseEvent = *dynamic_cast<LeftMouseButtonPressedEvent*>(e.get());
-        itemInHand->onLeftClick(world, mouseEvent, blockLookingAt);
+        itemInHand->onLeftClick(world, blockLookingAt);
     }
 
     if(e->getEventID() == "RIGHTMOUSEBUTTONPRESSED") {
-        RightMouseButtonPressedEvent mouseEvent = *dynamic_cast<RightMouseButtonPressedEvent*>(e.get());
-        itemInHand->onRightClick(world, mouseEvent);
+        itemInHand->onRightClick(world);
+        world->getTimerMap()->resetTimer("itemUseTimer");
     }
 }
 
@@ -467,3 +409,161 @@ void Player::setItemInHand(std::unique_ptr<Item> item) {
 void Player::setBufferedChunkLocation(BlockPos pos) {
     this->bufferedChunkLocation = pos;
 }
+
+
+void Player::move(glm::vec3* moveVec) {    
+    double d0 = pos.x;
+    double d1 = pos.y;
+    double d2 = pos.z;
+
+    double d3 = (*moveVec)[0];
+    double d4 = (*moveVec)[1];
+    double d5 = (*moveVec)[2];
+    bool flag = isGrounded && isSneaking;
+
+    if (flag) {
+        d3 = d3 / 3;
+        d5 = d5 / 3;
+    }
+
+    flag = isGrounded && !isSneaking && isSprinting;
+
+    if(flag) {
+        d3 = d3 * 1.3;
+        d5 = d5 * 1.3;
+    }
+
+    if (!isGrounded && isSneaking) {
+        d3 = d3 / 2;
+        d5 = d5 / 2;
+    }
+
+    Pos previousPosX = pos;
+
+    pos.x += d3;
+
+    if(!this->validatePosition(pos, *world->getBlockData())) {
+        pos = previousPosX;
+    }
+
+    Pos previousPosZ = pos;
+
+    pos.z += d5;
+
+    if(!this->validatePosition(pos, *world->getBlockData())) {
+        pos = previousPosZ;
+        pos = previousPosX;
+        pos.z += d5;
+        sneakPos = pos;
+        if(!this->validatePosition(pos, *world->getBlockData())) {
+            pos = previousPosZ;
+        }
+    }
+
+    Pos previousPos = pos;
+
+    float yPosToSnapTo[1] = {pos.y};
+
+    pos.y += d4;
+
+    if(!this->validatePosition(pos, *world->getBlockData(), yPosToSnapTo)) {
+        pos = previousPos;
+        if(d4 < 0) {
+            pos.y = yPosToSnapTo[0];
+            isJumping = false;
+        }
+        (*moveVec)[1] = 0;
+    }
+
+    if(!isBlockUnderPlayer() && isGrounded && !isJumping && isSneaking) {
+        pos = sneakPos;
+
+        (*moveVec)[1] = 0;
+    }else if(!isJumping && isSneaking && isBlockUnderPlayer()) {
+        sneakPos = pos;
+    }
+
+    if(!isBlockUnderPlayer()) {
+        isGrounded = false;
+    }else {
+        isGrounded = true;
+    }
+}
+
+void Player::updateHorizontalMotion(long milliseconds) {
+    float unitX = 0;
+    float unitZ = 0;
+
+    if(zInputDirection > 0) {
+        if(xInputDirection > 0) {
+            unitX = sqrt(2)/2;
+            unitZ = sqrt(2)/2;
+        }
+
+        if(xInputDirection == 0) {
+            unitZ = 1;
+        }
+
+        if(xInputDirection < 0) {
+            unitX = -sqrt(2)/2;
+            unitZ = sqrt(2)/2;
+        }
+    }
+
+    if(zInputDirection == 0) {
+        if(xInputDirection > 0) {
+            unitX = 1;
+        }
+
+        if(xInputDirection == 0) {
+            //dont move at all
+        }
+
+        if(xInputDirection < 0) {
+            unitX = -1;
+        }
+    }
+
+    if(zInputDirection < 0) {
+        if(xInputDirection > 0) {
+            unitX = sqrt(2)/2;
+            unitZ = -sqrt(2)/2;
+        }
+
+        if(xInputDirection == 0) {
+            unitZ = -1;
+        }
+
+        if(xInputDirection < 0) {
+            unitX = -sqrt(2)/2;
+            unitZ = -sqrt(2)/2;            
+        }
+    }
+
+    double xMovRel = milliseconds / 1000.0 * speed * unitX;
+    double zMovRel = milliseconds / 1000.0 * speed * unitZ;
+
+    double degRADS = yaw / 180.0 * M_PI;
+    double xMovAbs = xMovRel * cos(degRADS) - zMovRel * sin(degRADS);
+    double zMovAbs = zMovRel * cos(degRADS) + xMovRel * sin(degRADS);
+
+    motion[0] = xMovAbs;
+    motion[2] = zMovAbs;
+
+    xInputDirection = 0;
+    zInputDirection = 0;
+}
+
+bool Player::isBlockUnderPlayer() {
+    BlockArrayData* data = world->getBlockData();
+    Pos playerPos = getPos();
+    
+    pos.y -= 0.02;
+    if(!this->validatePosition(pos, *world->getBlockData())) {
+        pos.y += 0.02;
+        return true;
+    }
+    pos.y += 0.02;
+    return false;
+}
+//fix sneak float

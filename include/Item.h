@@ -12,9 +12,9 @@ class Item {
     public:
         virtual std::string getItemName();
 
-        virtual void onRightClick(World* world, RightMouseButtonPressedEvent event);
+        virtual void onRightClick(World* world);
 
-        virtual void onLeftClick(World* world, LeftMouseButtonPressedEvent event, BlockPos* blockLookingAt);
+        virtual void onLeftClick(World* world, BlockPos* blockLookingAt);
 
         virtual ~Item() = default;
     private:

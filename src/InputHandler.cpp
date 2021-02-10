@@ -96,7 +96,7 @@ void InputHandler::setFirstMouse() {
 
 void InputHandler::callRegularEvents(EventQueue* e, TimerMap* timerMap) {
     for(int i = 0; i < held.size(); ++i) {
-        std::chrono::system_clock::duration duration = timerMap->getTimerDurationAndReset(held.at(i));
+        std::chrono::system_clock::duration duration = std::chrono::duration_cast<std::chrono::milliseconds>(timerMap->getTimerDurationAndReset(held.at(i)));
         e->callEvent(std::shared_ptr<KeyHeldEvent>(new KeyHeldEvent(held.at(i), duration)));
     }
 }
