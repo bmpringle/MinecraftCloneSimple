@@ -9,37 +9,9 @@
 #include "BlockArrayData.h"
 #include "ItemBlock.h"
 #include "glmh.h"
+#include "Pos.h"
 
 class World;
-
-class Pos {
-    public:
-        Pos(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {
-
-        }
-
-        float x = 0;
-        float y = 0;
-        float z = 0;
-
-        friend Pos operator+(Pos lhs, Pos rhs) {
-            return Pos(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
-        }
-
-        BlockPos toBlockPos() {
-            return BlockPos((x >= 0) ? (int)x : (int)(x-1), (y >= 0) ? (int)y : (int)(y-1), (z >= 0) ? (int)z : (int)(z-1));
-        }
-};
-
-class MoveVec2 {
-    public:
-        MoveVec2() {
-
-        }
-        float relativeX = 0;
-        float relativeZ = 0;
-        double durationInMilliseconds = 0;
-};
 
 class Player final : public Listener, public Model {
     public:

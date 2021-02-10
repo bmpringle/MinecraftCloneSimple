@@ -1,6 +1,6 @@
-#include "Model.h"
-#include "Player.h"
-#include "Block.h"
+#include "AABB.h"
+#include "BlockPos.h"
+#include "Pos.h"
 
 void AABB::add(Pos p) {
     startX += p.x;

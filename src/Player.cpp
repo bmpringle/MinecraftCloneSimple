@@ -12,8 +12,6 @@ Player::Player(World* _world) : pos(Pos(0, 5, 0)), world(_world), bufferedChunkL
 }
 
 void Player::updateClient(World* world) {  
-    Pos previousPos = pos;
-
     //handle space bar and gravity from events
     long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDurationAndReset("playerUpdateTimer")).count();
 
@@ -27,7 +25,10 @@ void Player::updateClient(World* world) {
 }
 
 void Player::updateServer(World* _world) {
-    long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("playerUpdateTimer")).count();
+    /* 
+     * Not needed right now:
+     * long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("playerUpdateTimer")).count();
+     */
 
     if(!isBlockUnderPlayer()) {
         motion[1] -= 0.038;
@@ -75,8 +76,6 @@ void Player::listenTo(std::shared_ptr<Event> e) {
     
     if(e->getEventID() == "KEYHELD") {
         KeyHeldEvent keyEvent = *dynamic_cast<KeyHeldEvent*>(e.get());
-
-        long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(keyEvent.duration).count();
 
         if(keyEvent.key == "w") {
             ++zInputDirection;
@@ -412,10 +411,6 @@ void Player::setBufferedChunkLocation(BlockPos pos) {
 
 
 void Player::move(glm::vec3* moveVec) {    
-    double d0 = pos.x;
-    double d1 = pos.y;
-    double d2 = pos.z;
-
     double d3 = (*moveVec)[0];
     double d4 = (*moveVec)[1];
     double d5 = (*moveVec)[2];
@@ -555,9 +550,6 @@ void Player::updateHorizontalMotion(long milliseconds) {
 }
 
 bool Player::isBlockUnderPlayer() {
-    BlockArrayData* data = world->getBlockData();
-    Pos playerPos = getPos();
-    
     pos.y -= 0.02;
     if(!this->validatePosition(pos, *world->getBlockData())) {
         pos.y += 0.02;
