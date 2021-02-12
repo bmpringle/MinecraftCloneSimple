@@ -55,9 +55,9 @@ void World::updateGame() {
 
 void World::generateWorld() {
     //generate a 40x3x40 layer of blocks for now, will change later
-    for(int x = 0; x < 100; ++x) {
+    for(int x = -1; x < 100; ++x) {
         for(int y = 0; y < 1; ++y) {
-            for(int z = 0; z < 100; ++z) {
+            for(int z = -1; z < 100; ++z) {
                 internalBlockData.setBlockAtPosition(BlockPos(x, y, z), std::shared_ptr<Block>(new BlockDirt()));
             }
         } 

@@ -101,7 +101,7 @@ std::shared_ptr<Block> BlockArrayData::getBlockAtPosition(BlockPos pos) {
         Chunk c = rawBlockData.at(i);
         std::array<int, 3> size = Chunk::getChunkSize();
         BlockPos chunkLocation = c.getChunkCoordinates();
-    
+        
         if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
             if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {

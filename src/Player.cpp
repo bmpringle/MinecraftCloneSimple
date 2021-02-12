@@ -5,23 +5,25 @@
 #include <math.h>
 #include "Blocks.h"
 
-Player::Player(World* _world) : pos(Pos(0, 5, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
+Player::Player(World* _world) : pos(Pos(0, 1, 1)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
     world->getTimerMap()->addTimerToMap("itemUseTimer");
     itemInHand = std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockDirt())));
+}
+
+void updatePlayerInWorld(World* _world) {
+
 }
 
 void Player::updateClient(World* world) {  
     //handle space bar and gravity from events
     long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDurationAndReset("playerUpdateTimer")).count();
 
-    if(isGrounded) {
-        updateHorizontalMotion(milliseconds);
-    }
+    updateHorizontalMotion(milliseconds);
 
     move(&motion);
 
-    updatePlayerLookingAt(world);
+    //updatePlayerLookingAt(world);
 }
 
 void Player::updateServer(World* _world) {
@@ -433,29 +435,23 @@ void Player::move(glm::vec3* moveVec) {
         d5 = d5 / 2;
     }
 
-    Pos previousPosX = pos;
+    Pos previousPos = pos;
 
     pos.x += d3;
 
     if(!this->validatePosition(pos, *world->getBlockData())) {
-        pos = previousPosX;
+        pos = previousPos;
     }
 
-    Pos previousPosZ = pos;
+    previousPos = pos;
 
     pos.z += d5;
 
     if(!this->validatePosition(pos, *world->getBlockData())) {
-        pos = previousPosZ;
-        pos = previousPosX;
-        pos.z += d5;
-        sneakPos = pos;
-        if(!this->validatePosition(pos, *world->getBlockData())) {
-            pos = previousPosZ;
-        }
+        pos = previousPos;
     }
 
-    Pos previousPos = pos;
+    previousPos = pos;
 
     float yPosToSnapTo[1] = {pos.y};
 
@@ -470,15 +466,19 @@ void Player::move(glm::vec3* moveVec) {
         (*moveVec)[1] = 0;
     }
 
-    if(!isBlockUnderPlayer() && isGrounded && !isJumping && isSneaking) {
+    flag = isBlockUnderPlayer();
+
+    if(!flag && isGrounded && !isJumping && isSneaking) {
         pos = sneakPos;
 
         (*moveVec)[1] = 0;
-    }else if(!isJumping && isSneaking && isBlockUnderPlayer()) {
+    }else if(!isJumping && isSneaking && flag) {
         sneakPos = pos;
     }
 
-    if(!isBlockUnderPlayer()) {
+    flag = isBlockUnderPlayer();
+
+    if(!flag) {
         isGrounded = false;
     }else {
         isGrounded = true;
@@ -549,13 +549,16 @@ void Player::updateHorizontalMotion(long milliseconds) {
     zInputDirection = 0;
 }
 
+
+//ahagahlkjdsflaksjf
 bool Player::isBlockUnderPlayer() {
     pos.y -= 0.02;
     if(!this->validatePosition(pos, *world->getBlockData())) {
         pos.y += 0.02;
         return true;
+    }else {
+        pos.y += 0.02;
+        return false;
     }
-    pos.y += 0.02;
-    return false;
 }
 //fix sneak float
