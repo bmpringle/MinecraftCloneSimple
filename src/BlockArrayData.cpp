@@ -19,7 +19,7 @@ void BlockArrayData::updateBlockAtPosition(BlockPos pos) {
 }
 
 void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {    
-    Chunk centerChunk = getChunkWithBlock(pos);
+    Chunk* centerChunk = getChunkWithBlock(pos);
 
     int renderDistance = world->getChunkRenderDistance();
     std::array<int, 3> size = Chunk::getChunkSize();
@@ -30,7 +30,7 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
 
     for(float x = -(float)renderDistance; x <= (float)renderDistance; ++x) {
         for(float z = -(float)renderDistance; z <= (float)renderDistance; ++z) {
-            BlockPos playerBlock = BlockPos((int)centerChunk.getChunkCoordinates().x + size[0] * x, 0, (int)centerChunk.getChunkCoordinates().z + size[2] * z);
+            BlockPos playerBlock = BlockPos((int)centerChunk->getChunkCoordinates().x + size[0] * x, 0, (int)centerChunk->getChunkCoordinates().z + size[2] * z);
             std::vector<LoadedChunkInfo>::iterator it = std::find_if(oldChunks.begin(), oldChunks.end(), [playerBlock](LoadedChunkInfo l) {
                             return l.chunkLocation == playerBlock;
             });
@@ -119,23 +119,23 @@ std::vector<Chunk> BlockArrayData::getRawChunkArray() {
 }
 
 //do not modify
-Chunk BlockArrayData::getChunkWithBlock(BlockPos pos) {
+Chunk* BlockArrayData::getChunkWithBlock(BlockPos pos) {
     std::array<int, 3> size = Chunk::getChunkSize();
 
-    for(Chunk c : rawBlockData) {
-        BlockPos location = c.getChunkCoordinates();
-        BlockPos locationEnd = c.getChunkCoordinates() + BlockPos(size[0], size[1], size[2]);
+    for(int i = 0; i < rawBlockData.size(); ++i) {
+        BlockPos location = rawBlockData[i].getChunkCoordinates();
+        BlockPos locationEnd = rawBlockData[i].getChunkCoordinates() + BlockPos(size[0], size[1], size[2]);
         
         if(location.x <= pos.x && locationEnd.x > pos.x) {
             if(location.y <= pos.y && locationEnd.y > pos.y) {
                 if(location.z <= pos.z && locationEnd.z > pos.z) {
-                    return c;
+                    return &rawBlockData[i];
                 }
             }
         }
     }
 
-    return Chunk(0, 0, true);
+    return fakeChunk;
 }
 
 bool BlockArrayData::shouldUpdateRenderer() {

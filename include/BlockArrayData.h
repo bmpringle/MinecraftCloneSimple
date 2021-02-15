@@ -24,7 +24,7 @@ class BlockArrayData {
 
         void removeBlockAtPosition(BlockPos pos);
 
-        Chunk getChunkWithBlock(BlockPos pos);
+        Chunk* getChunkWithBlock(BlockPos pos);
 
         //checks if rendererupdate flag is set
         bool shouldUpdateRenderer();
@@ -46,6 +46,7 @@ class BlockArrayData {
         std::vector<Chunk> rawBlockData;
         int size[3];
         bool updateRenderer = false;
+        Chunk* fakeChunk = new Chunk(0, 0, true);
 
         std::vector<LoadedChunkInfo> loadedChunkLocations = std::vector<LoadedChunkInfo>();
 };

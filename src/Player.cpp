@@ -49,11 +49,11 @@ void Player::updateServer(World* _world) {
         motion[2] *= 0.98;
     }
 
-    if(bufferedChunkLocation != world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).getChunkCoordinates() && !world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).isFakeChunk()) {
-        setBufferedChunkLocation(world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).getChunkCoordinates());
+    if(bufferedChunkLocation != world->getBlockData()->getChunkWithBlock(getPos().toBlockPos())->getChunkCoordinates() && !world->getBlockData()->getChunkWithBlock(getPos().toBlockPos())->isFakeChunk()) {
+        setBufferedChunkLocation(world->getBlockData()->getChunkWithBlock(getPos().toBlockPos())->getChunkCoordinates());
         world->getBlockData()->updateLoadedChunks(bufferedChunkLocation, world);
-    }else if(!world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).isFakeChunk()){
-        setBufferedChunkLocation(world->getBlockData()->getChunkWithBlock(getPos().toBlockPos()).getChunkCoordinates());
+    }else if(!world->getBlockData()->getChunkWithBlock(getPos().toBlockPos())->isFakeChunk()){
+        setBufferedChunkLocation(world->getBlockData()->getChunkWithBlock(getPos().toBlockPos())->getChunkCoordinates());
     }
 }
 
@@ -208,20 +208,22 @@ bool Player::validatePosition(Pos newPosition, BlockArrayData data) {
     playerAABB.add(newPosition);
 
     for(int i = 0; i < data.getLoadedChunkLocations().size(); ++i) {
-        Chunk c = data.getChunkWithBlock(data.getLoadedChunkLocations().at(i).chunkLocation);
-        AABB chunkAABB = c.getChunkAABB();
+        Chunk* c = data.getChunkWithBlock(data.getLoadedChunkLocations().at(i).chunkLocation);
+        if(!c->isFakeChunk()) {
+            AABB chunkAABB = c->getChunkAABB();
 
-        BlockPos chunkCoords = c.getChunkCoordinates();
-        chunkAABB.add(chunkCoords);
+            BlockPos chunkCoords = c->getChunkCoordinates();
+            chunkAABB.add(chunkCoords);
 
-        if(AABBIntersectedByAABB(playerAABB, chunkAABB) && !c.isFakeChunk()) {
-            for(int k = 0; k < c.getBlocksInChunk().size(); ++k) {
-                std::shared_ptr<Block> block = c.getBlocksInChunk().at(k);
-                AABB blockAABB = block->getAABB();
-                blockAABB.add(block->getPos());
+            if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
+                for(int k = 0; k < c->getBlocksInChunk().size(); ++k) {
+                    std::shared_ptr<Block> block = c->getBlocksInChunk().at(k);
+                    AABB blockAABB = block->getAABB();
+                    blockAABB.add(block->getPos());
 
-                if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
-                    return false;
+                    if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
+                        return false;
+                    }
                 }
             }
         }
@@ -234,21 +236,23 @@ bool Player::validatePosition(Pos newPosition, BlockArrayData data, float* yToSn
     playerAABB.add(newPosition);
 
     for(int i = 0; i < data.getLoadedChunkLocations().size(); ++i) {
-        Chunk c = data.getChunkWithBlock(data.getLoadedChunkLocations().at(i).chunkLocation);
-        AABB chunkAABB = c.getChunkAABB();
-        
-        BlockPos chunkCoords = c.getChunkCoordinates();
-        chunkAABB.add(chunkCoords);
-        
-        if(AABBIntersectedByAABB(playerAABB, chunkAABB) && !c.isFakeChunk()) {
-            for(int k = 0; k < c.getBlocksInChunk().size(); ++k) {
-                std::shared_ptr<Block> block = c.getBlocksInChunk().at(k);
-                AABB blockAABB = block->getAABB();
-                blockAABB.add(block->getPos());
+        Chunk* c = data.getChunkWithBlock(data.getLoadedChunkLocations().at(i).chunkLocation);
+        if(!c->isFakeChunk()) {
+            AABB chunkAABB = c->getChunkAABB();
+            
+            BlockPos chunkCoords = c->getChunkCoordinates();
+            chunkAABB.add(chunkCoords);
+            
+            if(AABBIntersectedByAABB(playerAABB, chunkAABB) && !c->isFakeChunk()) {
+                for(int k = 0; k < c->getBlocksInChunk().size(); ++k) {
+                    std::shared_ptr<Block> block = c->getBlocksInChunk().at(k);
+                    AABB blockAABB = block->getAABB();
+                    blockAABB.add(block->getPos());
 
-                if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
-                    yToSnapTo[0] = blockAABB.startY + blockAABB.ySize;
-                    return false;
+                    if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
+                        yToSnapTo[0] = blockAABB.startY + blockAABB.ySize;
+                        return false;
+                    }
                 }
             }
         }
@@ -269,13 +273,13 @@ void Player::updatePlayerLookingAt(World* world) {
 
     int side = 0;
 
-    std::vector<Chunk> chunksCrossed = std::vector<Chunk>();
+    std::vector<Chunk*> chunksCrossed = std::vector<Chunk*>();
 
     for(int i = 0; i < world->getBlockData()->getLoadedChunkLocations().size(); ++i) {
-        Chunk chunk = world->getBlockData()->getChunkWithBlock(world->getBlockData()->getLoadedChunkLocations().at(i).chunkLocation);
-        if(!chunk.isFakeChunk()) {
-            AABB aabb = chunk.getChunkAABB();
-            aabb.add(chunk.getChunkCoordinates());
+        Chunk* chunk = world->getBlockData()->getChunkWithBlock(world->getBlockData()->getLoadedChunkLocations().at(i).chunkLocation);
+        if(!chunk->isFakeChunk()) {
+            AABB aabb = chunk->getChunkAABB();
+            aabb.add(chunk->getChunkCoordinates());
 
             int sideIntersect = 0;
 
@@ -288,8 +292,8 @@ void Player::updatePlayerLookingAt(World* world) {
     }
 
     for(int j = 0; j < chunksCrossed.size(); ++j) {
-        for(int k = 0; k < chunksCrossed.at(j).getBlocksInChunk().size(); ++k) {
-            std::shared_ptr<Block> block = chunksCrossed.at(j).getBlocksInChunk().at(k);
+        for(int k = 0; k < chunksCrossed.at(j)->getBlocksInChunk().size(); ++k) {
+            std::shared_ptr<Block> block = chunksCrossed.at(j)->getBlocksInChunk().at(k);
 
             AABB aabb = block->getAABB();
             aabb.add(block->getPos());

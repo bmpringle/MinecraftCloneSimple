@@ -1,13 +1,16 @@
 #include "Chunk.h"
 #include <iostream>
 #include <algorithm>
+#include <functional>
+#include "World.h"
 
 Chunk::Chunk(int xLoc, int zLoc) : chunkCoordinates(BlockPos(xLoc, 0, zLoc)), chunkAABB(0, 0, 0, X, Y, Z) {
-
+    initTree();
 }
 
-Chunk::Chunk(int xLoc, int zLoc, bool _isFakeChunk) : chunkCoordinates(BlockPos(xLoc, 0, zLoc)), chunkAABB(0, 0, 0, X, Y, Z) {
+Chunk::Chunk(int xLoc, int zLoc, bool _isFakeChunk) : chunkCoordinates(BlockPos(xLoc, 0, zLoc)), chunkAABB(0, 0, 0, X, Y, Z), blockTree(BinaryTree<std::array<std::shared_ptr<Block>, 256>, AABB, std::array<std::shared_ptr<Block>, 256>>()) {
     isFake = _isFakeChunk;
+    initTree();
 }
 
 bool Chunk::doesBlockHaveCoordinates(BlockPos pos, std::shared_ptr<Block> block) {
@@ -52,6 +55,20 @@ void Chunk::setBlockAtRelativeLocation(BlockPos pos, std::shared_ptr<Block> bloc
                     block->setPos(getChunkCoordinates() + pos);
                     blocksInChunk.push_back(block);
                 }
+                block->setPos(getChunkCoordinates() + pos);
+                AABB bAABB = block->getAABB();
+                bAABB.add(pos);
+                std::function<bool(AABB)> eval = [bAABB](AABB aabb) -> bool { 
+                    if(AABBIntersectedByAABB(bAABB, aabb)){
+                        return true;
+                    }
+                    return false;
+                };
+                /*std::vector<std::optional<std::array<std::shared_ptr<Block>, 256>>*> block = blockTree.getLeafOfTree(eval);
+                if(block.size() != 1) {
+                    std::cout << "abort! there are " << block.size() << " valid blocks" << std::endl;
+                    abort();
+                }*/
             }
         }
     }
@@ -92,4 +109,53 @@ void Chunk::removeBlockAtRelativeLocation(BlockPos pos) {
 
 bool Chunk::isFakeChunk() {
     return isFake;
+}
+
+void Chunk::initTree() {
+    std::function<bool(AABB*)> leftCreate = [](AABB* aabb) -> bool { 
+        if(aabb->xSize > 1 && aabb->zSize > 1) {
+            if(aabb->xSize > aabb->zSize) {
+                aabb->xSize = aabb->xSize / 2;
+                return true;
+            }else {
+                aabb->zSize = aabb->zSize / 2;
+                return true;
+            }
+        }else if(aabb->xSize > 1) {
+            aabb->xSize = aabb->xSize / 2;
+            return true;
+        }else if(aabb->zSize > 1) {
+            aabb->zSize = aabb->zSize / 2;
+            return true;
+        }else {
+            return false;
+        }
+    };
+
+    std::function<bool(AABB*)> rightCreate = [](AABB* aabb) -> bool { 
+        if(aabb->xSize > 1 && aabb->zSize > 1) {
+            if(aabb->xSize > aabb->zSize) {
+                aabb->xSize = aabb->xSize / 2;
+                aabb->startX = aabb->startX + aabb->xSize;
+                return true;
+            }else {
+                aabb->zSize = aabb->zSize / 2;
+                aabb->startZ = aabb->startZ + aabb->zSize;
+                return true;
+            }
+        }else if(aabb->xSize > 1) {
+            aabb->xSize = aabb->xSize / 2;
+            aabb->startX = aabb->startX + aabb->xSize;
+            return true;
+        }else if(aabb->zSize > 1) {
+            aabb->zSize = aabb->zSize / 2;
+            aabb->startZ = aabb->startZ + aabb->zSize;
+            return true;
+        }else {
+            return false;
+        }
+    };
+    std::array<std::shared_ptr<Block>, 256> nullarray = {nullptr};
+    nullarray.fill(nullptr);
+    blockTree = BinaryTree<std::array<std::shared_ptr<Block>, 256>, AABB, std::array<std::shared_ptr<Block>, 256>>(leftCreate, rightCreate, getChunkAABB(), getChunkAABB(), nullarray);
 }

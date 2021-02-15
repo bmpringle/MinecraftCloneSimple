@@ -162,7 +162,7 @@ void WorldRenderer::updateWorldVBO(World* world) {
     }
 
     for(LoadedChunkInfo lchunk : lChunksLocations) {
-        Chunk c = data->getChunkWithBlock(lchunk.chunkLocation);
+        Chunk* c = data->getChunkWithBlock(lchunk.chunkLocation);
         BlockPos pos = lchunk.chunkLocation;
 
         std::vector<RenderChunkBuffer>::iterator it = std::find_if(renderChunkBuffers.begin(), renderChunkBuffers.end(), [pos] (RenderChunkBuffer buff) {
@@ -173,7 +173,7 @@ void WorldRenderer::updateWorldVBO(World* world) {
         if(it == renderChunkBuffers.end()) {
             std::vector<float> vectorWithColors = std::vector<float>();
 
-            for(std::shared_ptr<Block> block : data->getChunkWithBlock(pos).getBlocksInChunk()) {
+            for(std::shared_ptr<Block> block : data->getChunkWithBlock(pos)->getBlocksInChunk()) {
                 RenderedModel model = block->getRenderedModel();
                 BlockPos pos = block->getPos();
 
@@ -232,7 +232,7 @@ void WorldRenderer::updateWorldVBO(World* world) {
             if(lchunk.update) {
                 std::vector<float> vectorWithColors = std::vector<float>();
 
-                for(std::shared_ptr<Block> block : data->getChunkWithBlock((*it).getPos()).getBlocksInChunk()) {
+                for(std::shared_ptr<Block> block : data->getChunkWithBlock((*it).getPos())->getBlocksInChunk()) {
                     RenderedModel model = block->getRenderedModel();
                     BlockPos pos = block->getPos();
 

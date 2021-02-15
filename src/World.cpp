@@ -34,8 +34,8 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler)
 
     renderer.updateWorldVBO(this);
 
-    thePlayer->setBufferedChunkLocation(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos()).getChunkCoordinates());
-    internalBlockData.updateLoadedChunks(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos()).getChunkCoordinates(), this);
+    thePlayer->setBufferedChunkLocation(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates());
+    internalBlockData.updateLoadedChunks(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates(), this);
 }
 
 void World::updateGame() {

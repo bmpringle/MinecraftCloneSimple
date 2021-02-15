@@ -4,6 +4,7 @@
 #include "Block.h"
 #include <vector>
 #include <array>
+#include "BinaryTree/BinaryTree.h"
 
 class Chunk {
     public:
@@ -29,12 +30,15 @@ class Chunk {
 
     private:
         bool doesBlockHaveCoordinates(BlockPos pos, std::shared_ptr<Block> block);
+        void initTree();
 
         static const int X = 16;
         static const int Y = 256;
         static const int Z = 16;
         BlockPos chunkCoordinates; 
         AABB chunkAABB;
+        BinaryTree<std::array<std::shared_ptr<Block>, 256>, AABB, std::array<std::shared_ptr<Block>, 256>> blockTree;
+        
         std::vector<std::shared_ptr<Block>> blocksInChunk;
 
         bool isFake = false;

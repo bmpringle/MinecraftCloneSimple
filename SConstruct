@@ -17,11 +17,7 @@ env = Environment()
 
 
 if COMPILE_LIBS == 1 and env['PLATFORM'] != 'win32' and env['PLATFORM'] != 'msys': 
-    command1 = 'mkdir -p ./temp/'
-    command1a = 'mkdir -p ./TimerMapLib/'
-    command1b = 'mkdir -p ./EventLib/'
-    command1c = 'mkdir -p ./lib/'
-    command1d = 'mkdir -p ./stbi/'
+    command1 = 'mkdir -p ./temp/ ./TimerMapLib/ ./EventLib/ ./lib/ ./stbi/ ./BinaryTree/'
     command2 = 'git clone https://github.com/bmpringle/EventQueue.git'
     command3 = 'git clone https://github.com/bmpringle/TimerMap.git'
     command4 = 'make library' #run twice (one for each lib)
@@ -34,21 +30,11 @@ if COMPILE_LIBS == 1 and env['PLATFORM'] != 'win32' and env['PLATFORM'] != 'msys
     command7 = 'rm -rf temp/'
     command8 = 'git clone https://github.com/g-truc/glm'
     command9 = 'curl https://raw.githubusercontent.com/nothings/stb/master/stb_image.h -o stb_image.h'
+    command10 = 'curl https://raw.githubusercontent.com/bmpringle/BinaryTree/master/BinaryNode.h -o BinaryNode.h'
+    command11 = 'curl https://raw.githubusercontent.com/bmpringle/BinaryTree/master/BinaryTree.h -o BinaryTree.h'
     
     process1 = subprocess.Popen(shell='true', cwd='./', args=command1, stdout=subprocess.PIPE)
     output, error = process1.communicate()
-
-    process1a = subprocess.Popen(shell='true', cwd='./', args=command1a, stdout=subprocess.PIPE)
-    output, error = process1a.communicate()
-
-    process1b = subprocess.Popen(shell='true', cwd='./', args=command1b, stdout=subprocess.PIPE)
-    output, error = process1b.communicate()
-
-    process1c = subprocess.Popen(shell='true', cwd='./', args=command1c, stdout=subprocess.PIPE)
-    output, error = process1c.communicate()
-
-    process1d = subprocess.Popen(shell='true', cwd='./', args=command1d, stdout=subprocess.PIPE)
-    output, error = process1d.communicate()
 
     process2 = subprocess.Popen(shell='true', cwd='./temp/', args=command2, stdout=subprocess.PIPE)
     output, error = process2.communicate()
@@ -88,6 +74,12 @@ if COMPILE_LIBS == 1 and env['PLATFORM'] != 'win32' and env['PLATFORM'] != 'msys
 
     process9 = subprocess.Popen(shell='true', cwd='./stbi/', args=command9, stdout=subprocess.PIPE)
     output, error = process9.communicate()
+
+    process10 = subprocess.Popen(shell='true', cwd='./BinaryTree/', args=command10, stdout=subprocess.PIPE)
+    output, error = process10.communicate()
+
+    process11 = subprocess.Popen(shell='true', cwd='./BinaryTree/', args=command11, stdout=subprocess.PIPE)
+    output, error = process11.communicate()
 
 elif COMPILE_LIBS == 1:
     print("auto-compilation not supported for non-unix platforms.")
