@@ -42,6 +42,8 @@ class BlockArrayData {
 
         void setAllLoadedChunksToBeUpdated();
 
+        bool isValidPosition(AABB aabb, float* yPos);
+
     private:
         std::vector<Chunk> rawBlockData;
         int size[3];

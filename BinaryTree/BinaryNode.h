@@ -28,9 +28,9 @@ class BinaryNode {
             }            
         };
 
-        void getLeafOfTree(std::vector<std::optional<Container>*>* result, std::function<bool(NodeData)> eval) {
-            bool leftTraverse = eval(leftData);
-            bool rightTraverse = eval(rightData);
+        void getLeafOfTree(std::vector<std::optional<Container>*>* result, std::function<bool(NodeData, bool, std::optional<Container>)> eval) {
+            bool leftTraverse = eval(leftData, (left == nullptr && right == nullptr), containedObject);
+            bool rightTraverse = eval(rightData, (left == nullptr && right == nullptr), containedObject);
             
             if(left != nullptr && leftTraverse) {
                 left->getLeafOfTree(result, eval);
@@ -39,7 +39,7 @@ class BinaryNode {
                 right->getLeafOfTree(result, eval);
             }
             if(left == nullptr && right == nullptr) {
-                if(eval(leftData) || eval(rightData)) {
+                if(leftTraverse || rightTraverse) {
                     result->push_back(&containedObject);
                 }
             }

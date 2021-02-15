@@ -148,6 +148,23 @@ bool AABBIntersectedByAABB(AABB box1, AABB box2) {
     return false;
 } 
 
+bool AABBIntersectedByAABBVocal(AABB box1, AABB box2) {
+    if(rangesOverlap(box1.startX, box1.startX + box1.xSize, box2.startX, box2.startX + box2.xSize)) {
+        if(rangesOverlap(box1.startY, box1.startY + box1.ySize, box2.startY, box2.startY + box2.ySize)) {
+            if(rangesOverlap(box1.startZ, box1.startZ + box1.zSize, box2.startZ, box2.startZ + box2.zSize)) {
+                return true;
+            }else {
+                std::cout << "failedzcheck" << std::endl;
+            }    
+        }else {
+            std::cout << "failedycheck" << std::endl;
+        }      
+    }else {
+        std::cout << "failedxcheck" << std::endl;
+    }
+    return false;
+} 
+
 void World::renderGame() {
     if(internalBlockData.shouldUpdateRenderer()) {
         renderer.updateWorldVBO(this);

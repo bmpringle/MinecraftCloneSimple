@@ -12,11 +12,11 @@ class Chunk {
 
         Chunk(int xLoc, int zLoc, bool _isFakeChunk);
 
-        std::shared_ptr<Block> getBlockAtRelativeLocation(BlockPos pos);
+        std::shared_ptr<Block> getBlockAtLocation(BlockPos pos);
 
-        void setBlockAtRelativeLocation(BlockPos pos, std::shared_ptr<Block> block);
+        void setBlockAtLocation(BlockPos pos, std::shared_ptr<Block> block);
 
-        void removeBlockAtRelativeLocation(BlockPos pos);
+        void removeBlockAtLocation(BlockPos pos);
 
         BlockPos getChunkCoordinates() const;
 
@@ -27,6 +27,8 @@ class Chunk {
         static std::array<int, 3> getChunkSize();
 
         bool isFakeChunk();
+
+        BinaryTree<std::array<std::shared_ptr<Block>, 256>, AABB, std::array<std::shared_ptr<Block>, 256>>* getBlockTree();
 
     private:
         bool doesBlockHaveCoordinates(BlockPos pos, std::shared_ptr<Block> block);
@@ -39,8 +41,6 @@ class Chunk {
         AABB chunkAABB;
         BinaryTree<std::array<std::shared_ptr<Block>, 256>, AABB, std::array<std::shared_ptr<Block>, 256>> blockTree;
         
-        std::vector<std::shared_ptr<Block>> blocksInChunk;
-
         bool isFake = false;
 };
 #endif

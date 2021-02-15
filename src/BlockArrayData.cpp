@@ -4,10 +4,6 @@
 #include "World.h"
 #include <algorithm>
 
-BlockPos relativeBlockPos(BlockPos pos, std::array<int, 3> size) {
-    return BlockPos(((size[0] - (-1 * pos.x) % size[0]) % size[0]), ((size[1] - (-1 * pos.y) % size[1]) % size[1]), ((size[2] - (-1 * pos.z) % size[2]) % size[2]));
-}
-
 BlockArrayData::BlockArrayData(int xSize, int ySize, int zSize) : rawBlockData(std::vector<Chunk>()) {
     size[0] = xSize; 
     size[1] = ySize; 
@@ -31,10 +27,13 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
     for(float x = -(float)renderDistance; x <= (float)renderDistance; ++x) {
         for(float z = -(float)renderDistance; z <= (float)renderDistance; ++z) {
             BlockPos playerBlock = BlockPos((int)centerChunk->getChunkCoordinates().x + size[0] * x, 0, (int)centerChunk->getChunkCoordinates().z + size[2] * z);
-            std::vector<LoadedChunkInfo>::iterator it = std::find_if(oldChunks.begin(), oldChunks.end(), [playerBlock](LoadedChunkInfo l) {
+
+            if(!getChunkWithBlock(playerBlock)->isFakeChunk()) {
+                std::vector<LoadedChunkInfo>::iterator it = std::find_if(oldChunks.begin(), oldChunks.end(), [playerBlock](LoadedChunkInfo l) {
                             return l.chunkLocation == playerBlock;
-            });
-            loadedChunkLocations.push_back(LoadedChunkInfo(playerBlock, (it == oldChunks.end()) ? true : oldChunks.at(it - oldChunks.begin()).update));
+                });
+                loadedChunkLocations.push_back(LoadedChunkInfo(playerBlock, (it == oldChunks.end()) ? true : oldChunks.at(it - oldChunks.begin()).update));
+            }
         }
     }
 }
@@ -49,7 +48,7 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
         if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
             if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
-                    rawBlockData.at(i).setBlockAtRelativeLocation(relativeBlockPos(pos, size), block);
+                    rawBlockData.at(i).setBlockAtLocation(pos, block);
                     if(isChunkLoaded(c)) {
                         std::vector<LoadedChunkInfo>::iterator chunkLocIt = std::find_if(loadedChunkLocations.begin(), loadedChunkLocations.end(), [c](LoadedChunkInfo l) {
                             return l.chunkLocation == c.getChunkCoordinates();
@@ -63,7 +62,7 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
     }
     
     Chunk c = Chunk(floor((float)pos.x / (float)size[0]), floor((float)pos.z / (float)size[2]));
-    c.setBlockAtRelativeLocation(relativeBlockPos(pos, size), block);
+    c.setBlockAtLocation(pos, block);
     rawBlockData.push_back(c);
 }
 
@@ -82,7 +81,7 @@ void BlockArrayData::removeBlockAtPosition(BlockPos pos) {
         if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
             if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
-                    rawBlockData.at(i).removeBlockAtRelativeLocation(relativeBlockPos(pos, size));
+                    rawBlockData.at(i).removeBlockAtLocation(pos);
                     if(isChunkLoaded(c)) {
                         std::vector<LoadedChunkInfo>::iterator chunkLocIt = std::find_if(loadedChunkLocations.begin(), loadedChunkLocations.end(), [c](LoadedChunkInfo l) {
                             return l.chunkLocation == c.getChunkCoordinates();
@@ -105,7 +104,7 @@ std::shared_ptr<Block> BlockArrayData::getBlockAtPosition(BlockPos pos) {
         if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
             if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
-                    return rawBlockData.at(i).getBlockAtRelativeLocation(relativeBlockPos(pos, size));
+                    return rawBlockData.at(i).getBlockAtLocation(pos);
                 }
             }
         }
@@ -113,7 +112,12 @@ std::shared_ptr<Block> BlockArrayData::getBlockAtPosition(BlockPos pos) {
     return nullptr;
 }
 
-//do not modify
+/*
+ * do not modify. actually, just don't use. 
+ * make another member function for whatever 
+ * purpose you need, copying all this data is 
+ * just not a fun time. ever.
+ */
 std::vector<Chunk> BlockArrayData::getRawChunkArray() {
     return rawBlockData;
 }
@@ -162,4 +166,38 @@ void BlockArrayData::setAllLoadedChunksToBeUpdated() {
     for(int i = 0; i < loadedChunkLocations.size(); ++i) {
         loadedChunkLocations.at(i).update = true;
     }
+}
+
+bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
+    for(int i = 0; i < getLoadedChunkLocations().size(); ++i) {
+        Chunk* c = getChunkWithBlock(getLoadedChunkLocations().at(i).chunkLocation);
+        if(!c->isFakeChunk()) {
+            AABB chunkAABB = c->getChunkAABB();
+            if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
+                auto tree = c->getBlockTree();
+                std::function<bool(AABB, bool, std::optional<std::array<std::shared_ptr<Block>, 256>>)> eval = [playerAABB](AABB aabb, bool isLeaf, std::optional<std::array<std::shared_ptr<Block>, 256>> block) -> bool { 
+                    if(AABBIntersectedByAABB(playerAABB, aabb)){
+                        return true;
+                    }
+                    return false;
+                };
+                std::vector<std::optional<std::array<std::shared_ptr<Block>, 256>>*> blocksVector = tree->getLeafOfTree(eval);
+                if(blocksVector.size() > 0) {
+                    for(std::optional<std::array<std::shared_ptr<Block>, 256>>* blocksColumn : blocksVector) {
+                        for(int i = 0; i < 256; ++i) {
+                            std::shared_ptr<Block> block = (*blocksColumn).value()[i];
+                            if(block != nullptr) {
+                                AABB blockAABB = block->getAABB();
+                                if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
+                                    *ypos = blockAABB.startY + blockAABB.ySize;
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }         
+            }
+        }
+    }
+    return true;
 }

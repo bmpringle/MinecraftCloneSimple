@@ -5,7 +5,7 @@
 #include <math.h>
 #include "Blocks.h"
 
-Player::Player(World* _world) : pos(Pos(0, 1, 1)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
+Player::Player(World* _world) : pos(Pos(0, 15, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
     world->getTimerMap()->addTimerToMap("itemUseTimer");
     itemInHand = std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockDirt())));
@@ -23,7 +23,7 @@ void Player::updateClient(World* world) {
 
     move(&motion);
 
-    //updatePlayerLookingAt(world);
+    updatePlayerLookingAt(world);
 }
 
 void Player::updateServer(World* _world) {
@@ -156,7 +156,7 @@ void Player::listenTo(std::shared_ptr<Event> e) {
 }
 
 AABB Player::getAABB() {
-    return AABB(0, 0, 0, 0.6, (isSneaking) ? sneakingHeight : standingHeight, 0.6);
+    return AABB(pos.x, pos.y, pos.z, 0.6, (isSneaking) ? sneakingHeight : standingHeight, 0.6);
 }
 
 RenderedModel Player::getRenderedModel() {
@@ -205,59 +205,13 @@ double Player::getYRotation() {
 
 bool Player::validatePosition(Pos newPosition, BlockArrayData data) {
     AABB playerAABB = getAABB();
-    playerAABB.add(newPosition);
-
-    for(int i = 0; i < data.getLoadedChunkLocations().size(); ++i) {
-        Chunk* c = data.getChunkWithBlock(data.getLoadedChunkLocations().at(i).chunkLocation);
-        if(!c->isFakeChunk()) {
-            AABB chunkAABB = c->getChunkAABB();
-
-            BlockPos chunkCoords = c->getChunkCoordinates();
-            chunkAABB.add(chunkCoords);
-
-            if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
-                for(int k = 0; k < c->getBlocksInChunk().size(); ++k) {
-                    std::shared_ptr<Block> block = c->getBlocksInChunk().at(k);
-                    AABB blockAABB = block->getAABB();
-                    blockAABB.add(block->getPos());
-
-                    if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
-                        return false;
-                    }
-                }
-            }
-        }
-    }
-    return true;
+    float a;
+    return data.isValidPosition(playerAABB, &a);
 }
 
 bool Player::validatePosition(Pos newPosition, BlockArrayData data, float* yToSnapTo) {
     AABB playerAABB = getAABB();
-    playerAABB.add(newPosition);
-
-    for(int i = 0; i < data.getLoadedChunkLocations().size(); ++i) {
-        Chunk* c = data.getChunkWithBlock(data.getLoadedChunkLocations().at(i).chunkLocation);
-        if(!c->isFakeChunk()) {
-            AABB chunkAABB = c->getChunkAABB();
-            
-            BlockPos chunkCoords = c->getChunkCoordinates();
-            chunkAABB.add(chunkCoords);
-            
-            if(AABBIntersectedByAABB(playerAABB, chunkAABB) && !c->isFakeChunk()) {
-                for(int k = 0; k < c->getBlocksInChunk().size(); ++k) {
-                    std::shared_ptr<Block> block = c->getBlocksInChunk().at(k);
-                    AABB blockAABB = block->getAABB();
-                    blockAABB.add(block->getPos());
-
-                    if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
-                        yToSnapTo[0] = blockAABB.startY + blockAABB.ySize;
-                        return false;
-                    }
-                }
-            }
-        }
-    }
-    return true;
+    return data.isValidPosition(playerAABB, yToSnapTo);
 }
 
 Pos Player::getCameraPosition() {
@@ -268,10 +222,7 @@ Pos Player::getCameraPosition() {
 }
 
 void Player::updatePlayerLookingAt(World* world) {
-    bool isLooking = false;
     float previousT = -1;
-
-    int side = 0;
 
     std::vector<Chunk*> chunksCrossed = std::vector<Chunk*>();
 
@@ -279,7 +230,6 @@ void Player::updatePlayerLookingAt(World* world) {
         Chunk* chunk = world->getBlockData()->getChunkWithBlock(world->getBlockData()->getLoadedChunkLocations().at(i).chunkLocation);
         if(!chunk->isFakeChunk()) {
             AABB aabb = chunk->getChunkAABB();
-            aabb.add(chunk->getChunkCoordinates());
 
             int sideIntersect = 0;
 
@@ -291,36 +241,50 @@ void Player::updatePlayerLookingAt(World* world) {
         }
     }
 
+    std::vector<float> tValues = std::vector<float>();
+    std::vector<int> sideValues = std::vector<int>();
+    std::vector<BlockPos> blockValues = std::vector<BlockPos>();
+
     for(int j = 0; j < chunksCrossed.size(); ++j) {
-        for(int k = 0; k < chunksCrossed.at(j)->getBlocksInChunk().size(); ++k) {
-            std::shared_ptr<Block> block = chunksCrossed.at(j)->getBlocksInChunk().at(k);
+        auto tree = chunksCrossed.at(j)->getBlockTree();
 
-            AABB aabb = block->getAABB();
-            aabb.add(block->getPos());
-
+        std::function<bool(AABB, bool, std::optional<std::array<std::shared_ptr<Block>, 256>>)> eval = [this, &tValues, &sideValues, &blockValues](AABB aabb, bool isLeaf, std::optional<std::array<std::shared_ptr<Block>, 256>> block) -> bool { 
             int sideIntersect = 0;
 
             float t = raycast(aabb, &sideIntersect);
 
-            if(t != -1 && (t < previousT || previousT == -1) && t <= 5) {
-                Pos normal = getCameraNormal();
-                Pos lookVector = Pos(normal.x * t, normal.y * t, normal.z * t);
-                internalBlockLookingAt = block->getPos();
-                isLooking = true;
-                previousT = t;
-                if(sideIntersect != 0) {
-                    side = sideIntersect;
+            if(isLeaf) {
+                if(t != -1) {
+                    for(int i = 0; i < 256; ++i) {
+                        AABB aabbPresice = AABB(aabb.startX, i, aabb.startZ, 1, 1, 1);
+                        if(block.value().at(i) != nullptr) {
+                            float tPresice = raycast(aabbPresice, &sideIntersect);
+                            float max = (tValues.size() > 1) ? tValues.at(tValues.size() - 1) : tPresice + 1;
+                            if(tPresice != -1 && tPresice < max) {
+                                tValues.push_back(tPresice);
+                                sideValues.push_back(sideIntersect);
+                                blockValues.push_back(BlockPos(aabbPresice.startX, aabbPresice.startY, aabbPresice.startZ));
+                            }
+                        }
+                    }
+                }
+            }else {
+                if(t != -1) {
+                    return true;
                 }
             }
-        }
+            return false;
+        };
+        tree->getLeafOfTree(eval);
     }
 
-    if(!isLooking) {
-        blockLookingAt = nullptr;
-        sideOfBlockLookingAt = 0;
-    }else {
+    if(tValues.size() > 0) {
+        internalBlockLookingAt = blockValues.at(blockValues.size() - 1);
         blockLookingAt = &internalBlockLookingAt;
-        sideOfBlockLookingAt = side;
+        sideOfBlockLookingAt = sideValues.at(sideValues.size() - 1);
+    }else {
+        blockLookingAt = nullptr;
+        sideOfBlockLookingAt = 0;        
     }
 }
 
@@ -344,7 +308,6 @@ Pos Player::getCameraNormal() {
 float Player::raycast(AABB aabb, int* side) {
     Pos cameraPos = getCameraPosition();
     Pos cameraNormal = getCameraNormal();
-
     if(cameraNormal.x == 0) {
         if(cameraPos.x < aabb.startX || cameraPos.x > aabb.startX + aabb.xSize) {
             return -1;

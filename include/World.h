@@ -58,5 +58,6 @@ class World {
 };
 
 bool AABBIntersectedByAABB(AABB box1, AABB box2);
+bool AABBIntersectedByAABBVocal(AABB box1, AABB box2);
 
 #endif

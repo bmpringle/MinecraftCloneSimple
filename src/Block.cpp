@@ -17,7 +17,7 @@ Block::Block() : pos(BlockPos(0, 0, 0)) {
 }
 
 AABB Block::getAABB() {
-    return AABB(0, 0, 0, 1, 1, 1);
+    return AABB(pos.x, pos.y, pos.z, 1, 1, 1);
 }
 
 RenderedModel Block::getRenderedModel() {
