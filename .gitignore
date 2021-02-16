@@ -6,6 +6,7 @@ bin/**
 stbi/**
 TimerMapLib/**
 EventLib/**
+BinaryTree/**
 lib/**
 glm/**
 glm/
