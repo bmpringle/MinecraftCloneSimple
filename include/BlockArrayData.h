@@ -20,7 +20,7 @@ class BlockArrayData {
 
         std::vector<Chunk> getRawChunkArray();
 
-        std::shared_ptr<Block> getBlockAtPosition(BlockPos pos);
+        BlockData getBlockAtPosition(BlockPos pos);
 
         void removeBlockAtPosition(BlockPos pos);
 

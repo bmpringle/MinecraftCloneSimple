@@ -8,62 +8,55 @@ Chunk::Chunk(int xLoc, int zLoc) : chunkCoordinates(BlockPos(xLoc, 0, zLoc)), ch
     initTree();
 }
 
-Chunk::Chunk(int xLoc, int zLoc, bool _isFakeChunk) : chunkCoordinates(BlockPos(xLoc, 0, zLoc)), chunkAABB(getChunkCoordinates().x, getChunkCoordinates().y, getChunkCoordinates().z, X, Y, Z), blockTree(BinaryTree<std::array<std::shared_ptr<Block>, 256>, AABB, std::array<std::shared_ptr<Block>, 256>>()) {
+Chunk::Chunk(int xLoc, int zLoc, bool _isFakeChunk) : chunkCoordinates(BlockPos(xLoc, 0, zLoc)), chunkAABB(getChunkCoordinates().x, getChunkCoordinates().y, getChunkCoordinates().z, X, Y, Z), blockTree(BinaryTree<std::array<BlockData, 256>, AABB, std::array<BlockData, 256>>()) {
     isFake = _isFakeChunk;
     initTree();
 }
 
-bool Chunk::doesBlockHaveCoordinates(BlockPos pos, std::shared_ptr<Block> block) {
-    BlockPos bPos = block->getPos();
-    if(bPos.x == pos.x && bPos.y == pos.y && bPos.z == pos.z) {
-        return true;
-    }
-    return false;
-}
-
-std::shared_ptr<Block> Chunk::getBlockAtLocation(BlockPos pos) {
+BlockData Chunk::getBlockAtLocation(BlockPos pos) {
     if(pos.x >= getChunkCoordinates().x && pos.x < getChunkCoordinates().x + X) {
         if(pos.y >= getChunkCoordinates().y && pos.y < getChunkCoordinates().y + Y) {
             if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
                 AABB bAABB = AABB(pos.x, pos.y, pos.z, 1, 1, 1);
-                std::function<bool(AABB, bool, std::optional<std::array<std::shared_ptr<Block>, 256>>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<std::array<std::shared_ptr<Block>, 256>> block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
                     if(AABBIntersectedByAABB(bAABB, aabb)){
                         return true;
                     }
                     return false;
                 };
-                std::vector<std::optional<std::array<std::shared_ptr<Block>, 256>>*> blocksVector = blockTree.getLeafOfTree(eval);
+                std::vector<std::optional<std::array<BlockData, 256>>*> blocksVector = blockTree.getLeafOfTree(eval);
                 if(blocksVector.size() != 1) {
                     std::cout << "abort! there are " << blocksVector.size() << " valid blocks" << std::endl;
                     abort();
                 }
-                std::optional<std::array<std::shared_ptr<Block>, 256>>* blocks = blocksVector.at(0);
+                std::optional<std::array<BlockData, 256>>* blocks = blocksVector.at(0);
                 return blocks->value()[pos.y];
             }
         }
     }
-    return nullptr;
+    return BlockData();
 }
 
 void Chunk::setBlockAtLocation(BlockPos pos, std::shared_ptr<Block> block) {
     if(pos.x >= getChunkCoordinates().x && pos.x < getChunkCoordinates().x + X) {
         if(pos.y >= getChunkCoordinates().y && pos.y < getChunkCoordinates().y + Y) {
             if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
-                block->setPos(pos);
-                AABB bAABB = block->getAABB();
-                std::function<bool(AABB, bool, std::optional<std::array<std::shared_ptr<Block>, 256>>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<std::array<std::shared_ptr<Block>, 256>> block) -> bool { 
+                BlockData blockData = BlockData(block, pos);
+                AABB bAABB = blockData.getAABB();
+
+                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
                     if(AABBIntersectedByAABB(bAABB, aabb)){
                         return true;
                     }
                     return false;
                 };
-                std::vector<std::optional<std::array<std::shared_ptr<Block>, 256>>*> blocksVector = blockTree.getLeafOfTree(eval);
+                std::vector<std::optional<std::array<BlockData, 256>>*> blocksVector = blockTree.getLeafOfTree(eval);
                 if(blocksVector.size() != 1) {
                     std::cout << "abort! there are " << blocksVector.size() << " valid blocks" << std::endl;
                     abort();
                 }
-                std::optional<std::array<std::shared_ptr<Block>, 256>>* blocks = blocksVector.at(0);
-                blocks->value()[pos.y] = block;
+                std::optional<std::array<BlockData, 256>>* blocks = blocksVector.at(0);
+                blocks->value()[pos.y] = blockData;
             }
         }
     }
@@ -77,17 +70,17 @@ AABB Chunk::getChunkAABB() {
     return chunkAABB;
 }
 
-std::vector<std::shared_ptr<Block>> Chunk::getBlocksInChunk() {
-    std::function<bool(AABB, bool, std::optional<std::array<std::shared_ptr<Block>, 256>>)> eval = [](AABB aabb, bool isLeaf, std::optional<std::array<std::shared_ptr<Block>, 256>> block) -> bool { 
+std::vector<BlockData> Chunk::getBlocksInChunk() {
+    std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
         return true;
     };
-    std::vector<std::optional<std::array<std::shared_ptr<Block>, 256>>*> blocksVector = blockTree.getLeafOfTree(eval);
+    std::vector<std::optional<std::array<BlockData, 256>>*> blocksVector = blockTree.getLeafOfTree(eval);
 
-    std::vector<std::shared_ptr<Block>> result = std::vector<std::shared_ptr<Block>>();
+    std::vector<BlockData> result = std::vector<BlockData>();
 
-    for(std::optional<std::array<std::shared_ptr<Block>, 256>>* blocks : blocksVector) {
+    for(std::optional<std::array<BlockData, 256>>* blocks : blocksVector) {
         for(int i = 0; i < 256; ++i) {
-            if(blocks->value()[i] != nullptr) {
+            if(blocks->value()[i].getBlockType() != nullptr) {
                 result.push_back(blocks->value()[i]);
             }
         }
@@ -106,19 +99,19 @@ void Chunk::removeBlockAtLocation(BlockPos pos) {
             if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
                 //blocktree version
                 AABB bAABB = AABB(pos.x, pos.y, pos.z, 1, 1, 1);
-                std::function<bool(AABB, bool, std::optional<std::array<std::shared_ptr<Block>, 256>>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<std::array<std::shared_ptr<Block>, 256>> block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
                     if(AABBIntersectedByAABB(bAABB, aabb)){
                         return true;
                     }
                     return false;
                 };
-                std::vector<std::optional<std::array<std::shared_ptr<Block>, 256>>*> blocksVector = blockTree.getLeafOfTree(eval);
+                std::vector<std::optional<std::array<BlockData, 256>>*> blocksVector = blockTree.getLeafOfTree(eval);
                 if(blocksVector.size() != 1) {
                     std::cout << "abort! there are " << blocksVector.size() << " valid blocks" << std::endl;
                     abort();
                 }
-                std::optional<std::array<std::shared_ptr<Block>, 256>>* blocks = blocksVector.at(0);
-                blocks->value()[pos.y] = nullptr;
+                std::optional<std::array<BlockData, 256>>* blocks = blocksVector.at(0);
+                blocks->value()[pos.y] = BlockData();
             }
         }
     }
@@ -172,11 +165,11 @@ void Chunk::initTree() {
             return false;
         }
     };
-    std::array<std::shared_ptr<Block>, 256> nullarray = {nullptr};
-    nullarray.fill(nullptr);
-    blockTree = BinaryTree<std::array<std::shared_ptr<Block>, 256>, AABB, std::array<std::shared_ptr<Block>, 256>>(leftCreate, rightCreate, getChunkAABB(), getChunkAABB(), nullarray);
+    std::array<BlockData, 256> nullarray = {BlockData()};
+    nullarray.fill(BlockData());
+    blockTree = BinaryTree<std::array<BlockData, 256>, AABB, std::array<BlockData, 256>>(leftCreate, rightCreate, getChunkAABB(), getChunkAABB(), nullarray);
 }
 
-BinaryTree<std::array<std::shared_ptr<Block>, 256>, AABB, std::array<std::shared_ptr<Block>, 256>>* Chunk::getBlockTree() {
+BinaryTree<std::array<BlockData, 256>, AABB, std::array<BlockData, 256>>* const Chunk::getBlockTree() {
     return &blockTree;
 }

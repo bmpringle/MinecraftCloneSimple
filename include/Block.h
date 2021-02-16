@@ -14,10 +14,6 @@ class Block : public Model {
 
         virtual std::string getName();
 
-        BlockPos getPos();
-
-        void setPos(BlockPos pos_);
-
         virtual std::shared_ptr<Block> create();
 
         AABB getAABB();
@@ -27,7 +23,5 @@ class Block : public Model {
         virtual std::string getTextureName();
 
         virtual ~Block() = default;
-    private:
-        BlockPos pos;
 };
 #endif

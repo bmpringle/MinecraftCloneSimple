@@ -20,8 +20,8 @@ void ItemBlock::onRightClick(World* world) {
                 break;
             case 1:
                 location = BlockPos(blockLookingAt->x - 1, blockLookingAt->y, blockLookingAt->z);
-                if(world->getBlockData()->getBlockAtPosition(location) == nullptr) {
-                    world->getBlockData()->setBlockAtPosition(location, block->create());
+                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
+                    world->getBlockData()->setBlockAtPosition(location, block);
 
                     bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
                     if(!valid) {
@@ -31,8 +31,8 @@ void ItemBlock::onRightClick(World* world) {
                 break;
             case 2:
                 location = BlockPos(blockLookingAt->x + 1, blockLookingAt->y, blockLookingAt->z);
-                if(world->getBlockData()->getBlockAtPosition(location) == nullptr) {
-                    world->getBlockData()->setBlockAtPosition(location, block->create());
+                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
+                    world->getBlockData()->setBlockAtPosition(location, block);
 
                     bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
                     if(!valid) {
@@ -42,8 +42,8 @@ void ItemBlock::onRightClick(World* world) {
                 break;
             case 3:
                 location = BlockPos(blockLookingAt->x, blockLookingAt->y - 1, blockLookingAt->z);
-                if(world->getBlockData()->getBlockAtPosition(location) == nullptr) {
-                    world->getBlockData()->setBlockAtPosition(location, block->create());
+                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
+                    world->getBlockData()->setBlockAtPosition(location, block);
 
                     bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
                     if(!valid) {
@@ -53,8 +53,8 @@ void ItemBlock::onRightClick(World* world) {
                 break;
             case 4:
                 location = BlockPos(blockLookingAt->x, blockLookingAt->y + 1, blockLookingAt->z);
-                if(world->getBlockData()->getBlockAtPosition(location) == nullptr) {
-                    world->getBlockData()->setBlockAtPosition(location, block->create());
+                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
+                    world->getBlockData()->setBlockAtPosition(location, block);
                     bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
                     
                     if(!valid) {
@@ -64,8 +64,8 @@ void ItemBlock::onRightClick(World* world) {
                 break;
             case 5:
                 location = BlockPos(blockLookingAt->x, blockLookingAt->y, blockLookingAt->z - 1);
-                if(world->getBlockData()->getBlockAtPosition(location) == nullptr) {
-                    world->getBlockData()->setBlockAtPosition(location, block->create());
+                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
+                    world->getBlockData()->setBlockAtPosition(location, block);
 
                     bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
                     if(!valid) {
@@ -75,8 +75,8 @@ void ItemBlock::onRightClick(World* world) {
                 break;
             case 6:
                 location = BlockPos(blockLookingAt->x, blockLookingAt->y, blockLookingAt->z + 1);
-                if(world->getBlockData()->getBlockAtPosition(location) == nullptr) {
-                    world->getBlockData()->setBlockAtPosition(location, block->create());
+                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
+                    world->getBlockData()->setBlockAtPosition(location, block);
 
                     bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
                     if(!valid) {

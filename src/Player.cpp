@@ -248,7 +248,7 @@ void Player::updatePlayerLookingAt(World* world) {
     for(int j = 0; j < chunksCrossed.size(); ++j) {
         auto tree = chunksCrossed.at(j)->getBlockTree();
 
-        std::function<bool(AABB, bool, std::optional<std::array<std::shared_ptr<Block>, 256>>)> eval = [this, &tValues, &sideValues, &blockValues](AABB aabb, bool isLeaf, std::optional<std::array<std::shared_ptr<Block>, 256>> block) -> bool { 
+        std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [this, &tValues, &sideValues, &blockValues](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
             int sideIntersect = 0;
 
             float t = raycast(aabb, &sideIntersect);
@@ -257,7 +257,7 @@ void Player::updatePlayerLookingAt(World* world) {
                 if(t != -1) {
                     for(int i = 0; i < 256; ++i) {
                         AABB aabbPresice = AABB(aabb.startX, i, aabb.startZ, 1, 1, 1);
-                        if(block.value().at(i) != nullptr) {
+                        if(block.value().at(i).getBlockType() != nullptr) {
                             float tPresice = raycast(aabbPresice, &sideIntersect);
                             float max = (tValues.size() > 1) ? tValues.at(tValues.size() - 1) : tPresice + 1;
                             if(tPresice != -1 && tPresice < max) {

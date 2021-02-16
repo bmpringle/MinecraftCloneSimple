@@ -5,6 +5,7 @@
 #include <vector>
 #include <array>
 #include "BinaryTree/BinaryTree.h"
+#include "BlockData.h"
 
 class Chunk {
     public:
@@ -12,7 +13,7 @@ class Chunk {
 
         Chunk(int xLoc, int zLoc, bool _isFakeChunk);
 
-        std::shared_ptr<Block> getBlockAtLocation(BlockPos pos);
+        BlockData getBlockAtLocation(BlockPos pos);
 
         void setBlockAtLocation(BlockPos pos, std::shared_ptr<Block> block);
 
@@ -22,16 +23,15 @@ class Chunk {
 
         AABB getChunkAABB();
 
-        std::vector<std::shared_ptr<Block>> getBlocksInChunk();
+        std::vector<BlockData> getBlocksInChunk();
 
         static std::array<int, 3> getChunkSize();
 
         bool isFakeChunk();
 
-        BinaryTree<std::array<std::shared_ptr<Block>, 256>, AABB, std::array<std::shared_ptr<Block>, 256>>* getBlockTree();
+        BinaryTree<std::array<BlockData, 256>, AABB, std::array<BlockData, 256>>* const getBlockTree();
 
     private:
-        bool doesBlockHaveCoordinates(BlockPos pos, std::shared_ptr<Block> block);
         void initTree();
 
         static const int X = 16;
@@ -39,7 +39,9 @@ class Chunk {
         static const int Z = 16;
         BlockPos chunkCoordinates; 
         AABB chunkAABB;
-        BinaryTree<std::array<std::shared_ptr<Block>, 256>, AABB, std::array<std::shared_ptr<Block>, 256>> blockTree;
+        BinaryTree<std::array<BlockData, 256>, AABB, std::array<BlockData, 256>> blockTree;
+
+        std::vector<BlockPos> blocksToUpdate = std::vector<BlockPos>();
         
         bool isFake = false;
 };

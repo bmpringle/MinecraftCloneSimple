@@ -153,7 +153,7 @@ void WorldRenderer::updateWorldVBO(World* world) {
         BlockPos loc = renderChunkBuffers[i].getPos();
         bool loaded = std::find_if(lChunksLocations.begin(), lChunksLocations.end(), [loc](LoadedChunkInfo l) {
                             return l.chunkLocation == loc;
-        })->update == true;
+        }) != lChunksLocations.end();
 
         if(!loaded) {
             renderChunkBuffers.erase(renderChunkBuffers.begin() + i);
@@ -173,11 +173,11 @@ void WorldRenderer::updateWorldVBO(World* world) {
             if(it == renderChunkBuffers.end()) {
                 std::vector<float> vectorWithColors = std::vector<float>();
 
-                for(std::shared_ptr<Block> block : data->getChunkWithBlock(pos)->getBlocksInChunk()) {
-                    RenderedModel model = block->getRenderedModel();
-                    BlockPos pos = block->getPos();
+                for(BlockData block : data->getChunkWithBlock(pos)->getBlocksInChunk()) {
+                    RenderedModel model = block.getBlockType()->getRenderedModel();
+                    BlockPos pos = block.getPos();
 
-                    int texID = textureArrayCreator.getTextureLayer(block->getTextureName());
+                    int texID = textureArrayCreator.getTextureLayer(block.getBlockType()->getTextureName());
                 
                     for(RenderedTriangle triangle : model.renderedModel) {
                         RenderedPoint point1 = triangle.a;
@@ -232,11 +232,11 @@ void WorldRenderer::updateWorldVBO(World* world) {
                 if(lchunk.update) {
                     std::vector<float> vectorWithColors = std::vector<float>();
 
-                    for(std::shared_ptr<Block> block : data->getChunkWithBlock((*it).getPos())->getBlocksInChunk()) {
-                        RenderedModel model = block->getRenderedModel();
-                        BlockPos pos = block->getPos();
+                    for(BlockData block : data->getChunkWithBlock((*it).getPos())->getBlocksInChunk()) {
+                        RenderedModel model = block.getBlockType()->getRenderedModel();
+                        BlockPos pos = block.getPos();
 
-                        int texID = textureArrayCreator.getTextureLayer(block->getTextureName());
+                        int texID = textureArrayCreator.getTextureLayer(block.getBlockType()->getTextureName());
                     
                         for(RenderedTriangle triangle : model.renderedModel) {
                             RenderedPoint point1 = triangle.a;
@@ -386,8 +386,8 @@ void WorldRenderer::updateAspectRatio(GLFWwindow* window) {
 }
 
 void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
-    std::shared_ptr<Block> block = world->getBlockData()->getBlockAtPosition(pos);
-    RenderedModel model = block->getRenderedModel();
+    BlockData block = world->getBlockData()->getBlockAtPosition(pos);
+    RenderedModel model = block.getBlockType()->getRenderedModel();
 
     for(int j = 0; j < model.renderedModel.size(); ++j) {
         RenderedTriangle triangle = model.renderedModel[j];
