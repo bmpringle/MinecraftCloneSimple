@@ -56,7 +56,7 @@ void World::updateGame() {
 void World::generateWorld() {
     //generate a 40x3x40 layer of blocks for now, will change later
     for(int x = -1; x < 100; ++x) {
-        for(int y = 0; y < 14; ++y) {
+        for(int y = 0; y < 20; ++y) {
             for(int z = -1; z < 100; ++z) {
                 internalBlockData.setBlockAtPosition(BlockPos(x, y, z), dirt);
             }

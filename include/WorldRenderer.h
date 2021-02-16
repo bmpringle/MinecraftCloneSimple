@@ -35,6 +35,8 @@ class WorldRenderer {
     private:
         void renderSetup();
 
+        void updateVectorWithMultithreading(std::vector<float>* buffer, std::vector<BlockData> blocksInChunk, TextureArrayCreator texCreator);
+
         unsigned int compileShaderProgramFromFiles(std::string vertexShaderPath, std::string fragmentShaderPath);
 
         float vertices[18] = {

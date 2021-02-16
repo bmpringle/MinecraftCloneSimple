@@ -1,6 +1,7 @@
 #include "WorldRenderer.h"
 #include "World.h"
 #include <algorithm>
+#include <thread>
 
 #define WORLDSIZE_CONST 100
 
@@ -162,132 +163,24 @@ void WorldRenderer::updateWorldVBO(World* world) {
     }
 
     for(LoadedChunkInfo lchunk : lChunksLocations) {
-        Chunk* c = data->getChunkWithBlock(lchunk.chunkLocation);
-        if(!c->isFakeChunk()) {
-            BlockPos pos = lchunk.chunkLocation;
-            std::vector<RenderChunkBuffer>::iterator it = std::find_if(renderChunkBuffers.begin(), renderChunkBuffers.end(), [pos] (RenderChunkBuffer buff) {
-                BlockPos loc = buff.getPos();
-                return loc == pos;
-            });
+        if(lchunk.update) {
+            Chunk* c = data->getChunkWithBlock(lchunk.chunkLocation);
+            if(!c->isFakeChunk()) {
+                BlockPos pos = lchunk.chunkLocation;
+                std::vector<RenderChunkBuffer>::iterator it = std::find_if(renderChunkBuffers.begin(), renderChunkBuffers.end(), [pos] (RenderChunkBuffer buff) {
+                    BlockPos loc = buff.getPos();
+                    return loc == pos;
+                });
 
-            if(it == renderChunkBuffers.end()) {
-                std::vector<float> vectorWithColors = std::vector<float>();
-
-                for(BlockData block : data->getChunkWithBlock(pos)->getBlocksInChunk()) {
-                    RenderedModel model = block.getBlockType()->getRenderedModel();
-                    BlockPos pos = block.getPos();
-
-                    int texID = textureArrayCreator.getTextureLayer(block.getBlockType()->getTextureName());
-                
-                    for(RenderedTriangle triangle : model.renderedModel) {
-                        RenderedPoint point1 = triangle.a;
-                        RenderedPoint point2 = triangle.b;
-                        RenderedPoint point3 = triangle.c;
-
-                        //point 1 red
-                        vectorWithColors.push_back(point1.x);
-                        vectorWithColors.push_back(point1.y);
-                        vectorWithColors.push_back(point1.z);
-                        vectorWithColors.push_back(1);
-                        vectorWithColors.push_back(0);
-                        vectorWithColors.push_back(0);
-                        vectorWithColors.push_back(point1.u);
-                        vectorWithColors.push_back(point1.v);
-                        vectorWithColors.push_back(texID);
-                        vectorWithColors.push_back(pos.x);
-                        vectorWithColors.push_back(pos.y);
-                        vectorWithColors.push_back(pos.z);
-
-                        //point 2 green
-                        vectorWithColors.push_back(point2.x);
-                        vectorWithColors.push_back(point2.y);
-                        vectorWithColors.push_back(point2.z);
-                        vectorWithColors.push_back(0);
-                        vectorWithColors.push_back(1);
-                        vectorWithColors.push_back(0);
-                        vectorWithColors.push_back(point2.u);
-                        vectorWithColors.push_back(point2.v);
-                        vectorWithColors.push_back(texID);
-                        vectorWithColors.push_back(pos.x);
-                        vectorWithColors.push_back(pos.y);
-                        vectorWithColors.push_back(pos.z);
-
-                        //point 3 blue
-                        vectorWithColors.push_back(point3.x);
-                        vectorWithColors.push_back(point3.y);
-                        vectorWithColors.push_back(point3.z);
-                        vectorWithColors.push_back(0);
-                        vectorWithColors.push_back(0);
-                        vectorWithColors.push_back(1);
-                        vectorWithColors.push_back(point3.u);
-                        vectorWithColors.push_back(point3.v);
-                        vectorWithColors.push_back(texID);
-                        vectorWithColors.push_back(pos.x);
-                        vectorWithColors.push_back(pos.y);
-                        vectorWithColors.push_back(pos.z);
-                    }
-                }
-                renderChunkBuffers.push_back(RenderChunkBuffer(vectorWithColors, pos));
-            }else {
-                if(lchunk.update) {
+                if(it == renderChunkBuffers.end()) {
                     std::vector<float> vectorWithColors = std::vector<float>();
-
-                    for(BlockData block : data->getChunkWithBlock((*it).getPos())->getBlocksInChunk()) {
-                        RenderedModel model = block.getBlockType()->getRenderedModel();
-                        BlockPos pos = block.getPos();
-
-                        int texID = textureArrayCreator.getTextureLayer(block.getBlockType()->getTextureName());
-                    
-                        for(RenderedTriangle triangle : model.renderedModel) {
-                            RenderedPoint point1 = triangle.a;
-                            RenderedPoint point2 = triangle.b;
-                            RenderedPoint point3 = triangle.c;
-
-                            //point 1 red
-                            vectorWithColors.push_back(point1.x);
-                            vectorWithColors.push_back(point1.y);
-                            vectorWithColors.push_back(point1.z);
-                            vectorWithColors.push_back(1);
-                            vectorWithColors.push_back(0);
-                            vectorWithColors.push_back(0);
-                            vectorWithColors.push_back(point1.u);
-                            vectorWithColors.push_back(point1.v);
-                            vectorWithColors.push_back(texID);
-                            vectorWithColors.push_back(pos.x);
-                            vectorWithColors.push_back(pos.y);
-                            vectorWithColors.push_back(pos.z);
-
-                            //point 2 green
-                            vectorWithColors.push_back(point2.x);
-                            vectorWithColors.push_back(point2.y);
-                            vectorWithColors.push_back(point2.z);
-                            vectorWithColors.push_back(0);
-                            vectorWithColors.push_back(1);
-                            vectorWithColors.push_back(0);
-                            vectorWithColors.push_back(point2.u);
-                            vectorWithColors.push_back(point2.v);
-                            vectorWithColors.push_back(texID);
-                            vectorWithColors.push_back(pos.x);
-                            vectorWithColors.push_back(pos.y);
-                            vectorWithColors.push_back(pos.z);
-
-                            //point 3 blue
-                            vectorWithColors.push_back(point3.x);
-                            vectorWithColors.push_back(point3.y);
-                            vectorWithColors.push_back(point3.z);
-                            vectorWithColors.push_back(0);
-                            vectorWithColors.push_back(0);
-                            vectorWithColors.push_back(1);
-                            vectorWithColors.push_back(point3.u);
-                            vectorWithColors.push_back(point3.v);
-                            vectorWithColors.push_back(texID);
-                            vectorWithColors.push_back(pos.x);
-                            vectorWithColors.push_back(pos.y);
-                            vectorWithColors.push_back(pos.z);
-                        }
-                    }
+                    updateVectorWithMultithreading(&vectorWithColors, data->getChunkWithBlock(pos)->getBlocksInChunk(), textureArrayCreator);
+                    renderChunkBuffers.push_back(RenderChunkBuffer(vectorWithColors, pos));
+                }else {
+                    std::vector<float> vectorWithColors = std::vector<float>();
+                    updateVectorWithMultithreading(&vectorWithColors, data->getChunkWithBlock((*it).getPos())->getBlocksInChunk(), textureArrayCreator);
                     it->setRenderData(vectorWithColors);
-                } 
+                }
             }
         }
     }
@@ -454,39 +347,35 @@ void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
     setUniforms(world, 1);
 
     for(RenderedTriangle triangle : model.renderedModel) {
-        RenderedPoint point1 = triangle.a;
-        RenderedPoint point2 = triangle.b;
-        RenderedPoint point3 = triangle.c;
-
         //point 1 black
-        vectorWithColors.push_back(point1.x);
-        vectorWithColors.push_back(point1.y);
-        vectorWithColors.push_back(point1.z);
+        vectorWithColors.push_back(triangle.a.x);
+        vectorWithColors.push_back(triangle.a.y);
+        vectorWithColors.push_back(triangle.a.z);
         vectorWithColors.push_back(0);
         vectorWithColors.push_back(0);
         vectorWithColors.push_back(0);
-        vectorWithColors.push_back(point1.u);
-        vectorWithColors.push_back(point1.v);
+        vectorWithColors.push_back(triangle.a.u);
+        vectorWithColors.push_back(triangle.a.v);
 
         //point 2 black
-        vectorWithColors.push_back(point2.x);
-        vectorWithColors.push_back(point2.y);
-        vectorWithColors.push_back(point2.z);
+        vectorWithColors.push_back(triangle.b.x);
+        vectorWithColors.push_back(triangle.b.y);
+        vectorWithColors.push_back(triangle.b.z);
         vectorWithColors.push_back(0);
         vectorWithColors.push_back(0);
         vectorWithColors.push_back(0);
-        vectorWithColors.push_back(point2.u);
-        vectorWithColors.push_back(point2.v);
+        vectorWithColors.push_back(triangle.b.u);
+        vectorWithColors.push_back(triangle.b.v);
 
         //point 3 black
-        vectorWithColors.push_back(point3.x);
-        vectorWithColors.push_back(point3.y);
-        vectorWithColors.push_back(point3.z);
+        vectorWithColors.push_back(triangle.c.x);
+        vectorWithColors.push_back(triangle.c.y);
+        vectorWithColors.push_back(triangle.c.z);
         vectorWithColors.push_back(0);
         vectorWithColors.push_back(0);
         vectorWithColors.push_back(0);
-        vectorWithColors.push_back(point3.u);
-        vectorWithColors.push_back(point3.v);
+        vectorWithColors.push_back(triangle.c.u);
+        vectorWithColors.push_back(triangle.c.v);
     }
 
     glBindVertexArray(VAO[2]);
@@ -586,4 +475,86 @@ glm::mat3x3 WorldRenderer::calculateYRotationMatrix(double yRotation) {
     rotationMatrix[2][2] = cos(yRads);
 
     return rotationMatrix;
+}
+
+void updateSectionOfVector(std::vector<float>* buffer, std::vector<BlockData> blocksInChunk, int bufferIndex, int blocksIndex, int blocksNumber, TextureArrayCreator texCreator) {
+    for(int i = blocksIndex; i < blocksIndex + blocksNumber; ++i) {
+        BlockData blockData = blocksInChunk.at(i);
+
+        RenderedModel model = blockData.getBlockType()->getRenderedModel();
+        BlockPos pos = blockData.getPos();
+
+        int texID = texCreator.getTextureLayer(blockData.getBlockType()->getTextureName());
+    
+        for(RenderedTriangle triangle : model.renderedModel) {
+            //point 1 red
+            buffer->at(bufferIndex) = triangle.a.x; ++bufferIndex;
+            buffer->at(bufferIndex) = triangle.a.y; ++bufferIndex;
+            buffer->at(bufferIndex) = triangle.a.z; ++bufferIndex;
+            buffer->at(bufferIndex) = 1; ++bufferIndex;
+            buffer->at(bufferIndex) = 0; ++bufferIndex;
+            buffer->at(bufferIndex) = 0; ++bufferIndex;
+            buffer->at(bufferIndex) = triangle.a.u; ++bufferIndex;
+            buffer->at(bufferIndex) = triangle.a.v; ++bufferIndex;
+            buffer->at(bufferIndex) = texID; ++bufferIndex;
+            buffer->at(bufferIndex) = pos.x; ++bufferIndex;
+            buffer->at(bufferIndex) = pos.y; ++bufferIndex;
+            buffer->at(bufferIndex) = pos.z; ++bufferIndex;
+
+            //point 2 green
+            buffer->at(bufferIndex) = triangle.b.x; ++bufferIndex;
+            buffer->at(bufferIndex) = triangle.b.y; ++bufferIndex;
+            buffer->at(bufferIndex) = triangle.b.z; ++bufferIndex;
+            buffer->at(bufferIndex) = 0; ++bufferIndex;
+            buffer->at(bufferIndex) = 1; ++bufferIndex;
+            buffer->at(bufferIndex) = 0; ++bufferIndex;
+            buffer->at(bufferIndex) = triangle.b.u; ++bufferIndex;
+            buffer->at(bufferIndex) = triangle.b.v; ++bufferIndex;
+            buffer->at(bufferIndex) = texID; ++bufferIndex;
+            buffer->at(bufferIndex) = pos.x; ++bufferIndex;
+            buffer->at(bufferIndex) = pos.y; ++bufferIndex;
+            buffer->at(bufferIndex) = pos.z; ++bufferIndex;
+
+            //point 3 blue
+            buffer->at(bufferIndex) = triangle.c.x; ++bufferIndex;
+            buffer->at(bufferIndex) = triangle.c.y; ++bufferIndex;
+            buffer->at(bufferIndex) = triangle.c.z; ++bufferIndex;
+            buffer->at(bufferIndex) = 0; ++bufferIndex;
+            buffer->at(bufferIndex) = 0; ++bufferIndex;
+            buffer->at(bufferIndex) = 1; ++bufferIndex;
+            buffer->at(bufferIndex) = triangle.c.u; ++bufferIndex;
+            buffer->at(bufferIndex) = triangle.c.v; ++bufferIndex;
+            buffer->at(bufferIndex) = texID; ++bufferIndex;
+            buffer->at(bufferIndex) = pos.x; ++bufferIndex;
+            buffer->at(bufferIndex) = pos.y; ++bufferIndex;
+            buffer->at(bufferIndex) = pos.z; ++bufferIndex;
+        }
+    }
+}
+
+//after profiling pretty sure this isn't even significantly faster, but I'll keep it becuase I think it will be as the game gets more complicated
+void WorldRenderer::updateVectorWithMultithreading(std::vector<float>* buffer, std::vector<BlockData> blocksInChunk, TextureArrayCreator texCreator) {    
+    //number of blocks in chunk * number of triangles per block * number of vertices per triangle * number of floats per vertex
+    int floatNumber = blocksInChunk.size() * 12 * 3 * 12;
+    buffer->resize(floatNumber);
+    int threadNumber = std::thread::hardware_concurrency();
+
+    //rounded down so we use this thread to handle the rest
+    int blocksPerThread = blocksInChunk.size() / threadNumber;
+    int blocksRemainder = blocksInChunk.size() - blocksPerThread * threadNumber;
+    int floatsPerThread = blocksPerThread * 12 * 3 * 12;
+    int floatsRemainder = blocksRemainder * 12 * 3 * 12;
+    std::vector<std::thread> threads = std::vector<std::thread>();
+
+    for(int p = 0; p < threadNumber; ++p) {
+        threads.push_back(std::thread(updateSectionOfVector, buffer, blocksInChunk, floatsRemainder + p * floatsPerThread, blocksRemainder + p * blocksPerThread, blocksPerThread, texCreator));
+    }
+
+    if(blocksRemainder > 0) {
+        updateSectionOfVector(buffer, blocksInChunk, 0, 0, blocksRemainder, texCreator);
+    }
+
+    for(int p = 0; p < threadNumber; ++p) {
+        threads.at(p).join();
+    }
 }

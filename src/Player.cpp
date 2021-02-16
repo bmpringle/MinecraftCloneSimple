@@ -5,7 +5,7 @@
 #include <math.h>
 #include "Blocks.h"
 
-Player::Player(World* _world) : pos(Pos(0, 15, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
+Player::Player(World* _world) : pos(Pos(0, 75, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
     world->getTimerMap()->addTimerToMap("itemUseTimer");
     itemInHand = std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockDirt())));
