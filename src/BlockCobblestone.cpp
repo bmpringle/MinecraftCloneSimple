@@ -11,7 +11,3 @@ std::string BlockCobblestone::getTextureName() {
 std::string BlockCobblestone::getName() {
     return "cobblestone";
 }
-
-std::shared_ptr<Block> BlockCobblestone::create() {
-    return std::shared_ptr<Block>(new BlockCobblestone());
-}

@@ -10,7 +10,5 @@ class BlockDirt : public Block {
         std::string getName() override;
 
         std::string getTextureName() override;   
-
-        std::shared_ptr<Block> create() override;   
 };
 #endif

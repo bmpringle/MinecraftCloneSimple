@@ -33,6 +33,13 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
                             return l.chunkLocation == chunkLocation;
                 });
                 loadedChunkLocations.push_back(LoadedChunkInfo(chunkLocation, (it == oldChunks.end()) ? true : oldChunks.at(it - oldChunks.begin()).update));
+            }else {
+                generateChunk(playerBlock);
+                BlockPos chunkLocation = getChunkWithBlock(playerBlock)->getChunkCoordinates();
+                std::vector<LoadedChunkInfo>::iterator it = std::find_if(oldChunks.begin(), oldChunks.end(), [chunkLocation](LoadedChunkInfo l) {
+                            return l.chunkLocation == chunkLocation;
+                });
+                loadedChunkLocations.push_back(LoadedChunkInfo(chunkLocation, (it == oldChunks.end()) ? true : oldChunks.at(it - oldChunks.begin()).update));
             }
         }
     }
@@ -200,4 +207,8 @@ bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
         }
     }
     return true;
+}
+
+void generateChunk(BlockPos chunkLocation) {
+
 }

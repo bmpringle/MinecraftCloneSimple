@@ -33,7 +33,7 @@ void Player::updateServer(World* _world) {
      */
 
     if(!isBlockUnderPlayer()) {
-        motion[1] -= 0.038;
+        motion[1] -= 0.038 * 1.3;
         motion[1] *= 0.98;
     }
 
@@ -106,7 +106,7 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         if(keyEvent.key == " ") {
             if(isGrounded) {
                 isJumping = true;
-                motion[1] = 0.38;
+                motion[1] += 0.38 / 2;
             }
         }
 
@@ -390,12 +390,13 @@ void Player::move(glm::vec3* moveVec) {
         d5 = d5 / 3;
     }
 
-    flag = isGrounded && !isSneaking && isSprinting;
+    flag = !isSneaking && isSprinting;
 
     if(flag) {
         d3 = d3 * 1.3;
         d5 = d5 * 1.3;
     }
+
 
     if (!isGrounded && isSneaking) {
         d3 = d3 / 2;
@@ -528,4 +529,3 @@ bool Player::isBlockUnderPlayer() {
         return false;
     }
 }
-//fix sneak float

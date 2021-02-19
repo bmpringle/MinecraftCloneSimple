@@ -44,6 +44,8 @@ class BlockArrayData {
 
         bool isValidPosition(AABB aabb, float* yPos);
 
+        void generateChunk(BlockPos chunkLocation);
+
     private:
         std::vector<Chunk> rawBlockData;
         int size[3];

@@ -36,6 +36,8 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler)
 
     thePlayer->setBufferedChunkLocation(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates());
     internalBlockData.updateLoadedChunks(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates(), this);
+
+    timerMap.addTimerToMap("tickTimer");
 }
 
 void World::updateGame() {
@@ -50,7 +52,12 @@ void World::updateGame() {
     input->callRegularEvents(worldEventQueue, &timerMap);
 
     thePlayer->updateClient(this);
-    thePlayer->updateServer(this);
+
+    for(int i = 0; i <  std::chrono::duration_cast<std::chrono::milliseconds>(timerMap.getTimerDuration("tickTimer")).count() / 50; ++i) {
+        timerMap.resetTimer("tickTimer");
+        //mkmoreexact
+        thePlayer->updateServer(this);
+    }
 }
 
 void World::generateWorld() {

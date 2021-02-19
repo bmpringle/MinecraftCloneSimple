@@ -14,8 +14,6 @@ class Block : public Model {
 
         virtual std::string getName();
 
-        virtual std::shared_ptr<Block> create();
-
         AABB getAABB();
 
         RenderedModel getRenderedModel();
