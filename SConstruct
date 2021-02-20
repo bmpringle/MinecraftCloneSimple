@@ -6,6 +6,9 @@
 #install the following libraries with brew:
 #   brew install glfw
 #   brew install glew
+
+#install libnoise using the version updated with cmake (you can find it on github)
+
 import os
 import subprocess
 
@@ -90,7 +93,7 @@ if env['PLATFORM'] == 'darwin': #macos
     HOMEBREW = '/opt/homebrew' if ARM else '/usr/local'
     GLFW_DIR='{}/Cellar/glfw/3.3.2'.format(HOMEBREW)
     GLEW_DIR='{}/Cellar/glew/2.2.0'.format(HOMEBREW)
-    LIBS=['GLEW','GLFW','pthread']
+    LIBS=['GLEW','GLFW','pthread', 'liblibnoise']
     LINK='{} -framework OpenGL -framework GLUT'.format(CXX)
 elif env['PLATFORM'] == 'posix': #linux
     CLANG = int(ARGUMENTS.get('CLANG', 1))

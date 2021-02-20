@@ -47,7 +47,7 @@ class BlockArrayData {
         void generateChunk(BlockPos chunkLocation);
 
     private:
-        std::vector<Chunk> rawBlockData;
+        std::vector<Chunk> chunkList;
         int size[3];
         bool updateRenderer = false;
         Chunk* fakeChunk = new Chunk(0, 0, true);

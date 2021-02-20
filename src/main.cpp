@@ -35,6 +35,8 @@ GLFWwindow* setup(int x, int y) {
 }
 
 int main(int argc, char** argv) {
+    srand(time(NULL));
+    
     int x = 640;
     int y = 480;
 

@@ -106,7 +106,7 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         if(keyEvent.key == " ") {
             if(isGrounded) {
                 isJumping = true;
-                motion[1] += 0.38 / 2;
+                motion[1] += 0.42/2;
             }
         }
 

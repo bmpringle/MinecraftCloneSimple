@@ -10,7 +10,7 @@ void Game::start() {
     while(!glfwWindowShouldClose(window)) {
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        
         input.callRegularEvents(&eventQueue, world.getTimerMap());
 
         glfwSwapBuffers(window);
