@@ -1,11 +1,11 @@
-#ifndef BLOCKCOBBLESTONE_H
-#define BLOCKCOBBLESTONE_H
+#ifndef BLOCKGRASS_H
+#define BLOCKGRASS_H
 
 #include "Block.h"
 
-class BlockCobblestone : public Block {
+class BlockGrass : public Block {
     public:
-        BlockCobblestone();
+        BlockGrass();
         
         std::string getName() override;
 

@@ -1,11 +1,18 @@
 #include "BlockDirt.h"
 #include "BlockCobblestone.h"
+#include "BlockGrass.h"
+#include "TextureArrayCreator.h"
 
 #ifndef BLOCKS_H
 #define BLOCKS_H
 
-static std::shared_ptr<Block> dirt = std::make_shared<BlockDirt>();
+class Blocks {
+    public: 
 
-static std::shared_ptr<Block> cobblestone = std::make_shared<BlockCobblestone>();
+        const static std::shared_ptr<Block> dirt;
+        const static std::shared_ptr<Block> cobblestone;
+        const static std::shared_ptr<Block> grass;
 
+        static void initTextureArrayCreator(TextureArrayCreator* texCreator);
+};
 #endif

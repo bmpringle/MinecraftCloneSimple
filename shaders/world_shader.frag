@@ -7,6 +7,6 @@ uniform sampler2DArray textureSampler;
 
 void main()
 {
-    vec2 modUV = vec2(uv.x, uv.y); 
-    FragColor = texture(textureSampler, uv);
+    vec3 modUV = vec3(uv.x, 1-uv.y, uv.z); 
+    FragColor = texture(textureSampler, modUV);
 } 

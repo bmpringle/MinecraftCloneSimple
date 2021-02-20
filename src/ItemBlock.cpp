@@ -13,13 +13,13 @@ void ItemBlock::onRightClick(World* world) {
     if(world->getPlayer()->getBlockLookingAt() != nullptr) {
         BlockPos location = BlockPos(0, 0, 0);
         BlockPos* blockLookingAt = world->getPlayer()->getBlockLookingAt();
-        int sideOfBlockLookingAt = world->getPlayer()->getSideOfBlockLookingAt();
+        SideEnum sideOfBlockLookingAt = world->getPlayer()->getSideOfBlockLookingAt();
 
         switch(sideOfBlockLookingAt) {
             default:
                 break;
-            case 1:
-                location = BlockPos(blockLookingAt->x - 1, blockLookingAt->y, blockLookingAt->z);
+            case UP:
+                location = BlockPos(blockLookingAt->x, blockLookingAt->y + 1, blockLookingAt->z);
                 if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
                     world->getBlockData()->setBlockAtPosition(location, block);
 
@@ -29,18 +29,7 @@ void ItemBlock::onRightClick(World* world) {
                     }                     
                 }
                 break;
-            case 2:
-                location = BlockPos(blockLookingAt->x + 1, blockLookingAt->y, blockLookingAt->z);
-                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
-                    world->getBlockData()->setBlockAtPosition(location, block);
-
-                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
-                    if(!valid) {
-                        world->getBlockData()->removeBlockAtPosition(location);
-                    }                      
-                }
-                break;
-            case 3:
+            case DOWN:
                 location = BlockPos(blockLookingAt->x, blockLookingAt->y - 1, blockLookingAt->z);
                 if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
                     world->getBlockData()->setBlockAtPosition(location, block);
@@ -51,8 +40,19 @@ void ItemBlock::onRightClick(World* world) {
                     }                      
                 }
                 break;
-            case 4:
-                location = BlockPos(blockLookingAt->x, blockLookingAt->y + 1, blockLookingAt->z);
+            case NORTH:
+                location = BlockPos(blockLookingAt->x, blockLookingAt->y, blockLookingAt->z + 1);
+                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
+                    world->getBlockData()->setBlockAtPosition(location, block);
+
+                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
+                    if(!valid) {
+                        world->getBlockData()->removeBlockAtPosition(location);
+                    }                      
+                }
+                break;
+            case SOUTH:
+                location = BlockPos(blockLookingAt->x, blockLookingAt->y, blockLookingAt->z - 1);
                 if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
                     world->getBlockData()->setBlockAtPosition(location, block);
                     bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
@@ -62,8 +62,8 @@ void ItemBlock::onRightClick(World* world) {
                     }
                 }
                 break;
-            case 5:
-                location = BlockPos(blockLookingAt->x, blockLookingAt->y, blockLookingAt->z - 1);
+            case EAST:
+                location = BlockPos(blockLookingAt->x + 1, blockLookingAt->y, blockLookingAt->z);
                 if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
                     world->getBlockData()->setBlockAtPosition(location, block);
 
@@ -73,8 +73,8 @@ void ItemBlock::onRightClick(World* world) {
                     }                       
                 }
                 break;
-            case 6:
-                location = BlockPos(blockLookingAt->x, blockLookingAt->y, blockLookingAt->z + 1);
+            case WEST:
+                location = BlockPos(blockLookingAt->x - 1, blockLookingAt->y, blockLookingAt->z);
                 if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
                     world->getBlockData()->setBlockAtPosition(location, block);
 

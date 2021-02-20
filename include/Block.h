@@ -6,9 +6,10 @@
 #include <memory>
 #include <iostream>
 #include "BlockPos.h"
+#include "SideEnum.h"
+#include "BlockRenderedModel.h"
 
-
-class Block : public Model {
+class Block {
     public:
         Block();
 
@@ -16,9 +17,9 @@ class Block : public Model {
 
         AABB getAABB();
 
-        RenderedModel getRenderedModel();
+        BlockRenderedModel getRenderedModel();
 
-        virtual std::string getTextureName();
+        virtual std::string getTextureName(SideEnum side);
 
         virtual ~Block() = default;
 };

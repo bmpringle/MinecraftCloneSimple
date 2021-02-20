@@ -4,7 +4,7 @@ BlockCobblestone::BlockCobblestone() {
 
 }
 
-std::string BlockCobblestone::getTextureName() {
+std::string BlockCobblestone::getTextureName(SideEnum side) {
     return "cobblestone.png";
 }
 

@@ -12,7 +12,7 @@ AABB Block::getAABB() {
     return AABB(0, 0, 0, 1, 1, 1);
 }
 
-RenderedModel Block::getRenderedModel() {
+BlockRenderedModel Block::getRenderedModel() {
     RenderedPoint p1 = RenderedPoint(0, 0, 0, /**uv coords*/ 0, 0);
     RenderedPoint p2 = RenderedPoint(1, 0, 0, /**uv coords*/ 0, 0);
     RenderedPoint p3 = RenderedPoint(1, 0, 1, /**uv coords*/ 0, 0);
@@ -35,16 +35,28 @@ RenderedModel Block::getRenderedModel() {
     RenderedTriangle t11 = RenderedTriangle(p3, p4, p7, 0);
     RenderedTriangle t12 = RenderedTriangle(p7, p4, p8, 1);
 
-    RenderedTriangle triangleArray[12] = {t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12};
-    std::vector<RenderedTriangle> triangles = std::vector<RenderedTriangle>();
+    std::array<RenderedTriangle, 2> f1 = {t1, t2};
+    BlockFace downFace = BlockFace(f1, DOWN);
 
-    for(RenderedTriangle triangle : triangleArray) {
-        triangles.push_back(triangle);
-    }
-    
-    return RenderedModel(triangles);
+    std::array<RenderedTriangle, 2> f2 = {t3, t4};
+    BlockFace upFace = BlockFace(f2, UP);
+
+    std::array<RenderedTriangle, 2> f3 = {t5, t6};
+    BlockFace westFace = BlockFace(f3, WEST);
+
+    std::array<RenderedTriangle, 2> f4 = {t7, t8};
+    BlockFace eastFace = BlockFace(f4, EAST);
+
+    std::array<RenderedTriangle, 2> f5 = {t9, t10};
+    BlockFace southFace = BlockFace(f5, SOUTH);
+
+    std::array<RenderedTriangle, 2> f6 = {t11, t12};
+    BlockFace northFace = BlockFace(f6, NORTH);
+
+    std::array<BlockFace, 6> blockFaceArray = {upFace, downFace, northFace, southFace, eastFace, westFace};
+    return BlockRenderedModel(blockFaceArray);
 }
 
-std::string Block::getTextureName() {
+std::string Block::getTextureName(SideEnum side) {
     return "notexture.png";
 }

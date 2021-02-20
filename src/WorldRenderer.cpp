@@ -2,12 +2,12 @@
 #include "World.h"
 #include <algorithm>
 #include <thread>
+#include "Blocks.h"
 
 #define WORLDSIZE_CONST 100
 
 WorldRenderer::WorldRenderer() : textureFetcher(TextureFetcher()), textureArrayCreator(TextureArrayCreator()) {
-    textureArrayCreator.addTextureToList("dirt.png");
-    textureArrayCreator.addTextureToList("cobblestone.png");
+    Blocks::initTextureArrayCreator(&textureArrayCreator);
     textureArrayCreator.generateTextureArray();
 
     renderSetup();
@@ -280,7 +280,7 @@ void WorldRenderer::updateAspectRatio(GLFWwindow* window) {
 
 void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
     BlockData block = world->getBlockData()->getBlockAtPosition(pos);
-    RenderedModel model = block.getBlockType()->getRenderedModel();
+    RenderedModel model = block.getBlockType()->getRenderedModel().toRenderedModel();
 
     for(int j = 0; j < model.renderedModel.size(); ++j) {
         RenderedTriangle triangle = model.renderedModel[j];
@@ -481,53 +481,55 @@ void updateSectionOfVector(std::vector<float>* buffer, std::vector<BlockData> bl
     for(int i = blocksIndex; i < blocksIndex + blocksNumber; ++i) {
         BlockData blockData = blocksInChunk.at(i);
 
-        RenderedModel model = blockData.getBlockType()->getRenderedModel();
+        BlockRenderedModel model = blockData.getBlockType()->getRenderedModel();
         BlockPos pos = blockData.getPos();
-
-        int texID = texCreator.getTextureLayer(blockData.getBlockType()->getTextureName());
     
-        for(RenderedTriangle triangle : model.renderedModel) {
-            //point 1 red
-            buffer->at(bufferIndex) = triangle.a.x; ++bufferIndex;
-            buffer->at(bufferIndex) = triangle.a.y; ++bufferIndex;
-            buffer->at(bufferIndex) = triangle.a.z; ++bufferIndex;
-            buffer->at(bufferIndex) = 1; ++bufferIndex;
-            buffer->at(bufferIndex) = 0; ++bufferIndex;
-            buffer->at(bufferIndex) = 0; ++bufferIndex;
-            buffer->at(bufferIndex) = triangle.a.u; ++bufferIndex;
-            buffer->at(bufferIndex) = triangle.a.v; ++bufferIndex;
-            buffer->at(bufferIndex) = texID; ++bufferIndex;
-            buffer->at(bufferIndex) = pos.x; ++bufferIndex;
-            buffer->at(bufferIndex) = pos.y; ++bufferIndex;
-            buffer->at(bufferIndex) = pos.z; ++bufferIndex;
+        for(BlockFace face : model.renderedBlockModel) {
+            int texID = texCreator.getTextureLayer(blockData.getBlockType()->getTextureName(face.side));
 
-            //point 2 green
-            buffer->at(bufferIndex) = triangle.b.x; ++bufferIndex;
-            buffer->at(bufferIndex) = triangle.b.y; ++bufferIndex;
-            buffer->at(bufferIndex) = triangle.b.z; ++bufferIndex;
-            buffer->at(bufferIndex) = 0; ++bufferIndex;
-            buffer->at(bufferIndex) = 1; ++bufferIndex;
-            buffer->at(bufferIndex) = 0; ++bufferIndex;
-            buffer->at(bufferIndex) = triangle.b.u; ++bufferIndex;
-            buffer->at(bufferIndex) = triangle.b.v; ++bufferIndex;
-            buffer->at(bufferIndex) = texID; ++bufferIndex;
-            buffer->at(bufferIndex) = pos.x; ++bufferIndex;
-            buffer->at(bufferIndex) = pos.y; ++bufferIndex;
-            buffer->at(bufferIndex) = pos.z; ++bufferIndex;
+            for(RenderedTriangle triangle : face.triangles) {
+                //point 1 red
+                buffer->at(bufferIndex) = triangle.a.x; ++bufferIndex;
+                buffer->at(bufferIndex) = triangle.a.y; ++bufferIndex;
+                buffer->at(bufferIndex) = triangle.a.z; ++bufferIndex;
+                buffer->at(bufferIndex) = 1; ++bufferIndex;
+                buffer->at(bufferIndex) = 0; ++bufferIndex;
+                buffer->at(bufferIndex) = 0; ++bufferIndex;
+                buffer->at(bufferIndex) = triangle.a.u; ++bufferIndex;
+                buffer->at(bufferIndex) = triangle.a.v; ++bufferIndex;
+                buffer->at(bufferIndex) = texID; ++bufferIndex;
+                buffer->at(bufferIndex) = pos.x; ++bufferIndex;
+                buffer->at(bufferIndex) = pos.y; ++bufferIndex;
+                buffer->at(bufferIndex) = pos.z; ++bufferIndex;
 
-            //point 3 blue
-            buffer->at(bufferIndex) = triangle.c.x; ++bufferIndex;
-            buffer->at(bufferIndex) = triangle.c.y; ++bufferIndex;
-            buffer->at(bufferIndex) = triangle.c.z; ++bufferIndex;
-            buffer->at(bufferIndex) = 0; ++bufferIndex;
-            buffer->at(bufferIndex) = 0; ++bufferIndex;
-            buffer->at(bufferIndex) = 1; ++bufferIndex;
-            buffer->at(bufferIndex) = triangle.c.u; ++bufferIndex;
-            buffer->at(bufferIndex) = triangle.c.v; ++bufferIndex;
-            buffer->at(bufferIndex) = texID; ++bufferIndex;
-            buffer->at(bufferIndex) = pos.x; ++bufferIndex;
-            buffer->at(bufferIndex) = pos.y; ++bufferIndex;
-            buffer->at(bufferIndex) = pos.z; ++bufferIndex;
+                //point 2 green
+                buffer->at(bufferIndex) = triangle.b.x; ++bufferIndex;
+                buffer->at(bufferIndex) = triangle.b.y; ++bufferIndex;
+                buffer->at(bufferIndex) = triangle.b.z; ++bufferIndex;
+                buffer->at(bufferIndex) = 0; ++bufferIndex;
+                buffer->at(bufferIndex) = 1; ++bufferIndex;
+                buffer->at(bufferIndex) = 0; ++bufferIndex;
+                buffer->at(bufferIndex) = triangle.b.u; ++bufferIndex;
+                buffer->at(bufferIndex) = triangle.b.v; ++bufferIndex;
+                buffer->at(bufferIndex) = texID; ++bufferIndex;
+                buffer->at(bufferIndex) = pos.x; ++bufferIndex;
+                buffer->at(bufferIndex) = pos.y; ++bufferIndex;
+                buffer->at(bufferIndex) = pos.z; ++bufferIndex;
+
+                //point 3 blue
+                buffer->at(bufferIndex) = triangle.c.x; ++bufferIndex;
+                buffer->at(bufferIndex) = triangle.c.y; ++bufferIndex;
+                buffer->at(bufferIndex) = triangle.c.z; ++bufferIndex;
+                buffer->at(bufferIndex) = 0; ++bufferIndex;
+                buffer->at(bufferIndex) = 0; ++bufferIndex;
+                buffer->at(bufferIndex) = 1; ++bufferIndex;
+                buffer->at(bufferIndex) = triangle.c.u; ++bufferIndex;
+                buffer->at(bufferIndex) = triangle.c.v; ++bufferIndex;
+                buffer->at(bufferIndex) = texID; ++bufferIndex;
+                buffer->at(bufferIndex) = pos.x; ++bufferIndex;
+                buffer->at(bufferIndex) = pos.y; ++bufferIndex;
+                buffer->at(bufferIndex) = pos.z; ++bufferIndex;
+            }
         }
     }
 }

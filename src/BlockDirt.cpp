@@ -4,7 +4,7 @@ BlockDirt::BlockDirt() {
 
 }
 
-std::string BlockDirt::getTextureName() {
+std::string BlockDirt::getTextureName(SideEnum side) {
     return "dirt.png";
 }
 

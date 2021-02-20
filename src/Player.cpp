@@ -63,11 +63,15 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         KeyPressedEvent keyEvent = *dynamic_cast<KeyPressedEvent*>(e.get());
 
         if(keyEvent.key == "1") {
-            setItemInHand(std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockDirt()))));
+            setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::dirt)));
         }
 
         if(keyEvent.key == "2") {
-            setItemInHand(std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockCobblestone()))));
+            setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::cobblestone)));
+        }
+
+        if(keyEvent.key == "3") {
+            setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::grass)));
         }
 
         if(keyEvent.key == "u") {
@@ -231,7 +235,7 @@ void Player::updatePlayerLookingAt(World* world) {
         if(!chunk->isFakeChunk()) {
             AABB aabb = chunk->getChunkAABB();
 
-            int sideIntersect = 0;
+            SideEnum sideIntersect = NORTH;
 
             float t = raycast(aabb, &sideIntersect);
 
@@ -242,14 +246,14 @@ void Player::updatePlayerLookingAt(World* world) {
     }
 
     std::vector<float> tValues = std::vector<float>();
-    std::vector<int> sideValues = std::vector<int>();
+    std::vector<SideEnum> sideValues = std::vector<SideEnum>();
     std::vector<BlockPos> blockValues = std::vector<BlockPos>();
 
     for(int j = 0; j < chunksCrossed.size(); ++j) {
         auto tree = chunksCrossed.at(j)->getBlockTree();
 
         std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [this, &tValues, &sideValues, &blockValues](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
-            int sideIntersect = 0;
+            SideEnum sideIntersect = NORTH;
 
             float t = raycast(aabb, &sideIntersect);
 
@@ -260,7 +264,7 @@ void Player::updatePlayerLookingAt(World* world) {
                         if(block.value().at(i).getBlockType() != nullptr) {
                             float tPresice = raycast(aabbPresice, &sideIntersect);
                             float max = (tValues.size() > 1) ? tValues.at(tValues.size() - 1) : tPresice + 1;
-                            if(tPresice != -1 && tPresice < max) {
+                            if(tPresice != -1 && tPresice < max && tPresice <= 5) {
                                 tValues.push_back(tPresice);
                                 sideValues.push_back(sideIntersect);
                                 blockValues.push_back(BlockPos(aabbPresice.startX, aabbPresice.startY, aabbPresice.startZ));
@@ -284,7 +288,7 @@ void Player::updatePlayerLookingAt(World* world) {
         sideOfBlockLookingAt = sideValues.at(sideValues.size() - 1);
     }else {
         blockLookingAt = nullptr;
-        sideOfBlockLookingAt = 0;        
+        sideOfBlockLookingAt = NORTH;        
     }
 }
 
@@ -305,7 +309,7 @@ Pos Player::getCameraNormal() {
     return Pos(n2[0], n2[1], n2[2]);
 }
 
-float Player::raycast(AABB aabb, int* side) {
+float Player::raycast(AABB aabb, SideEnum* side) {
     Pos cameraPos = getCameraPosition();
     Pos cameraNormal = getCameraNormal();
     if(cameraNormal.x == 0) {
@@ -351,22 +355,22 @@ float Player::raycast(AABB aabb, int* side) {
     }
 
     if(t1 == tmin) {
-        *side = 1;
+        *side = WEST;
     }else if(t2 == tmin) {
-        *side = 2;
+        *side = EAST;
     }else if(t3 == tmin) {
-        *side = 3;
+        *side = DOWN;
     }else if(t4 == tmin) {
-        *side = 4;
+        *side = UP;
     }else if(t5 == tmin) {
-        *side = 5;
+        *side = SOUTH;
     }else if(t6 == tmin) {
-        *side = 6;
+        *side = NORTH;
     }
     return tmin;
 }
 
-int Player::getSideOfBlockLookingAt() {
+SideEnum Player::getSideOfBlockLookingAt() {
     return sideOfBlockLookingAt;
 }
 
@@ -383,7 +387,7 @@ void Player::move(glm::vec3* moveVec) {
     double d3 = (*moveVec)[0];
     double d4 = (*moveVec)[1];
     double d5 = (*moveVec)[2];
-    bool flag = isGrounded && isSneaking;
+    bool flag = isSneaking;
 
     if (flag) {
         d3 = d3 / 3;
@@ -395,12 +399,6 @@ void Player::move(glm::vec3* moveVec) {
     if(flag) {
         d3 = d3 * 1.3;
         d5 = d5 * 1.3;
-    }
-
-
-    if (!isGrounded && isSneaking) {
-        d3 = d3 / 2;
-        d5 = d5 / 2;
     }
 
     Pos previousPos = pos;

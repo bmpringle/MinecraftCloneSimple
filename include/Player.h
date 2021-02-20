@@ -26,7 +26,7 @@ class Player final : public Listener, public Model {
         Pos getCameraPosition();
         Pos getCameraNormal();
         BlockPos* getBlockLookingAt();
-        int getSideOfBlockLookingAt();
+        SideEnum getSideOfBlockLookingAt();
         void setItemInHand(std::unique_ptr<Item> item);
         bool validatePosition(Pos newPosition, BlockArrayData data);
         void setBufferedChunkLocation(BlockPos pos);
@@ -34,7 +34,7 @@ class Player final : public Listener, public Model {
     private:
         bool validatePosition(Pos newPosition, BlockArrayData data, float* yToSnapTo);
         void updatePlayerLookingAt(World* world);
-        float raycast(AABB box, int* side);
+        float raycast(AABB box, SideEnum* side);
         void updateHorizontalMotion(long milliseconds);
         void move(glm::vec3* moveVec);
         bool isBlockUnderPlayer();
@@ -53,8 +53,7 @@ class Player final : public Listener, public Model {
         //this exists to prevent the pointer you should use from going stale DO NOT READ THIS POINTER
         BlockPos internalBlockLookingAt = BlockPos(0, 0, 0);
 
-        //order 1: lowX, 2: highX, 3: bottomY, 4: topY, 5: lowZ, 6: highZ
-        int sideOfBlockLookingAt = 0;
+        SideEnum sideOfBlockLookingAt = NORTH;
 
         std::unique_ptr<Item> itemInHand = nullptr;
 

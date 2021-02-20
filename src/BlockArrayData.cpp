@@ -211,17 +211,17 @@ bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
     return true;
 }
 
+const double SEED = abs(rand() % 10000);
+double zNoise = rand() % 1 - 0.5;
+
 void BlockArrayData::generateChunk(BlockPos chunkLocation) {
     Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize()[0]), floor((float)chunkLocation.z / (float)Chunk::getChunkSize()[2]));
-
-    const double SEED = abs(rand() % 10000);
-    double zNoise = rand() % 1 - 0.5;
 
     const double width = Chunk::getChunkSize()[0];
     const double height = Chunk::getChunkSize()[2];
 
     const int averageTerrainHeight = 10;
-    const double amplifier = 5;
+    const double amplifier = 3;
 
     noise::module::Perlin noise;
     noise.SetSeed(SEED);
@@ -231,9 +231,15 @@ void BlockArrayData::generateChunk(BlockPos chunkLocation) {
             double nx = x/width - 0.5, ny = z/height - 0.5;
             double value = 1 * noise.GetValue(1 * nx, 1 * ny, zNoise) + 0.5 * noise.GetValue(2 * nx, 2 * ny, zNoise) + 0.25 * noise.GetValue(4 * nx, 4 * ny, zNoise) + 0.125 * noise.GetValue(8 * nx, 8 * ny, zNoise) + 0.0625 * noise.GetValue(16 * nx, 16 * ny, zNoise);
 
-            int blockHeight = (int)(value * amplifier) + averageTerrainHeight;
+            int blockHeight = floor(value * amplifier) + averageTerrainHeight;
             for(int y = 0; y < blockHeight; ++y) {
-                generatingChunk.setBlockAtLocation(BlockPos(x, y, z), dirt);
+                if(y + 1 == blockHeight) {
+                    generatingChunk.setBlockAtLocation(BlockPos(x, y, z), Blocks::grass);
+                }else if(y + 4 >= blockHeight) {
+                    generatingChunk.setBlockAtLocation(BlockPos(x, y, z), Blocks::dirt);
+                }else {
+                    generatingChunk.setBlockAtLocation(BlockPos(x, y, z), Blocks::cobblestone);
+                }
             }
         }
     }

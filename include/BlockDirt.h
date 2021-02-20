@@ -9,6 +9,6 @@ class BlockDirt : public Block {
 
         std::string getName() override;
 
-        std::string getTextureName() override;   
+        std::string getTextureName(SideEnum side) override;   
 };
 #endif
