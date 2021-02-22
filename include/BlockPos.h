@@ -15,6 +15,8 @@ class BlockPos {
 
         bool operator!=(BlockPos rhs);
 
+        friend bool operator<(BlockPos lhs, BlockPos rhs);
+
         void print();
 };
 

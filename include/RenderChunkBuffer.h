@@ -8,6 +8,8 @@ class RenderChunkBuffer {
     public:
         RenderChunkBuffer(std::vector<float> _renderData, BlockPos _pos);
 
+        RenderChunkBuffer();
+
         void setRenderData(std::vector<float> newData);
 
         unsigned int getRenderDataBuffer();

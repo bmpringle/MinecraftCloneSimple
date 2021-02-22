@@ -28,11 +28,11 @@ class Player final : public Listener, public Model {
         BlockPos* getBlockLookingAt();
         SideEnum getSideOfBlockLookingAt();
         void setItemInHand(std::unique_ptr<Item> item);
-        bool validatePosition(Pos newPosition, BlockArrayData data);
+        bool validatePosition(Pos newPosition, BlockArrayData* data);
         void setBufferedChunkLocation(BlockPos pos);
         void updateServer(World* _world);
     private:
-        bool validatePosition(Pos newPosition, BlockArrayData data, float* yToSnapTo);
+        bool validatePosition(Pos newPosition, BlockArrayData* data, float* yToSnapTo);
         void updatePlayerLookingAt(World* world);
         float raycast(AABB box, SideEnum* side);
         void updateHorizontalMotion(long milliseconds);

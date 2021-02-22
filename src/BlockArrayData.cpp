@@ -16,41 +16,50 @@ void BlockArrayData::updateBlockAtPosition(BlockPos pos) {
 
 }
 
-void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {    
+void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {   
+
     Chunk* centerChunk = getChunkWithBlock(pos);
 
     int renderDistance = world->getChunkRenderDistance();
     std::array<int, 3> size = Chunk::getChunkSize();
 
-    std::vector<LoadedChunkInfo> oldChunks = loadedChunkLocations;
+    std::map<BlockPos, LoadedChunkInfo> oldChunks = loadedChunkLocations;
 
     loadedChunkLocations.clear();
-
+    //auto start = std::chrono::high_resolution_clock::now();
     for(float x = -(float)renderDistance; x <= (float)renderDistance; ++x) {
         for(float z = -(float)renderDistance; z <= (float)renderDistance; ++z) {
             BlockPos playerBlock = BlockPos((int)centerChunk->getChunkCoordinates().x + size[0] * x, 0, (int)centerChunk->getChunkCoordinates().z + size[2] * z);
             if(!getChunkWithBlock(playerBlock)->isFakeChunk()) {
                 BlockPos chunkLocation = getChunkWithBlock(playerBlock)->getChunkCoordinates();
-                std::vector<LoadedChunkInfo>::iterator it = std::find_if(oldChunks.begin(), oldChunks.end(), [chunkLocation](LoadedChunkInfo l) {
-                            return l.chunkLocation == chunkLocation;
-                });
-                loadedChunkLocations.push_back(LoadedChunkInfo(chunkLocation, (it == oldChunks.end()) ? true : oldChunks.at(it - oldChunks.begin()).update));
+                LoadedChunkInfo info = LoadedChunkInfo(BlockPos(0, 0, 0), false);
+                try {
+                    info = oldChunks.at(chunkLocation);
+                    loadedChunkLocations[chunkLocation] = LoadedChunkInfo(chunkLocation, info.update);
+                }catch(std::out_of_range e) {
+                    loadedChunkLocations[chunkLocation] = LoadedChunkInfo(chunkLocation, true);
+                }
             }else {
                 generateChunk(playerBlock);
+                LoadedChunkInfo info = LoadedChunkInfo(BlockPos(0, 0, 0), false);
                 BlockPos chunkLocation = getChunkWithBlock(playerBlock)->getChunkCoordinates();
-                std::vector<LoadedChunkInfo>::iterator it = std::find_if(oldChunks.begin(), oldChunks.end(), [chunkLocation](LoadedChunkInfo l) {
-                            return l.chunkLocation == chunkLocation;
-                });
-                loadedChunkLocations.push_back(LoadedChunkInfo(chunkLocation, (it == oldChunks.end()) ? true : oldChunks.at(it - oldChunks.begin()).update));
+                try {
+                    info = oldChunks.at(chunkLocation);       
+                    loadedChunkLocations[chunkLocation] = LoadedChunkInfo(chunkLocation, info.update);
+                }catch(std::out_of_range e) {
+                    loadedChunkLocations[chunkLocation] = LoadedChunkInfo(chunkLocation, true);
+                }
             }
         }
     }
+    //std::cout << "duration1: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
 }
 
 void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> block) {
 
     std::array<int, 3> size = Chunk::getChunkSize();
 
+    
     for(int i = 0; i < chunkList.size(); ++i) {
         Chunk c = chunkList.at(i);
         BlockPos chunkLocation = c.getChunkCoordinates();
@@ -59,10 +68,7 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
                     chunkList.at(i).setBlockAtLocation(pos, block);
                     if(isChunkLoaded(c)) {
-                        std::vector<LoadedChunkInfo>::iterator chunkLocIt = std::find_if(loadedChunkLocations.begin(), loadedChunkLocations.end(), [c](LoadedChunkInfo l) {
-                            return l.chunkLocation == c.getChunkCoordinates();
-                        });
-                        chunkLocIt->update = true;
+                        loadedChunkLocations[c.getChunkCoordinates()].update = true;
                     }
                     return;
                 }
@@ -76,12 +82,16 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
 }
 
 bool BlockArrayData::isChunkLoaded(Chunk c) {
-    return std::find_if(loadedChunkLocations.begin(), loadedChunkLocations.end(), [c](LoadedChunkInfo l) {
-        return l.chunkLocation == c.getChunkCoordinates();
-    }) != loadedChunkLocations.end();
+    try {
+        loadedChunkLocations.at(c.getChunkCoordinates());
+        return true;
+    }catch(std::out_of_range e) {
+        return false;
+    }
 }
 
 void BlockArrayData::removeBlockAtPosition(BlockPos pos) {
+
     for(int i = 0; i < chunkList.size(); ++i) {
         Chunk c = chunkList.at(i);
         std::array<int, 3> size = Chunk::getChunkSize();
@@ -92,10 +102,7 @@ void BlockArrayData::removeBlockAtPosition(BlockPos pos) {
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
                     chunkList.at(i).removeBlockAtLocation(pos);
                     if(isChunkLoaded(c)) {
-                        std::vector<LoadedChunkInfo>::iterator chunkLocIt = std::find_if(loadedChunkLocations.begin(), loadedChunkLocations.end(), [c](LoadedChunkInfo l) {
-                            return l.chunkLocation == c.getChunkCoordinates();
-                        });
-                        chunkLocIt->update = true;
+                        loadedChunkLocations[c.getChunkCoordinates()].update = true;
                     }
                 }
             }
@@ -105,6 +112,7 @@ void BlockArrayData::removeBlockAtPosition(BlockPos pos) {
 
 //do not modify
 BlockData BlockArrayData::getBlockAtPosition(BlockPos pos) {
+
     for(int i = 0; i < chunkList.size(); ++i) {
         Chunk c = chunkList.at(i);
         std::array<int, 3> size = Chunk::getChunkSize();
@@ -133,6 +141,7 @@ std::vector<Chunk> BlockArrayData::getRawChunkArray() {
 
 //do not modify
 Chunk* BlockArrayData::getChunkWithBlock(BlockPos pos) {
+    
     std::array<int, 3> size = Chunk::getChunkSize();
 
     for(int i = 0; i < chunkList.size(); ++i) {
@@ -152,8 +161,8 @@ Chunk* BlockArrayData::getChunkWithBlock(BlockPos pos) {
 }
 
 bool BlockArrayData::shouldUpdateRenderer() {
-    for(int i = 0; i < loadedChunkLocations.size(); ++i) {
-        if(loadedChunkLocations.at(i).update) {
+    for(std::pair<BlockPos, LoadedChunkInfo> pair : loadedChunkLocations) {
+        if(loadedChunkLocations[pair.first].update) {
             return true;
         }
     }
@@ -161,25 +170,25 @@ bool BlockArrayData::shouldUpdateRenderer() {
 }
 
 void BlockArrayData::hasUpdatedRenderer() {
-    for(int i = 0; i < loadedChunkLocations.size(); ++i) {
-        loadedChunkLocations.at(i).update = false;
+    for(std::pair<BlockPos, LoadedChunkInfo> pair : loadedChunkLocations) {
+        loadedChunkLocations[pair.first].update = false;
     }
 }
 
-const std::vector<LoadedChunkInfo> BlockArrayData::getLoadedChunkLocations() {
+const std::map<BlockPos, LoadedChunkInfo> BlockArrayData::getLoadedChunkLocations() {
     return loadedChunkLocations;
 }
 
 //used when world is loaded to force a rendering update
 void BlockArrayData::setAllLoadedChunksToBeUpdated() {
-    for(int i = 0; i < loadedChunkLocations.size(); ++i) {
-        loadedChunkLocations.at(i).update = true;
+    for(std::pair<BlockPos, LoadedChunkInfo> pair : loadedChunkLocations) {
+        loadedChunkLocations[pair.first].update = true;
     }
 }
 
 bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
-    for(int i = 0; i < getLoadedChunkLocations().size(); ++i) {
-        Chunk* c = getChunkWithBlock(getLoadedChunkLocations().at(i).chunkLocation);
+    for(std::pair<BlockPos, LoadedChunkInfo> pair : loadedChunkLocations) {
+        Chunk* c = getChunkWithBlock(pair.first);
         if(!c->isFakeChunk()) {
             AABB chunkAABB = c->getChunkAABB();
             if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
@@ -210,9 +219,6 @@ bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
     }
     return true;
 }
-
-const double SEED = abs(rand() % 10000);
-double zNoise = rand() % 1 - 0.5;
 
 void BlockArrayData::generateChunk(BlockPos chunkLocation) {
     Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize()[0]), floor((float)chunkLocation.z / (float)Chunk::getChunkSize()[2]));

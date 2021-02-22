@@ -52,3 +52,7 @@ void RenderChunkBuffer::renderChunk() {
     glBindBuffer(GL_ARRAY_BUFFER, getRenderDataBuffer());
     glDrawArrays(GL_TRIANGLES, 0, getRenderDataSize() / 12);
 }
+
+RenderChunkBuffer::RenderChunkBuffer() {
+    
+}

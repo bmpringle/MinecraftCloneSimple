@@ -23,7 +23,7 @@ void ItemBlock::onRightClick(World* world) {
                 if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
                     world->getBlockData()->setBlockAtPosition(location, block);
 
-                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
+                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), world->getBlockData());
                     if(!valid) {
                         world->getBlockData()->removeBlockAtPosition(location);
                     }                     
@@ -34,7 +34,7 @@ void ItemBlock::onRightClick(World* world) {
                 if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
                     world->getBlockData()->setBlockAtPosition(location, block);
 
-                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
+                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), world->getBlockData());
                     if(!valid) {
                         world->getBlockData()->removeBlockAtPosition(location);
                     }                      
@@ -45,7 +45,7 @@ void ItemBlock::onRightClick(World* world) {
                 if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
                     world->getBlockData()->setBlockAtPosition(location, block);
 
-                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
+                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), world->getBlockData());
                     if(!valid) {
                         world->getBlockData()->removeBlockAtPosition(location);
                     }                      
@@ -55,7 +55,7 @@ void ItemBlock::onRightClick(World* world) {
                 location = BlockPos(blockLookingAt->x, blockLookingAt->y, blockLookingAt->z - 1);
                 if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
                     world->getBlockData()->setBlockAtPosition(location, block);
-                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
+                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), world->getBlockData());
                     
                     if(!valid) {
                         world->getBlockData()->removeBlockAtPosition(location);
@@ -67,7 +67,7 @@ void ItemBlock::onRightClick(World* world) {
                 if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
                     world->getBlockData()->setBlockAtPosition(location, block);
 
-                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
+                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), world->getBlockData());
                     if(!valid) {
                         world->getBlockData()->removeBlockAtPosition(location);
                     }                       
@@ -78,7 +78,7 @@ void ItemBlock::onRightClick(World* world) {
                 if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr) {
                     world->getBlockData()->setBlockAtPosition(location, block);
 
-                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), *world->getBlockData());
+                    bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), world->getBlockData());
                     if(!valid) {
                         world->getBlockData()->removeBlockAtPosition(location);
                     }                    

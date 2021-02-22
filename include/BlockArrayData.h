@@ -7,6 +7,8 @@
 #include "RenderInclude.h"
 #include "Chunk.h"
 #include "LoadedChunkInfo.h"
+#include <mutex>
+#include <map>
 
 class World;
 
@@ -34,7 +36,7 @@ class BlockArrayData {
 
         void updateLoadedChunks(BlockPos pos, World* world);
 
-        const std::vector<LoadedChunkInfo> getLoadedChunkLocations();
+        const std::map<BlockPos, LoadedChunkInfo> getLoadedChunkLocations();
 
         const std::vector<bool> getChunkLocationsToUpdate();
 
@@ -48,10 +50,14 @@ class BlockArrayData {
 
     private:
         std::vector<Chunk> chunkList;
+
         int size[3];
         bool updateRenderer = false;
         Chunk* fakeChunk = new Chunk(0, 0, true);
 
-        std::vector<LoadedChunkInfo> loadedChunkLocations = std::vector<LoadedChunkInfo>();
+        std::map<BlockPos, LoadedChunkInfo> loadedChunkLocations = std::map<BlockPos,LoadedChunkInfo>();
+
+        const double SEED = abs(rand() % 10000);
+        double zNoise = rand() % 1 - 0.5;
 };
 #endif

@@ -35,7 +35,7 @@ class WorldRenderer {
     private:
         void renderSetup();
 
-        void updateVectorWithMultithreading(std::vector<float>* buffer, std::vector<BlockData> blocksInChunk, TextureArrayCreator texCreator);
+        void updateChunkData(std::vector<float>* buffer, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator);
 
         unsigned int compileShaderProgramFromFiles(std::string vertexShaderPath, std::string fragmentShaderPath);
 
@@ -58,6 +58,8 @@ class WorldRenderer {
 
         TextureArrayCreator textureArrayCreator;
 
-        std::vector<RenderChunkBuffer> renderChunkBuffers = std::vector<RenderChunkBuffer>();
+        std::map<BlockPos, RenderChunkBuffer> renderChunkBuffers = std::map<BlockPos, RenderChunkBuffer>();
+
+        std::vector<RenderChunkBuffer> renderChunkBuffersOld = std::vector<RenderChunkBuffer>();
 };
 #endif

@@ -148,42 +148,44 @@ void WorldRenderer::updateWorldVBO(World* world) {
     
     BlockArrayData* data = world->getBlockData();
 
-    std::vector<LoadedChunkInfo> lChunksLocations = data->getLoadedChunkLocations();
+    std::map<BlockPos, LoadedChunkInfo> lChunksLocations = data->getLoadedChunkLocations();
 
-    for(int i = 0; i < renderChunkBuffers.size(); ++i) {
-        BlockPos loc = renderChunkBuffers[i].getPos();
-        bool loaded = std::find_if(lChunksLocations.begin(), lChunksLocations.end(), [loc](LoadedChunkInfo l) {
-                            return l.chunkLocation == loc;
-        }) != lChunksLocations.end();
+    std::vector<BlockPos> posToRemove = std::vector<BlockPos>();
+    for(std::pair<BlockPos, RenderChunkBuffer> buff : renderChunkBuffers) {
+        BlockPos loc = buff.first;
 
-        if(!loaded) {
-            renderChunkBuffers.erase(renderChunkBuffers.begin() + i);
-            --i;
+        try {
+            lChunksLocations.at(loc);
+        }catch(std::out_of_range e) {
+            posToRemove.push_back(buff.first);
         }
     }
 
-    for(LoadedChunkInfo lchunk : lChunksLocations) {
-        if(lchunk.update) {
-            Chunk* c = data->getChunkWithBlock(lchunk.chunkLocation);
-            if(!c->isFakeChunk()) {
-                BlockPos pos = lchunk.chunkLocation;
-                std::vector<RenderChunkBuffer>::iterator it = std::find_if(renderChunkBuffers.begin(), renderChunkBuffers.end(), [pos] (RenderChunkBuffer buff) {
-                    BlockPos loc = buff.getPos();
-                    return loc == pos;
-                });
+    for(BlockPos remove : posToRemove) {
+        renderChunkBuffers.erase(remove);
+    }
+    
+    //auto start = std::chrono::high_resolution_clock::now();
+    for(std::pair<BlockPos, LoadedChunkInfo> lchunk : lChunksLocations) {
+        if(lchunk.second.update) {
+            Chunk* c = data->getChunkWithBlock(lchunk.first);
 
-                if(it == renderChunkBuffers.end()) {
-                    std::vector<float> vectorWithColors = std::vector<float>();
-                    updateVectorWithMultithreading(&vectorWithColors, data->getChunkWithBlock(pos)->getBlocksInChunk(), textureArrayCreator);
-                    renderChunkBuffers.push_back(RenderChunkBuffer(vectorWithColors, pos));
-                }else {
-                    std::vector<float> vectorWithColors = std::vector<float>();
-                    updateVectorWithMultithreading(&vectorWithColors, data->getChunkWithBlock((*it).getPos())->getBlocksInChunk(), textureArrayCreator);
-                    it->setRenderData(vectorWithColors);
-                }
-            }
+            BlockPos pos = lchunk.first;
+            try {
+                RenderChunkBuffer buffer = renderChunkBuffers.at(pos);
+                std::vector<BlockData> blockData = c->getBlocksInChunk();
+                std::vector<float> vectorWithColors = std::vector<float>();
+                updateChunkData(&vectorWithColors, &blockData, &textureArrayCreator);
+                renderChunkBuffers.at(pos).setRenderData(vectorWithColors); 
+            }catch(std::out_of_range e) {
+                std::vector<float> vectorWithColors = std::vector<float>();
+                std::vector<BlockData> blockData = c->getBlocksInChunk();
+                updateChunkData(&vectorWithColors, &blockData, &textureArrayCreator);
+                renderChunkBuffers[pos] = RenderChunkBuffer(vectorWithColors, pos);
+            }      
         }
     }
+    //std::cout << "duration: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
 }
 
 void WorldRenderer::renderFrame(World* world) {
@@ -195,8 +197,8 @@ void WorldRenderer::renderFrame(World* world) {
     glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayCreator.getGeneratedTextureArray());
     glUseProgram(shaderProgram[3]);
 
-    for(RenderChunkBuffer cBuffer : renderChunkBuffers) {
-        cBuffer.renderChunk();
+    for(std::pair<const BlockPos, RenderChunkBuffer> cBuffer : renderChunkBuffers) {
+        cBuffer.second.renderChunk();
     }
 }
 
@@ -477,86 +479,59 @@ glm::mat3x3 WorldRenderer::calculateYRotationMatrix(double yRotation) {
     return rotationMatrix;
 }
 
-void updateSectionOfVector(std::vector<float>* buffer, std::vector<BlockData> blocksInChunk, int bufferIndex, int blocksIndex, int blocksNumber, TextureArrayCreator texCreator) {
-    for(int i = blocksIndex; i < blocksIndex + blocksNumber; ++i) {
-        BlockData blockData = blocksInChunk.at(i);
+void WorldRenderer::updateChunkData(std::vector<float>* buffer, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator) {    
+    for(int i = 0; i < blocksInChunk->size(); ++i) {
+        BlockData blockData = blocksInChunk->at(i);
 
         BlockRenderedModel model = blockData.getBlockType()->getRenderedModel();
         BlockPos pos = blockData.getPos();
     
         for(BlockFace face : model.renderedBlockModel) {
-            int texID = texCreator.getTextureLayer(blockData.getBlockType()->getTextureName(face.side));
+            int texID = texCreator->getTextureLayer(blockData.getBlockType()->getTextureName(face.side));
 
             for(RenderedTriangle triangle : face.triangles) {
                 //point 1 red
-                buffer->at(bufferIndex) = triangle.a.x; ++bufferIndex;
-                buffer->at(bufferIndex) = triangle.a.y; ++bufferIndex;
-                buffer->at(bufferIndex) = triangle.a.z; ++bufferIndex;
-                buffer->at(bufferIndex) = 1; ++bufferIndex;
-                buffer->at(bufferIndex) = 0; ++bufferIndex;
-                buffer->at(bufferIndex) = 0; ++bufferIndex;
-                buffer->at(bufferIndex) = triangle.a.u; ++bufferIndex;
-                buffer->at(bufferIndex) = triangle.a.v; ++bufferIndex;
-                buffer->at(bufferIndex) = texID; ++bufferIndex;
-                buffer->at(bufferIndex) = pos.x; ++bufferIndex;
-                buffer->at(bufferIndex) = pos.y; ++bufferIndex;
-                buffer->at(bufferIndex) = pos.z; ++bufferIndex;
+                buffer->push_back(triangle.a.x);
+                buffer->push_back(triangle.a.y);
+                buffer->push_back(triangle.a.z);
+                buffer->push_back(1);
+                buffer->push_back(0);
+                buffer->push_back(0);
+                buffer->push_back(triangle.a.u);
+                buffer->push_back(triangle.a.v);
+                buffer->push_back(texID);
+                buffer->push_back(pos.x);
+                buffer->push_back(pos.y);
+                buffer->push_back(pos.z);
 
                 //point 2 green
-                buffer->at(bufferIndex) = triangle.b.x; ++bufferIndex;
-                buffer->at(bufferIndex) = triangle.b.y; ++bufferIndex;
-                buffer->at(bufferIndex) = triangle.b.z; ++bufferIndex;
-                buffer->at(bufferIndex) = 0; ++bufferIndex;
-                buffer->at(bufferIndex) = 1; ++bufferIndex;
-                buffer->at(bufferIndex) = 0; ++bufferIndex;
-                buffer->at(bufferIndex) = triangle.b.u; ++bufferIndex;
-                buffer->at(bufferIndex) = triangle.b.v; ++bufferIndex;
-                buffer->at(bufferIndex) = texID; ++bufferIndex;
-                buffer->at(bufferIndex) = pos.x; ++bufferIndex;
-                buffer->at(bufferIndex) = pos.y; ++bufferIndex;
-                buffer->at(bufferIndex) = pos.z; ++bufferIndex;
+                buffer->push_back(triangle.b.x);
+                buffer->push_back(triangle.b.y);
+                buffer->push_back(triangle.b.z);
+                buffer->push_back(0);
+                buffer->push_back(1);
+                buffer->push_back(0);
+                buffer->push_back(triangle.b.u);
+                buffer->push_back(triangle.b.v);
+                buffer->push_back(texID);
+                buffer->push_back(pos.x);
+                buffer->push_back(pos.y);
+                buffer->push_back(pos.z);
 
                 //point 3 blue
-                buffer->at(bufferIndex) = triangle.c.x; ++bufferIndex;
-                buffer->at(bufferIndex) = triangle.c.y; ++bufferIndex;
-                buffer->at(bufferIndex) = triangle.c.z; ++bufferIndex;
-                buffer->at(bufferIndex) = 0; ++bufferIndex;
-                buffer->at(bufferIndex) = 0; ++bufferIndex;
-                buffer->at(bufferIndex) = 1; ++bufferIndex;
-                buffer->at(bufferIndex) = triangle.c.u; ++bufferIndex;
-                buffer->at(bufferIndex) = triangle.c.v; ++bufferIndex;
-                buffer->at(bufferIndex) = texID; ++bufferIndex;
-                buffer->at(bufferIndex) = pos.x; ++bufferIndex;
-                buffer->at(bufferIndex) = pos.y; ++bufferIndex;
-                buffer->at(bufferIndex) = pos.z; ++bufferIndex;
+                buffer->push_back(triangle.c.x);
+                buffer->push_back(triangle.c.y);
+                buffer->push_back(triangle.c.z);
+                buffer->push_back(0);
+                buffer->push_back(0);
+                buffer->push_back(1);
+                buffer->push_back(triangle.c.u);
+                buffer->push_back(triangle.c.v);
+                buffer->push_back(texID);
+                buffer->push_back(pos.x);
+                buffer->push_back(pos.y);
+                buffer->push_back(pos.z);
             }
         }
-    }
-}
-
-//after profiling pretty sure this isn't even significantly faster, but I'll keep it becuase I think it will be as the game gets more complicated
-void WorldRenderer::updateVectorWithMultithreading(std::vector<float>* buffer, std::vector<BlockData> blocksInChunk, TextureArrayCreator texCreator) {    
-    //number of blocks in chunk * number of triangles per block * number of vertices per triangle * number of floats per vertex
-    int floatNumber = blocksInChunk.size() * 12 * 3 * 12;
-    buffer->resize(floatNumber);
-    int threadNumber = std::thread::hardware_concurrency();
-
-    //rounded down so we use this thread to handle the rest
-    int blocksPerThread = blocksInChunk.size() / threadNumber;
-    int blocksRemainder = blocksInChunk.size() - blocksPerThread * threadNumber;
-    int floatsPerThread = blocksPerThread * 12 * 3 * 12;
-    int floatsRemainder = blocksRemainder * 12 * 3 * 12;
-    std::vector<std::thread> threads = std::vector<std::thread>();
-
-    for(int p = 0; p < threadNumber; ++p) {
-        threads.push_back(std::thread(updateSectionOfVector, buffer, blocksInChunk, floatsRemainder + p * floatsPerThread, blocksRemainder + p * blocksPerThread, blocksPerThread, texCreator));
-    }
-
-    if(blocksRemainder > 0) {
-        updateSectionOfVector(buffer, blocksInChunk, 0, 0, blocksRemainder, texCreator);
-    }
-
-    for(int p = 0; p < threadNumber; ++p) {
-        threads.at(p).join();
     }
 }

@@ -4,6 +4,7 @@
 #include "Events.h"
 #include <math.h>
 #include "Blocks.h"
+#include <thread>
 
 Player::Player(World* _world) : pos(Pos(0, 75, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
@@ -207,15 +208,15 @@ double Player::getYRotation() {
     return pitch;
 }
 
-bool Player::validatePosition(Pos newPosition, BlockArrayData data) {
+bool Player::validatePosition(Pos newPosition, BlockArrayData* data) {
     AABB playerAABB = getAABB();
     float a;
-    return data.isValidPosition(playerAABB, &a);
+    return data->isValidPosition(playerAABB, &a);
 }
 
-bool Player::validatePosition(Pos newPosition, BlockArrayData data, float* yToSnapTo) {
+bool Player::validatePosition(Pos newPosition, BlockArrayData* data, float* yToSnapTo) {
     AABB playerAABB = getAABB();
-    return data.isValidPosition(playerAABB, yToSnapTo);
+    return data->isValidPosition(playerAABB, yToSnapTo);
 }
 
 Pos Player::getCameraPosition() {
@@ -230,8 +231,8 @@ void Player::updatePlayerLookingAt(World* world) {
 
     std::vector<Chunk*> chunksCrossed = std::vector<Chunk*>();
 
-    for(int i = 0; i < world->getBlockData()->getLoadedChunkLocations().size(); ++i) {
-        Chunk* chunk = world->getBlockData()->getChunkWithBlock(world->getBlockData()->getLoadedChunkLocations().at(i).chunkLocation);
+    for(std::pair<BlockPos, LoadedChunkInfo> pair : world->getBlockData()->getLoadedChunkLocations()) {
+        Chunk* chunk = world->getBlockData()->getChunkWithBlock(pair.first);
         if(!chunk->isFakeChunk()) {
             AABB aabb = chunk->getChunkAABB();
 
@@ -405,7 +406,7 @@ void Player::move(glm::vec3* moveVec) {
 
     pos.x += d3;
 
-    if(!this->validatePosition(pos, *world->getBlockData())) {
+    if(!this->validatePosition(pos, world->getBlockData())) {
         pos = previousPos;
     }
 
@@ -413,7 +414,7 @@ void Player::move(glm::vec3* moveVec) {
 
     pos.z += d5;
 
-    if(!this->validatePosition(pos, *world->getBlockData())) {
+    if(!this->validatePosition(pos, world->getBlockData())) {
         pos = previousPos;
     }
 
@@ -423,7 +424,7 @@ void Player::move(glm::vec3* moveVec) {
 
     pos.y += d4;
 
-    if(!this->validatePosition(pos, *world->getBlockData(), yPosToSnapTo)) {
+    if(!this->validatePosition(pos, world->getBlockData(), yPosToSnapTo)) {
         pos = previousPos;
         if(d4 < 0) {
             pos.y = yPosToSnapTo[0];
@@ -519,7 +520,7 @@ void Player::updateHorizontalMotion(long milliseconds) {
 //ahagahlkjdsflaksjf
 bool Player::isBlockUnderPlayer() {
     pos.y -= 0.02;
-    if(!this->validatePosition(pos, *world->getBlockData())) {
+    if(!this->validatePosition(pos, world->getBlockData())) {
         pos.y += 0.02;
         return true;
     }else {
