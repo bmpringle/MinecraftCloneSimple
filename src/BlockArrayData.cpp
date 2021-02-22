@@ -4,12 +4,12 @@
 #include "World.h"
 #include <algorithm>
 #include <Blocks.h>
-#include <noise/noise.h>
 
-BlockArrayData::BlockArrayData(int xSize, int ySize, int zSize) : chunkList(std::vector<Chunk>()) {
+BlockArrayData::BlockArrayData(int xSize, int ySize, int zSize) : chunkList(std::vector<Chunk>()), noise(noise::module::Perlin()) {
     size[0] = xSize; 
     size[1] = ySize; 
     size[2] = zSize;
+    noise.SetSeed(SEED);
 }
 
 void BlockArrayData::updateBlockAtPosition(BlockPos pos) {
@@ -26,7 +26,7 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
     std::map<BlockPos, LoadedChunkInfo> oldChunks = loadedChunkLocations;
 
     loadedChunkLocations.clear();
-    //auto start = std::chrono::high_resolution_clock::now();
+
     for(float x = -(float)renderDistance; x <= (float)renderDistance; ++x) {
         for(float z = -(float)renderDistance; z <= (float)renderDistance; ++z) {
             BlockPos playerBlock = BlockPos((int)centerChunk->getChunkCoordinates().x + size[0] * x, 0, (int)centerChunk->getChunkCoordinates().z + size[2] * z);
@@ -52,7 +52,6 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
             }
         }
     }
-    //std::cout << "duration1: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
 }
 
 void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> block) {
@@ -223,22 +222,15 @@ bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
 void BlockArrayData::generateChunk(BlockPos chunkLocation) {
     Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize()[0]), floor((float)chunkLocation.z / (float)Chunk::getChunkSize()[2]));
 
-    const double width = Chunk::getChunkSize()[0];
-    const double height = Chunk::getChunkSize()[2];
-
-    const int averageTerrainHeight = 10;
-    const double amplifier = 3;
-
-    noise::module::Perlin noise;
-    noise.SetSeed(SEED);
-    
     for(int x = chunkLocation.x; x < chunkLocation.x + width; ++x) {
         for(int z = chunkLocation.z; z < chunkLocation.z + height; ++z) {
             double nx = x/width - 0.5, ny = z/height - 0.5;
             double value = 1 * noise.GetValue(1 * nx, 1 * ny, zNoise) + 0.5 * noise.GetValue(2 * nx, 2 * ny, zNoise) + 0.25 * noise.GetValue(4 * nx, 4 * ny, zNoise) + 0.125 * noise.GetValue(8 * nx, 8 * ny, zNoise) + 0.0625 * noise.GetValue(16 * nx, 16 * ny, zNoise);
-
             int blockHeight = floor(value * amplifier) + averageTerrainHeight;
-            for(int y = 0; y < blockHeight; ++y) {
+            std::vector<std::shared_ptr<Block>> blocks = {Blocks::cobblestone, Blocks::dirt, Blocks::grass};
+            std::vector<int> amounts = {blockHeight - 4, 3, 1};
+            generatingChunk.setColumnOfBlocks(BlockPos(x, 0, z), blocks, amounts);
+            /*for(int y = 0; y < blockHeight; ++y) {
                 if(y + 1 == blockHeight) {
                     generatingChunk.setBlockAtLocation(BlockPos(x, y, z), Blocks::grass);
                 }else if(y + 4 >= blockHeight) {
@@ -246,8 +238,9 @@ void BlockArrayData::generateChunk(BlockPos chunkLocation) {
                 }else {
                     generatingChunk.setBlockAtLocation(BlockPos(x, y, z), Blocks::cobblestone);
                 }
-            }
+            }*/
         }
     }
+
     chunkList.push_back(generatingChunk);
 }

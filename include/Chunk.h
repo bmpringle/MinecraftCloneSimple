@@ -17,6 +17,8 @@ class Chunk {
 
         void setBlockAtLocation(BlockPos pos, std::shared_ptr<Block> block);
 
+        void setColumnOfBlocks(BlockPos pos, std::vector<std::shared_ptr<Block>> block, std::vector<int> amount);
+
         void removeBlockAtLocation(BlockPos pos);
 
         BlockPos getChunkCoordinates() const;

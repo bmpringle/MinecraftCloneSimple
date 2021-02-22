@@ -62,6 +62,44 @@ void Chunk::setBlockAtLocation(BlockPos pos, std::shared_ptr<Block> block) {
     }
 }
 
+void Chunk::setColumnOfBlocks(BlockPos pos, std::vector<std::shared_ptr<Block>> block, std::vector<int> amount) {
+    if(pos.x >= getChunkCoordinates().x && pos.x < getChunkCoordinates().x + X) {
+        if(pos.y >= getChunkCoordinates().y && pos.y < getChunkCoordinates().y + Y) {
+            if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
+                BlockData blockData = BlockData(block[0], pos);
+                AABB bAABB = blockData.getAABB();
+
+                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
+                    if(AABBIntersectedByAABB(bAABB, aabb)){
+                        return true;
+                    }
+                    return false;
+                };
+                std::vector<std::optional<std::array<BlockData, 256>>*> blocksVector = blockTree.getLeafOfTree(eval);
+                if(blocksVector.size() != 1) {
+                    std::cout << "abort! there are " << blocksVector.size() << " valid blocks" << std::endl;
+                    abort();
+                }
+                std::optional<std::array<BlockData, 256>>* blocks = blocksVector.at(0);
+                if(block.size() != amount.size()) {
+                    std::cout << "assert failed: block.size() != amount.size()" << std::endl;
+                    abort();
+                }
+
+                int b = 0;
+                for(int _amount : amount) {
+                    std::shared_ptr<Block> _block = block.at(b);
+                    for(int y = pos.y; y < pos.y + _amount; ++y) {
+                        BlockData data = BlockData(_block, BlockPos(pos.x, y, pos.z));
+                        blocks->value()[y] = data;
+                    }
+                    pos.y += _amount;    
+                    ++b;
+                }
+            }
+        }
+    }
+}
 BlockPos Chunk::getChunkCoordinates() const {
     return BlockPos(chunkCoordinates.x * X, chunkCoordinates.y * Y, chunkCoordinates.z * Z);
 }

@@ -9,6 +9,7 @@
 #include "LoadedChunkInfo.h"
 #include <mutex>
 #include <map>
+#include <noise/noise.h>
 
 class World;
 
@@ -59,5 +60,13 @@ class BlockArrayData {
 
         const double SEED = abs(rand() % 10000);
         double zNoise = rand() % 1 - 0.5;
+
+        const double width = Chunk::getChunkSize()[0];
+        const double height = Chunk::getChunkSize()[2];
+
+        const int averageTerrainHeight = 10;
+        const double amplifier = 3;
+
+        noise::module::Perlin noise;
 };
 #endif

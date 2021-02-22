@@ -101,7 +101,7 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         }
 
         if(keyEvent.key == "u") {
-            if(std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("itemUseTimer")).count() > 150) {
+            if(std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("itemUseTimer")).count() > 30) {
                 itemInHand->onRightClick(world);
                 world->getTimerMap()->resetTimer("itemUseTimer");
 
