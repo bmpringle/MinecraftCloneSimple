@@ -75,6 +75,10 @@ void Player::listenTo(std::shared_ptr<Event> e) {
             setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::grass)));
         }
 
+        if(keyEvent.key == "4") {
+            setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::log)));
+        }
+
         if(keyEvent.key == "u") {
             itemInHand->onRightClick(world);
             world->getTimerMap()->resetTimer("itemUseTimer");
@@ -101,7 +105,7 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         }
 
         if(keyEvent.key == "u") {
-            if(std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("itemUseTimer")).count() > 30) {
+            if(std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("itemUseTimer")).count() > 200) {
                 itemInHand->onRightClick(world);
                 world->getTimerMap()->resetTimer("itemUseTimer");
 

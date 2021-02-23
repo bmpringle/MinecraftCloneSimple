@@ -100,6 +100,34 @@ void Chunk::setColumnOfBlocks(BlockPos pos, std::vector<std::shared_ptr<Block>> 
         }
     }
 }
+
+void Chunk::softSetBlockAtLocation(BlockPos pos, std::shared_ptr<Block> block) {
+    if(pos.x >= getChunkCoordinates().x && pos.x < getChunkCoordinates().x + X) {
+        if(pos.y >= getChunkCoordinates().y && pos.y < getChunkCoordinates().y + Y) {
+            if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
+                BlockData blockData = BlockData(block, pos);
+                AABB bAABB = blockData.getAABB();
+
+                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
+                    if(AABBIntersectedByAABB(bAABB, aabb)){
+                        return true;
+                    }
+                    return false;
+                };
+                std::vector<std::optional<std::array<BlockData, 256>>*> blocksVector = blockTree.getLeafOfTree(eval);
+                if(blocksVector.size() != 1) {
+                    std::cout << "abort! there are " << blocksVector.size() << " valid blocks" << std::endl;
+                    abort();
+                }
+                std::optional<std::array<BlockData, 256>>* blocks = blocksVector.at(0);
+                if(blocks->value()[pos.y].getBlockType() == nullptr) {
+                    blocks->value()[pos.y] = blockData;
+                }   
+            }
+        }
+    }
+}
+
 BlockPos Chunk::getChunkCoordinates() const {
     return BlockPos(chunkCoordinates.x * X, chunkCoordinates.y * Y, chunkCoordinates.z * Z);
 }

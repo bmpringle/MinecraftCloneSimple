@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "RenderInclude.h"
 #include "stbi/stb_image.h"
+#include <iostream>
 
 TextureArrayCreator::TextureArrayCreator() {
 
@@ -65,20 +66,26 @@ unsigned int TextureArrayCreator::getGeneratedTextureArray() {
 }
 
 int TextureArrayCreator::getTextureLayer(std::string tex) {
-    std::vector<std::string>::iterator it = std::find(texturePaths.begin(), texturePaths.end(), tex);
-    if(it == texturePaths.end()) {
-        return -1;
-    }
-
-    int index = it - texturePaths.begin();
-
-    if(textureDepths.at(index) == -1) {
-        generateTextureArray();
-        
-        it = std::find(texturePaths.begin(), texturePaths.end(), tex);
-        if(textureDepths.at(index) == -1) {
+    try {
+        std::vector<std::string>::iterator it = std::find(texturePaths.begin(), texturePaths.end(), tex);
+        if(it == texturePaths.end()) {
             return -1;
         }
+
+        int index = it - texturePaths.begin();
+
+        if(textureDepths.at(index) == -1) {
+            generateTextureArray();
+            
+            it = std::find(texturePaths.begin(), texturePaths.end(), tex);
+            if(textureDepths.at(index) == -1) {
+                return -1;
+            }
+        }
+        
+    
+        return textureDepths.at(index);
+    }catch(std::out_of_range e) {
+        std::cout << "tex-requ: " << tex << std::endl;
     }
-    return textureDepths.at(index);
 }

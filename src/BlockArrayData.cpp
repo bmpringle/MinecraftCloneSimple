@@ -219,6 +219,29 @@ bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
     return true;
 }
 
+void spawnTree(Chunk* chunk, int height, BlockPos beginningOfTree) {
+    std::vector<std::shared_ptr<Block>> blocks = {Blocks::log};
+    std::vector<int> amounts = {height};
+    chunk->setColumnOfBlocks(beginningOfTree, blocks, amounts);
+
+    //top
+    chunk->softSetBlockAtLocation(BlockPos(beginningOfTree.x, beginningOfTree.y + amounts[0], beginningOfTree.z), Blocks::dirt);
+
+    blocks = {Blocks::dirt};
+    std::vector<int> amountstwo = {2};
+    std::vector<int> amountsone = {1};
+
+    //ring 1
+    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(1, height - 2, 0), blocks, amountstwo);
+    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(1, height - 2, 1), blocks, amountsone);
+    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(0, height - 2, 1), blocks, amountstwo);
+    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(-1, height - 2, 1), blocks, amountsone);
+    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(-1, height - 2, 0), blocks, amountstwo);
+    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(-1, height - 2, -1), blocks, amountsone);
+    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(0, height - 2, -1), blocks, amountstwo);
+    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(1, height - 2, -1), blocks, amountsone);
+}
+
 void BlockArrayData::generateChunk(BlockPos chunkLocation) {
     Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize()[0]), floor((float)chunkLocation.z / (float)Chunk::getChunkSize()[2]));
 
@@ -230,15 +253,12 @@ void BlockArrayData::generateChunk(BlockPos chunkLocation) {
             std::vector<std::shared_ptr<Block>> blocks = {Blocks::cobblestone, Blocks::dirt, Blocks::grass};
             std::vector<int> amounts = {blockHeight - 4, 3, 1};
             generatingChunk.setColumnOfBlocks(BlockPos(x, 0, z), blocks, amounts);
-            /*for(int y = 0; y < blockHeight; ++y) {
-                if(y + 1 == blockHeight) {
-                    generatingChunk.setBlockAtLocation(BlockPos(x, y, z), Blocks::grass);
-                }else if(y + 4 >= blockHeight) {
-                    generatingChunk.setBlockAtLocation(BlockPos(x, y, z), Blocks::dirt);
-                }else {
-                    generatingChunk.setBlockAtLocation(BlockPos(x, y, z), Blocks::cobblestone);
-                }
-            }*/
+            
+            double tree = abs(rand() % 1000);
+
+            if(tree < 5) {
+                spawnTree(&generatingChunk, (abs(rand() % 2) == 1) ? 5 : 4, BlockPos(x, blockHeight, z));
+            }
         }
     }
 

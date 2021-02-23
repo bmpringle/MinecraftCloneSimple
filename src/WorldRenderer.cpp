@@ -165,7 +165,6 @@ void WorldRenderer::updateWorldVBO(World* world) {
         renderChunkBuffers.erase(remove);
     }
     
-    //auto start = std::chrono::high_resolution_clock::now();
     for(std::pair<BlockPos, LoadedChunkInfo> lchunk : lChunksLocations) {
         if(lchunk.second.update) {
             Chunk* c = data->getChunkWithBlock(lchunk.first);
@@ -185,7 +184,6 @@ void WorldRenderer::updateWorldVBO(World* world) {
             }      
         }
     }
-    //std::cout << "duration: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
 }
 
 void WorldRenderer::renderFrame(World* world) {
