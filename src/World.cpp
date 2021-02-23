@@ -37,8 +37,6 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler)
 
     thePlayer->setBufferedChunkLocation(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates());
     internalBlockData.updateLoadedChunks(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates(), this);
-
-    timerMap.addTimerToMap("tickTimer");
 }
 
 void World::updateGame() {
@@ -53,17 +51,9 @@ void World::updateGame() {
     
     input->callRegularEvents(worldEventQueue, &timerMap);
     
-    auto updateClient = std::chrono::high_resolution_clock::now();
     thePlayer->updateClient(this);
-    std::cout << "updateClient: " << (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-updateClient).count()) << std::endl;
 
-    auto updateServer = std::chrono::high_resolution_clock::now();
-    for(int i = 0; i <  std::chrono::duration_cast<std::chrono::milliseconds>(timerMap.getTimerDuration("tickTimer")).count() / 50; ++i) {
-        timerMap.resetTimer("tickTimer");
-        //mkmoreexact
-        thePlayer->updateServer(this);
-    }
-    std::cout << "updateServer: " << (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-updateServer).count()) << std::endl;
+    thePlayer->updateServer(this);
 }
 
 void World::generateWorld() {
@@ -109,12 +99,24 @@ void World::mainLoop() {
 
     worldEventQueue->addEventListener(thePlayer);
 
-    while(!glfwWindowShouldClose(window) && !paused) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        auto updateStart = std::chrono::high_resolution_clock::now();
-        updateGame();
-        renderGame();
+    auto previous = std::chrono::high_resolution_clock::now();
+    double lag = 0.0;
+    const double MS_PER_UPDATE = 16.666;
 
+    while (!glfwWindowShouldClose(window) && !paused) {
+        auto current = std::chrono::high_resolution_clock::now();
+        double elapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(current - previous)).count();
+        previous = current;
+        lag += elapsed;
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        while (lag >= MS_PER_UPDATE) {
+            updateGame();
+            lag -= MS_PER_UPDATE;
+        }
+
+        renderGame();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

@@ -35,7 +35,7 @@ class Player final : public Listener, public Model {
         bool validatePosition(Pos newPosition, BlockArrayData* data, float* yToSnapTo);
         void updatePlayerLookingAt(World* world);
         float raycast(AABB box, SideEnum* side);
-        void updateHorizontalMotion(long milliseconds);
+        void updateHorizontalMotion();
         void move(glm::vec3* moveVec);
         bool isBlockUnderPlayer();
 

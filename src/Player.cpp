@@ -19,9 +19,11 @@ void updatePlayerInWorld(World* _world) {
 
 void Player::updateClient(World* world) {  
     //handle space bar and gravity from events
-    long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDurationAndReset("playerUpdateTimer")).count();
+    /*
+     *long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDurationAndReset("playerUpdateTimer")).count();
+    */
 
-    updateHorizontalMotion(milliseconds);
+    updateHorizontalMotion();
 
     move(&motion);
 
@@ -33,16 +35,16 @@ void Player::updateServer(World* _world) {
      * Not needed right now:
      * long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("playerUpdateTimer")).count();
      */
-
+    
     if(!isBlockUnderPlayer()) {
-        motion[1] -= 0.038 * 1.3;
+        motion[1] -= 0.086 / 6;
         motion[1] *= 0.98;
     }
 
     if(abs(motion[0]) < 0.005) {
         motion[0] = 0;
     }else {
-        motion[0] *= 0.98;
+        motion[0] *= 0.9998;
     }
 
     if(abs(motion[2]) < 0.005) {
@@ -116,7 +118,7 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         if(keyEvent.key == " ") {
             if(isGrounded) {
                 isJumping = true;
-                motion[1] += 0.42/2;
+                motion[1] = 0.21;
             }
         }
 
@@ -406,6 +408,11 @@ void Player::move(glm::vec3* moveVec) {
         d3 = d3 * 1.3;
         d5 = d5 * 1.3;
     }
+    
+    if(flag && isJumping) {
+        d3 = d3 / 1.3 * 1.5;
+        d5 = d5 / 1.3 * 1.5;
+    }
 
     Pos previousPos = pos;
 
@@ -457,7 +464,7 @@ void Player::move(glm::vec3* moveVec) {
     }
 }
 
-void Player::updateHorizontalMotion(long milliseconds) {
+void Player::updateHorizontalMotion() {
     float unitX = 0;
     float unitZ = 0;
 
@@ -507,8 +514,8 @@ void Player::updateHorizontalMotion(long milliseconds) {
         }
     }
 
-    double xMovRel = milliseconds / 1000.0 * speed * unitX;
-    double zMovRel = milliseconds / 1000.0 * speed * unitZ;
+    double xMovRel = (speed * unitX) / 60;
+    double zMovRel = (speed * unitZ) / 60;
 
     double degRADS = yaw / 180.0 * M_PI;
     double xMovAbs = xMovRel * cos(degRADS) - zMovRel * sin(degRADS);
@@ -524,12 +531,12 @@ void Player::updateHorizontalMotion(long milliseconds) {
 
 //ahagahlkjdsflaksjf
 bool Player::isBlockUnderPlayer() {
-    pos.y -= 0.02;
+    pos.y -= 0.002;
     if(!this->validatePosition(pos, world->getBlockData())) {
-        pos.y += 0.02;
+        pos.y += 0.002;
         return true;
     }else {
-        pos.y += 0.02;
+        pos.y += 0.002;
         return false;
     }
 }
