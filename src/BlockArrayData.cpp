@@ -74,10 +74,75 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
             }        
         }
     }
+    generateChunk(BlockPos((float)size[0] * floor((float)pos.x / (float)size[0]), 0, (float)size[2] * floor((float)pos.z / (float)size[2])));
+    setBlockAtPosition(pos, block);
+}
+
+void BlockArrayData::softSetBlockAtPosition(BlockPos pos, std::shared_ptr<Block> block) {
+    std::array<int, 3> size = Chunk::getChunkSize();
+
     
-    Chunk c = Chunk(floor((float)pos.x / (float)size[0]), floor((float)pos.z / (float)size[2]));
-    c.setBlockAtLocation(pos, block);
-    chunkList.push_back(c);
+    for(int i = 0; i < chunkList.size(); ++i) {
+        Chunk c = chunkList.at(i);
+        BlockPos chunkLocation = c.getChunkCoordinates();
+        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
+            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
+                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
+                    chunkList.at(i).softSetBlockAtLocation(pos, block);
+                    if(isChunkLoaded(c)) {
+                        loadedChunkLocations[c.getChunkCoordinates()].update = true;
+                    }
+                    return;
+                }
+            }        
+        }
+    }
+    generateChunk(BlockPos((float)size[0] * floor((float)pos.x / (float)size[0]), 0, (float)size[2] * floor((float)pos.z / (float)size[2])));
+    softSetBlockAtPosition(pos, block);
+}
+
+void BlockArrayData::setColumnAtPosition(BlockPos pos, std::vector<std::shared_ptr<Block>> block, std::vector<int> amount) {
+    std::array<int, 3> size = Chunk::getChunkSize();
+
+    for(int i = 0; i < chunkList.size(); ++i) {
+        Chunk c = chunkList.at(i);
+        BlockPos chunkLocation = c.getChunkCoordinates();
+        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
+            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
+                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
+                    chunkList.at(i).setColumnOfBlocks(pos, block, amount);
+                    if(isChunkLoaded(c)) {
+                        loadedChunkLocations[c.getChunkCoordinates()].update = true;
+                    }
+                    return;
+                }
+            }        
+        }
+    }   
+    generateChunk(BlockPos((float)size[0] * floor((float)pos.x / (float)size[0]), 0, (float)size[2] * floor((float)pos.z / (float)size[2])));
+    setColumnAtPosition(pos, block, amount);
+}
+
+void BlockArrayData::softSetColumnAtPosition(BlockPos pos, std::vector<std::shared_ptr<Block>> block, std::vector<int> amount) {
+    std::array<int, 3> size = Chunk::getChunkSize();
+
+    for(int i = 0; i < chunkList.size(); ++i) {
+        Chunk c = chunkList.at(i);
+        BlockPos chunkLocation = c.getChunkCoordinates();
+        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
+            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
+                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
+                    chunkList.at(i).softSetColumnOfBlocks(pos, block, amount);
+                    if(isChunkLoaded(c)) {
+                        loadedChunkLocations[c.getChunkCoordinates()].update = true;
+                    }
+                    return;
+                }
+            }        
+        }
+    }
+    generateChunk(BlockPos((float)size[0] * floor((float)pos.x / (float)size[0]), 0, (float)size[2] * floor((float)pos.z / (float)size[2])));
+    softSetColumnAtPosition(pos, block, amount);
 }
 
 bool BlockArrayData::isChunkLoaded(Chunk c) {
@@ -219,10 +284,10 @@ bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
     return true;
 }
 
-void spawnTree(Chunk* chunk, int height, BlockPos beginningOfTree) {
+void spawnTree(BlockArrayData* data, Chunk* chunk, int height, BlockPos beginningOfTree) {
     std::vector<std::shared_ptr<Block>> blocks = {Blocks::log};
     std::vector<int> amounts = {height};
-    chunk->setColumnOfBlocks(beginningOfTree, blocks, amounts);
+    chunk->softSetColumnOfBlocks(beginningOfTree, blocks, amounts);
 
     //top
     chunk->softSetBlockAtLocation(BlockPos(beginningOfTree.x, beginningOfTree.y + amounts[0], beginningOfTree.z), Blocks::dirt);
@@ -230,20 +295,21 @@ void spawnTree(Chunk* chunk, int height, BlockPos beginningOfTree) {
     blocks = {Blocks::dirt};
     std::vector<int> amountstwo = {2};
     std::vector<int> amountsone = {1};
-
     //ring 1
-    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(1, height - 2, 0), blocks, amountstwo);
-    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(1, height - 2, 1), blocks, amountsone);
-    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(0, height - 2, 1), blocks, amountstwo);
-    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(-1, height - 2, 1), blocks, amountsone);
-    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(-1, height - 2, 0), blocks, amountstwo);
-    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(-1, height - 2, -1), blocks, amountsone);
-    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(0, height - 2, -1), blocks, amountstwo);
-    chunk->setColumnOfBlocks(beginningOfTree + BlockPos(1, height - 2, -1), blocks, amountsone);
+    data->softSetColumnAtPosition(beginningOfTree + BlockPos(1, height - 2, 0), blocks, amountstwo);
+    data->softSetColumnAtPosition(beginningOfTree + BlockPos(1, height - 2, 1), blocks, amountsone);
+    data->softSetColumnAtPosition(beginningOfTree + BlockPos(0, height - 2, 1), blocks, amountstwo);
+    data->softSetColumnAtPosition(beginningOfTree + BlockPos(-1, height - 2, 1), blocks, amountsone);
+    data->softSetColumnAtPosition(beginningOfTree + BlockPos(-1, height - 2, 0), blocks, amountstwo);
+    data->softSetColumnAtPosition(beginningOfTree + BlockPos(-1, height - 2, -1), blocks, amountsone);
+    data->softSetColumnAtPosition(beginningOfTree + BlockPos(0, height - 2, -1), blocks, amountstwo);
+    data->softSetColumnAtPosition(beginningOfTree + BlockPos(1, height - 2, -1), blocks, amountsone);
 }
 
 void BlockArrayData::generateChunk(BlockPos chunkLocation) {
     Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize()[0]), floor((float)chunkLocation.z / (float)Chunk::getChunkSize()[2]));
+
+    std::map<BlockPos, int> treeMap = std::map<BlockPos, int>();
 
     for(int x = chunkLocation.x; x < chunkLocation.x + width; ++x) {
         for(int z = chunkLocation.z; z < chunkLocation.z + height; ++z) {
@@ -257,10 +323,14 @@ void BlockArrayData::generateChunk(BlockPos chunkLocation) {
             double tree = abs(rand() % 1000);
 
             if(tree < 5) {
-                spawnTree(&generatingChunk, (abs(rand() % 2) == 1) ? 5 : 4, BlockPos(x, blockHeight, z));
+                treeMap[BlockPos(x, blockHeight, z)] = ((abs(rand() % 2) == 1) ? 5 : 4); 
             }
         }
     }
 
     chunkList.push_back(generatingChunk);
+
+    for(std::pair<BlockPos, int> pair: treeMap) {
+        spawnTree(this, &generatingChunk, pair.second, pair.first);
+    }
 }

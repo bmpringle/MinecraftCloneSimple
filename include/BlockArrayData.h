@@ -21,6 +21,12 @@ class BlockArrayData {
 
         void setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> block);
 
+        void softSetBlockAtPosition(BlockPos pos, std::shared_ptr<Block> block);
+
+        void setColumnAtPosition(BlockPos pos, std::vector<std::shared_ptr<Block>> block, std::vector<int> amount);
+
+        void softSetColumnAtPosition(BlockPos pos, std::vector<std::shared_ptr<Block>> block, std::vector<int> amount);
+
         std::vector<Chunk> getRawChunkArray();
 
         BlockData getBlockAtPosition(BlockPos pos);
