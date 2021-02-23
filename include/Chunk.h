@@ -21,6 +21,8 @@ class Chunk {
 
         void setColumnOfBlocks(BlockPos pos, std::vector<std::shared_ptr<Block>> block, std::vector<int> amount);
 
+        void softSetColumnOfBlocks(BlockPos pos, std::vector<std::shared_ptr<Block>> block, std::vector<int> amount);
+
         void removeBlockAtLocation(BlockPos pos);
 
         BlockPos getChunkCoordinates() const;

@@ -50,15 +50,20 @@ void World::updateGame() {
             }
         }
     }*/
+    
     input->callRegularEvents(worldEventQueue, &timerMap);
-
+    
+    auto updateClient = std::chrono::high_resolution_clock::now();
     thePlayer->updateClient(this);
+    std::cout << "updateClient: " << (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-updateClient).count()) << std::endl;
 
+    auto updateServer = std::chrono::high_resolution_clock::now();
     for(int i = 0; i <  std::chrono::duration_cast<std::chrono::milliseconds>(timerMap.getTimerDuration("tickTimer")).count() / 50; ++i) {
         timerMap.resetTimer("tickTimer");
         //mkmoreexact
         thePlayer->updateServer(this);
     }
+    std::cout << "updateServer: " << (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-updateServer).count()) << std::endl;
 }
 
 void World::generateWorld() {
@@ -106,8 +111,10 @@ void World::mainLoop() {
 
     while(!glfwWindowShouldClose(window) && !paused) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        auto updateStart = std::chrono::high_resolution_clock::now();
         updateGame();
         renderGame();
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
