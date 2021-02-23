@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <thread>
 #include "Blocks.h"
+#include <math.h>
 
 #define WORLDSIZE_CONST 100
 

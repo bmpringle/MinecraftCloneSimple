@@ -1,0 +1,7 @@
+cmake -DCMAKE_CXX_COMPILER=/usr/local/bin/x86_64-w64-mingw32-g++ -DCMAKE_CROSSCOMPILING=TRUE -DCMAKE_CXX_COMPILER_WORKS=1 -DCMAKE_SYSTEM_PROCESSOR=x86_64
+
+//switch these out for right binarytools before running make
+
+emacs CMakeFiles/libnoise.dir/flags.make
+
+emacs CMakeFiles/libnoise.dir/link.txt

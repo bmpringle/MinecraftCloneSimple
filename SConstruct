@@ -14,6 +14,7 @@ import subprocess
 
 DBG = int(ARGUMENTS.get('DBG', 0))
 ARM = int(ARGUMENTS.get('ARM', 1))
+
 COMPILE_LIBS = int(ARGUMENTS.get('COMPILE_LIBS', 0))
 
 env = Environment()
@@ -95,6 +96,12 @@ if env['PLATFORM'] == 'darwin': #macos
     GLEW_DIR='{}/Cellar/glew/2.2.0'.format(HOMEBREW)
     LIBS=['GLEW','GLFW','pthread', 'liblibnoise']
     LINK='{} -framework OpenGL -framework GLUT'.format(CXX)
+
+    if int(ARGUMENTS.get('W64', 0))==1:
+        CXX='/usr/local/bin/x86_64-w64-mingw32-g++'
+        LINK='{} -static-libgcc -static-libstdc++ -static'.format(CXX)
+        LIBS=['glu32', 'gdi32', 'opengl32']
+
 elif env['PLATFORM'] == 'posix': #linux
     CLANG = int(ARGUMENTS.get('CLANG', 1))
     CXX='clang++' if CLANG==1 else "g++"
@@ -143,11 +150,20 @@ GLEW_LIB=os.sep.join([GLEW_DIR,'lib'])
 BLD = 'dbg' if DBG == 1 else 'rel'
 OPT = 0 if DBG == 1 else 3
 
-CCFLAGS='-static -O{} -I {} -I {} -I {} -I {} -I {} -Wall -g -std=c++2a -DGLEW_STATIC'.format(OPT, "./glm/", './', './include/', GLFW_INCLUDE, GLEW_INCLUDE)
+LIBNOISEINC = '/usr/local/include/'
+if int(ARGUMENTS.get('W64', 0))==1:
+    LIBNOISEINC = '../libnoise-w64/include/'
+
+CCFLAGS='-static -O{} -I {} -I {} -I {} -I {} -I {} -I {} -D _USE_MATH_DEFINES -Wall -g -std=c++2a -DGLEW_STATIC'.format(OPT, "./glm/", './', './include/', GLFW_INCLUDE, GLEW_INCLUDE, LIBNOISEINC)
+
+LIBSSTATIC = Glob(os.sep.join(['lib', '*.a']))
+
+if int(ARGUMENTS.get('W64', 0))==1:
+    LIBSSTATIC = Glob(os.sep.join(['lib', '*.lib']))
 
 VariantDir(os.sep.join(['obj', BLD]), "src", duplicate=0)
 tst = env.Program(os.sep.join(['bin', BLD, 'tstGame']),
-                    source=[Glob('{}/*.cpp'.format(os.sep.join(['obj', BLD]))), Glob(os.sep.join(['lib', '*.a']))],
+                    source=[Glob('{}/*.cpp'.format(os.sep.join(['obj', BLD]))), LIBSSTATIC],
                     CXX=CXX,
                     CCFLAGS=CCFLAGS,
                     LINK=LINK,
@@ -155,3 +171,23 @@ tst = env.Program(os.sep.join(['bin', BLD, 'tstGame']),
                     LIBS=LIBS)
 
 Default(tst)
+
+if int(ARGUMENTS.get('DIST', 0)) == 1:
+    process1 = subprocess.Popen(shell='true', cwd='./', args="mkdir -p dist", stdout=subprocess.PIPE)
+    output, error = process1.communicate()
+
+    process1 = subprocess.Popen(shell='true', cwd='./', args="mkdir -p dist/shaders/", stdout=subprocess.PIPE)
+    output, error = process1.communicate()
+
+    process1 = subprocess.Popen(shell='true', cwd='./', args="mkdir -p dist/src/assets/", stdout=subprocess.PIPE)
+    output, error = process1.communicate()
+
+    if int(ARGUMENTS.get('W64', 0)) == 1:
+        process1 = subprocess.Popen(shell='true', cwd='./', args="cp ./bin/rel/tstGame.exe ./dist/", stdout=subprocess.PIPE)
+        output, error = process1.communicate()
+
+        process1 = subprocess.Popen(shell='true', cwd='./', args="cp -r shaders/ ./dist/shaders/", stdout=subprocess.PIPE)
+        output, error = process1.communicate()
+
+        process1 = subprocess.Popen(shell='true', cwd='./', args="cp -r src/assets/ ./dist/src/assets/", stdout=subprocess.PIPE)
+        output, error = process1.communicate()
