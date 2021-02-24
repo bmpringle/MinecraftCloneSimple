@@ -60,3 +60,7 @@ BlockRenderedModel Block::getRenderedModel() {
 std::string Block::getTextureName(SideEnum side) {
     return "notexture.png";
 }
+
+bool Block::isSolid() {
+    return true;
+}

@@ -22,7 +22,7 @@ unsigned int TextureArrayCreator::generateTextureArray() {
 
     glBindTexture(GL_TEXTURE_2D_ARRAY, texBuffer);
 
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGB, 16, 16, texturePaths.size(), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, 16, 16, texturePaths.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
     textureDepths.clear();
 
@@ -35,7 +35,7 @@ unsigned int TextureArrayCreator::generateTextureArray() {
             return -1;
         }
 
-        glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, 16, 16, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, 16, 16, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
         textureDepths.push_back(i);
 

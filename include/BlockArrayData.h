@@ -55,6 +55,8 @@ class BlockArrayData {
 
         void generateChunk(BlockPos chunkLocation);
 
+        bool isAABBInWater(AABB playerAABB);
+
     private:
         std::vector<Chunk> chunkList;
 
@@ -72,6 +74,7 @@ class BlockArrayData {
 
         const int averageTerrainHeight = 10;
         const double amplifier = 3;
+        const int waterLevel = 7;
 
         noise::module::Perlin noise;
 };

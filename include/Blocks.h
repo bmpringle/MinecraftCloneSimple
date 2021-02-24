@@ -3,6 +3,7 @@
 #include "BlockGrass.h"
 #include "BlockLog.h"
 #include "BlockLeaf.h"
+#include "BlockWater.h"
 
 #include "TextureArrayCreator.h"
 
@@ -17,6 +18,7 @@ class Blocks {
         const static std::shared_ptr<Block> grass;
         const static std::shared_ptr<Block> log;
         const static std::shared_ptr<Block> leaf;
+        const static std::shared_ptr<Block> water;
 
         static void initTextureArrayCreator(TextureArrayCreator* texCreator);
 };

@@ -268,7 +268,7 @@ bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
                     for(std::optional<std::array<BlockData, 256>>* blocksColumn : blocksVector) {
                         for(int i = 0; i < 256; ++i) {
                             BlockData block = (*blocksColumn).value()[i];
-                            if(block.getBlockType() != nullptr) {
+                            if(block.getBlockType() != nullptr && block.getBlockType()->isSolid()) {
                                 AABB blockAABB = block.getAABB();
                                 if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
                                     *ypos = blockAABB.startY + blockAABB.ySize;
@@ -320,6 +320,12 @@ void BlockArrayData::generateChunk(BlockPos chunkLocation) {
             std::vector<int> amounts = {blockHeight - 4, 3, 1};
             generatingChunk.setColumnOfBlocks(BlockPos(x, 0, z), blocks, amounts);
             
+            if(blockHeight < waterLevel) {
+                std::vector<std::shared_ptr<Block>> blocks = {Blocks::dirt, Blocks::water};
+                std::vector<int> amounts = {1, waterLevel - blockHeight};
+                generatingChunk.setColumnOfBlocks(BlockPos(x, blockHeight - 1, z), blocks, amounts);
+            }
+
             double tree = abs(rand() % 1000);
 
             if(tree < 5) {
@@ -333,4 +339,37 @@ void BlockArrayData::generateChunk(BlockPos chunkLocation) {
     for(std::pair<BlockPos, int> pair: treeMap) {
         spawnTree(this, &generatingChunk, pair.second, pair.first);
     }
+}
+
+bool BlockArrayData::isAABBInWater(AABB playerAABB) {
+    for(std::pair<BlockPos, LoadedChunkInfo> pair : loadedChunkLocations) {
+        Chunk* c = getChunkWithBlock(pair.first);
+        if(!c->isFakeChunk()) {
+            AABB chunkAABB = c->getChunkAABB();
+            if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
+                auto tree = c->getBlockTree();
+                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [playerAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
+                    if(AABBIntersectedByAABB(playerAABB, aabb)){
+                        return true;
+                    }
+                    return false;
+                };
+                std::vector<std::optional<std::array<BlockData, 256>>*> blocksVector = tree->getLeafOfTree(eval);
+                if(blocksVector.size() > 0) {
+                    for(std::optional<std::array<BlockData, 256>>* blocksColumn : blocksVector) {
+                        for(int i = 0; i < 256; ++i) {
+                            BlockData block = (*blocksColumn).value()[i];
+                            if(block.getBlockType() != nullptr && block.getBlockType()->getName() == "water") {
+                                AABB blockAABB = block.getAABB();
+                                if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }         
+            }
+        }
+    }
+    return false;
 }

@@ -35,9 +35,14 @@ void Player::updateServer(World* _world) {
      * Not needed right now:
      * long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("playerUpdateTimer")).count();
      */
-    
+    if(isInWater(_world->getBlockData())) {
+        waterPhysics = true;
+    }else {
+        waterPhysics = false;
+    }
+
     if(!isBlockUnderPlayer()) {
-        motion[1] -= 0.086 / 6;
+        motion[1] -= (0.086 / 6) * ((waterPhysics) ? 0.4 : 1);
         motion[1] *= 0.98;
     }
 
@@ -86,6 +91,10 @@ void Player::listenTo(std::shared_ptr<Event> e) {
             setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::leaf)));
         }
 
+        if(keyEvent.key == "6") {
+            setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::water)));
+        }
+
         if(keyEvent.key == "u") {
             itemInHand->onRightClick(world);
             world->getTimerMap()->resetTimer("itemUseTimer");
@@ -120,9 +129,9 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         }
 
         if(keyEvent.key == " ") {
-            if(isGrounded) {
+            if(isGrounded || canJumpInWater(world->getBlockData())) {
                 isJumping = true;
-                motion[1] = 0.21;
+                motion[1] = 0.21 * ((waterPhysics) ? 0.3 : 1);
             }
         }
 
@@ -273,7 +282,7 @@ void Player::updatePlayerLookingAt(World* world) {
                 if(t != -1) {
                     for(int i = 0; i < 256; ++i) {
                         AABB aabbPresice = AABB(aabb.startX, i, aabb.startZ, 1, 1, 1);
-                        if(block.value().at(i).getBlockType() != nullptr) {
+                        if(block.value().at(i).getBlockType() != nullptr && (block.value().at(i).getBlockType()->isSolid())) {
                             float tPresice = raycast(aabbPresice, &sideIntersect);
                             float max = (tValues.size() > 1) ? tValues.at(tValues.size() - 1) : tPresice + 1;
                             if(tPresice != -1 && tPresice < max && tPresice <= 5) {
@@ -399,24 +408,6 @@ void Player::move(glm::vec3* moveVec) {
     double d3 = (*moveVec)[0];
     double d4 = (*moveVec)[1];
     double d5 = (*moveVec)[2];
-    bool flag = isSneaking;
-
-    if (flag) {
-        d3 = d3 / 3;
-        d5 = d5 / 3;
-    }
-
-    flag = !isSneaking && isSprinting;
-
-    if(flag) {
-        d3 = d3 * 1.3;
-        d5 = d5 * 1.3;
-    }
-    
-    if(flag && isJumping) {
-        d3 = d3 / 1.3 * 1.5;
-        d5 = d5 / 1.3 * 1.5;
-    }
 
     Pos previousPos = pos;
 
@@ -449,7 +440,7 @@ void Player::move(glm::vec3* moveVec) {
         (*moveVec)[1] = 0;
     }
 
-    flag = isBlockUnderPlayer();
+    bool flag = isBlockUnderPlayer();
 
     if(!flag && isGrounded && !isJumping && isSneaking) {
         pos = sneakPos;
@@ -525,8 +516,44 @@ void Player::updateHorizontalMotion() {
     double xMovAbs = xMovRel * cos(degRADS) - zMovRel * sin(degRADS);
     double zMovAbs = zMovRel * cos(degRADS) + xMovRel * sin(degRADS);
 
-    motion[0] = xMovAbs;
-    motion[2] = zMovAbs;
+    bool flag = isSneaking;
+
+    if (flag) {
+        xMovAbs = xMovAbs / 3;
+        zMovAbs = zMovAbs / 3;
+    }
+
+    flag = !isSneaking && isSprinting;
+    
+    if(flag && isJumping && !waterPhysics) {
+        xMovAbs = xMovAbs * 1.5;
+        zMovAbs = zMovAbs * 1.5;
+    }else if(flag) {
+        xMovAbs = xMovAbs * 1.3;
+        zMovAbs = zMovAbs * 1.3;
+    }
+
+    if(waterPhysics) {
+        xMovAbs = xMovAbs * 0.4;
+        zMovAbs = zMovAbs * 0.4;
+    }
+
+    if(isGrounded) {
+        motion[0] = xMovAbs;
+        motion[2] = zMovAbs;
+    }else {
+        if(abs(xMovAbs) > 0) {
+            motion[0] = xMovAbs;
+        }else {
+            motion[0] *= 0.8;
+        }
+        
+        if(abs(zMovAbs) > 0) {
+            motion[2] = zMovAbs;
+        }else {
+            motion[2] *= 0.8;
+        }
+    }
 
     xInputDirection = 0;
     zInputDirection = 0;
@@ -543,4 +570,12 @@ bool Player::isBlockUnderPlayer() {
         pos.y += 0.002;
         return false;
     }
+}
+
+bool Player::canJumpInWater(BlockArrayData* data) {
+    return data->isAABBInWater(AABB(pos.x, pos.y, pos.z, 0.6, 1, 0.6));
+}
+
+bool Player::isInWater(BlockArrayData* data) {
+    return data->isAABBInWater(getAABB());
 }

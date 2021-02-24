@@ -31,6 +31,9 @@ class Player final : public Listener, public Model {
         bool validatePosition(Pos newPosition, BlockArrayData* data);
         void setBufferedChunkLocation(BlockPos pos);
         void updateServer(World* _world);
+        bool isInWater(BlockArrayData* data);
+        bool canJumpInWater(BlockArrayData* data);
+        
     private:
         bool validatePosition(Pos newPosition, BlockArrayData* data, float* yToSnapTo);
         void updatePlayerLookingAt(World* world);
@@ -65,6 +68,9 @@ class Player final : public Listener, public Model {
         bool isSneaking = false;
         bool isSprinting = false;
         
+ 
+        bool waterPhysics = false;
+
         float standingHeight = 1.8;
         float sneakingHeight = 1.65;
 

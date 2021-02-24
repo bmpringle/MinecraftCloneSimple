@@ -21,6 +21,8 @@ class Block {
 
         virtual std::string getTextureName(SideEnum side);
 
+        virtual bool isSolid();
+
         virtual ~Block() = default;
 };
 #endif
