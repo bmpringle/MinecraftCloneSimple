@@ -290,9 +290,9 @@ void spawnTree(BlockArrayData* data, Chunk* chunk, int height, BlockPos beginnin
     chunk->softSetColumnOfBlocks(beginningOfTree, blocks, amounts);
 
     //top
-    chunk->softSetBlockAtLocation(BlockPos(beginningOfTree.x, beginningOfTree.y + amounts[0], beginningOfTree.z), Blocks::dirt);
+    chunk->softSetBlockAtLocation(BlockPos(beginningOfTree.x, beginningOfTree.y + amounts[0], beginningOfTree.z), Blocks::leaf);
 
-    blocks = {Blocks::dirt};
+    blocks = {Blocks::leaf};
     std::vector<int> amountstwo = {2};
     std::vector<int> amountsone = {1};
     //ring 1

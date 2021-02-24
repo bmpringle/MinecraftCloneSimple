@@ -82,6 +82,10 @@ void Player::listenTo(std::shared_ptr<Event> e) {
             setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::log)));
         }
 
+        if(keyEvent.key == "5") {
+            setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::leaf)));
+        }
+
         if(keyEvent.key == "u") {
             itemInHand->onRightClick(world);
             world->getTimerMap()->resetTimer("itemUseTimer");

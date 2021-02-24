@@ -2,6 +2,7 @@
 #include "BlockCobblestone.h"
 #include "BlockGrass.h"
 #include "BlockLog.h"
+#include "BlockLeaf.h"
 
 #include "TextureArrayCreator.h"
 
@@ -15,6 +16,7 @@ class Blocks {
         const static std::shared_ptr<Block> cobblestone;
         const static std::shared_ptr<Block> grass;
         const static std::shared_ptr<Block> log;
+        const static std::shared_ptr<Block> leaf;
 
         static void initTextureArrayCreator(TextureArrayCreator* texCreator);
 };
