@@ -64,3 +64,7 @@ std::string Block::getTextureName(SideEnum side) {
 bool Block::isSolid() {
     return true;
 }
+
+bool Block::isOpaque() {
+    return true;
+}

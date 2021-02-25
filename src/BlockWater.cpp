@@ -15,3 +15,7 @@ std::string BlockWater::getName() {
 bool BlockWater::isSolid() {
     return false;
 }
+
+bool BlockWater::isOpaque() {
+    return false;
+}

@@ -23,6 +23,8 @@ class Block {
 
         virtual bool isSolid();
 
+        virtual bool isOpaque();
+
         virtual ~Block() = default;
 };
 #endif

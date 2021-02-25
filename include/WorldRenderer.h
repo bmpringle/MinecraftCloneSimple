@@ -35,7 +35,7 @@ class WorldRenderer {
     private:
         void renderSetup();
 
-        void updateChunkData(std::vector<float>* buffer, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator);
+        void updateChunkData(std::vector<float>* buffer, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator, bool opaqueFlag);
 
         unsigned int compileShaderProgramFromFiles(std::string vertexShaderPath, std::string fragmentShaderPath);
 

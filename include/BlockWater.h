@@ -12,5 +12,7 @@ class BlockWater : public Block {
         std::string getTextureName(SideEnum side) override;  
 
         bool isSolid() override;  
+
+        bool isOpaque() override;
 };
 #endif

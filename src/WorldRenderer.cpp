@@ -86,7 +86,7 @@ unsigned int WorldRenderer::compileShaderProgramFromFiles(std::string vertexShad
 void WorldRenderer::renderSetup() {  
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);  
-    //glEnable(GL_CULL_FACE); 
+    glDisable(GL_CULL_FACE); 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
     
@@ -174,14 +174,18 @@ void WorldRenderer::updateWorldVBO(World* world) {
             try {
                 RenderChunkBuffer buffer = renderChunkBuffers.at(pos);
                 std::vector<BlockData> blockData = c->getBlocksInChunk();
-                std::vector<float> vectorWithColors = std::vector<float>();
-                updateChunkData(&vectorWithColors, &blockData, &textureArrayCreator);
-                renderChunkBuffers.at(pos).setRenderData(vectorWithColors); 
+                std::vector<float> opaqueBuffer = std::vector<float>();
+                std::vector<float> transparentBuffer = std::vector<float>();
+                updateChunkData(&opaqueBuffer, &blockData, &textureArrayCreator, true);
+                updateChunkData(&transparentBuffer, &blockData, &textureArrayCreator, false);
+                renderChunkBuffers.at(pos).setRenderData(opaqueBuffer, transparentBuffer); 
             }catch(std::out_of_range e) {
-                std::vector<float> vectorWithColors = std::vector<float>();
+                std::vector<float> opaqueBuffer = std::vector<float>();
+                std::vector<float> transparentBuffer = std::vector<float>();
                 std::vector<BlockData> blockData = c->getBlocksInChunk();
-                updateChunkData(&vectorWithColors, &blockData, &textureArrayCreator);
-                renderChunkBuffers[pos] = RenderChunkBuffer(vectorWithColors, pos);
+                updateChunkData(&opaqueBuffer, &blockData, &textureArrayCreator, true);
+                updateChunkData(&transparentBuffer, &blockData, &textureArrayCreator, false);
+                renderChunkBuffers[pos] = RenderChunkBuffer(opaqueBuffer, transparentBuffer, pos);
             }      
         }
     }
@@ -197,7 +201,11 @@ void WorldRenderer::renderFrame(World* world) {
     glUseProgram(shaderProgram[3]);
 
     for(std::pair<const BlockPos, RenderChunkBuffer> cBuffer : renderChunkBuffers) {
-        cBuffer.second.renderChunk();
+        cBuffer.second.renderChunkOpaque();
+    }
+
+    for(std::pair<const BlockPos, RenderChunkBuffer> cBuffer : renderChunkBuffers) {
+        cBuffer.second.renderChunkTransparent();
     }
 }
 
@@ -478,58 +486,60 @@ glm::mat3x3 WorldRenderer::calculateYRotationMatrix(double yRotation) {
     return rotationMatrix;
 }
 
-void WorldRenderer::updateChunkData(std::vector<float>* buffer, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator) {    
+void WorldRenderer::updateChunkData(std::vector<float>* buffer, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator, bool opaqueFlag) {    
     for(int i = 0; i < blocksInChunk->size(); ++i) {
         BlockData blockData = blocksInChunk->at(i);
 
-        BlockRenderedModel model = blockData.getBlockType()->getRenderedModel();
-        BlockPos pos = blockData.getPos();
-    
-        for(BlockFace face : model.renderedBlockModel) {
-            int texID = texCreator->getTextureLayer(blockData.getBlockType()->getTextureName(face.side));
+        if(blockData.getBlockType()->isOpaque() == opaqueFlag) {
+            BlockRenderedModel model = blockData.getBlockType()->getRenderedModel();
+            BlockPos pos = blockData.getPos();
+        
+            for(BlockFace face : model.renderedBlockModel) {
+                int texID = texCreator->getTextureLayer(blockData.getBlockType()->getTextureName(face.side));
 
-            for(RenderedTriangle triangle : face.triangles) {
-                //point 1 red
-                buffer->push_back(triangle.a.x);
-                buffer->push_back(triangle.a.y);
-                buffer->push_back(triangle.a.z);
-                buffer->push_back(1);
-                buffer->push_back(0);
-                buffer->push_back(0);
-                buffer->push_back(triangle.a.u);
-                buffer->push_back(triangle.a.v);
-                buffer->push_back(texID);
-                buffer->push_back(pos.x);
-                buffer->push_back(pos.y);
-                buffer->push_back(pos.z);
+                for(RenderedTriangle triangle : face.triangles) {
+                    //point 1 red
+                    buffer->push_back(triangle.a.x);
+                    buffer->push_back(triangle.a.y);
+                    buffer->push_back(triangle.a.z);
+                    buffer->push_back(1);
+                    buffer->push_back(0);
+                    buffer->push_back(0);
+                    buffer->push_back(triangle.a.u);
+                    buffer->push_back(triangle.a.v);
+                    buffer->push_back(texID);
+                    buffer->push_back(pos.x);
+                    buffer->push_back(pos.y);
+                    buffer->push_back(pos.z);
 
-                //point 2 green
-                buffer->push_back(triangle.b.x);
-                buffer->push_back(triangle.b.y);
-                buffer->push_back(triangle.b.z);
-                buffer->push_back(0);
-                buffer->push_back(1);
-                buffer->push_back(0);
-                buffer->push_back(triangle.b.u);
-                buffer->push_back(triangle.b.v);
-                buffer->push_back(texID);
-                buffer->push_back(pos.x);
-                buffer->push_back(pos.y);
-                buffer->push_back(pos.z);
+                    //point 2 green
+                    buffer->push_back(triangle.b.x);
+                    buffer->push_back(triangle.b.y);
+                    buffer->push_back(triangle.b.z);
+                    buffer->push_back(0);
+                    buffer->push_back(1);
+                    buffer->push_back(0);
+                    buffer->push_back(triangle.b.u);
+                    buffer->push_back(triangle.b.v);
+                    buffer->push_back(texID);
+                    buffer->push_back(pos.x);
+                    buffer->push_back(pos.y);
+                    buffer->push_back(pos.z);
 
-                //point 3 blue
-                buffer->push_back(triangle.c.x);
-                buffer->push_back(triangle.c.y);
-                buffer->push_back(triangle.c.z);
-                buffer->push_back(0);
-                buffer->push_back(0);
-                buffer->push_back(1);
-                buffer->push_back(triangle.c.u);
-                buffer->push_back(triangle.c.v);
-                buffer->push_back(texID);
-                buffer->push_back(pos.x);
-                buffer->push_back(pos.y);
-                buffer->push_back(pos.z);
+                    //point 3 blue
+                    buffer->push_back(triangle.c.x);
+                    buffer->push_back(triangle.c.y);
+                    buffer->push_back(triangle.c.z);
+                    buffer->push_back(0);
+                    buffer->push_back(0);
+                    buffer->push_back(1);
+                    buffer->push_back(triangle.c.u);
+                    buffer->push_back(triangle.c.v);
+                    buffer->push_back(texID);
+                    buffer->push_back(pos.x);
+                    buffer->push_back(pos.y);
+                    buffer->push_back(pos.z);
+                }
             }
         }
     }
