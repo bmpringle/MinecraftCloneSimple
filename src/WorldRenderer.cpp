@@ -86,10 +86,11 @@ unsigned int WorldRenderer::compileShaderProgramFromFiles(std::string vertexShad
 void WorldRenderer::renderSetup() {  
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);  
-    //glEnable(GL_CULL_FACE); 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
-    
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+    glEnable(GL_CULL_FACE); 
+    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+
     shaderProgram[0] = compileShaderProgramFromFiles("./shaders/basic_shader.vert", "./shaders/basic_shader.frag");
     shaderProgram[1] = compileShaderProgramFromFiles("./shaders/texture_shader.vert", "./shaders/texture_shader.frag");
     shaderProgram[2] = compileShaderProgramFromFiles("./shaders/2d_shader.vert", "./shaders/2d_shader.frag");
