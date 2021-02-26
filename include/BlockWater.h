@@ -14,5 +14,7 @@ class BlockWater : public Block {
         bool isSolid() override;  
 
         bool isOpaque() override;
+
+        BlockRenderedModel getRenderedModel() override;
 };
 #endif

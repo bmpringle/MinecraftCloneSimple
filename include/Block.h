@@ -17,7 +17,7 @@ class Block {
 
         AABB getAABB();
 
-        BlockRenderedModel getRenderedModel();
+        virtual BlockRenderedModel getRenderedModel();
 
         virtual std::string getTextureName(SideEnum side);
 

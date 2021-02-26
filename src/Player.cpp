@@ -42,7 +42,7 @@ void Player::updateServer(World* _world) {
     }
 
     if(!isBlockUnderPlayer()) {
-        motion[1] -= (0.086 / 6) * ((waterPhysics) ? 0.4 : 1);
+        motion[1] -= (0.086 / 6) * ((waterPhysics) ? 0.5 : 1);
         motion[1] *= 0.98;
     }
 
@@ -131,7 +131,7 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         if(keyEvent.key == " ") {
             if(isGrounded || canJumpInWater(world->getBlockData())) {
                 isJumping = true;
-                motion[1] = 0.21 * ((waterPhysics) ? 0.3 : 1);
+                motion[1] = 0.21 * ((waterPhysics) ? 0.4 : 1);
             }
         }
 
@@ -573,9 +573,14 @@ bool Player::isBlockUnderPlayer() {
 }
 
 bool Player::canJumpInWater(BlockArrayData* data) {
-    return data->isAABBInWater(AABB(pos.x, pos.y, pos.z, 0.6, 1, 0.6));
+    AABB aabb = getAABB();
+    aabb.startY += 0.4;
+    aabb.ySize -= 0.4;
+    return data->isAABBInWater(aabb);
 }
 
 bool Player::isInWater(BlockArrayData* data) {
-    return data->isAABBInWater(getAABB());
+    AABB aabb = getAABB();
+    aabb.ySize += 0.05;
+    return data->isAABBInWater(aabb);
 }
