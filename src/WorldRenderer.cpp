@@ -87,7 +87,7 @@ void WorldRenderer::renderSetup() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);  
     //glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
     glEnable(GL_CULL_FACE); 
     glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
@@ -203,6 +203,8 @@ void WorldRenderer::renderFrame(World* world) {
 }
 
 void WorldRenderer::renderOverlay(float rectangle[48], std::string texture) {
+    glEnable(GL_BLEND);
+
     float overlay[48] = {0};
 
     for(int i = 0; i < 48; ++i) {
@@ -226,6 +228,9 @@ void WorldRenderer::renderOverlay(float rectangle[48], std::string texture) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(overlay), &overlay[0], GL_STATIC_DRAW);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    
+    glDisable(GL_BLEND);
 }
 
 void WorldRenderer::setUniforms(World* world, int programIndex) {

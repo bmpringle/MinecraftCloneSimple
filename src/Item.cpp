@@ -1,18 +1,21 @@
 #include "Item.h"
 #include "World.h"
 #include "Block.h"
+#include "ItemStack.h"
+#include "ItemStack.h"
 
-void Item::onRightClick(World* world) {
+void Item::onUse(World* world, ItemStack* stack) {
 
 }
 
-void Item::onLeftClick(World* world, BlockPos* blockLookingAt) {
-    if(blockLookingAt != nullptr) {
-        BlockPos selected = *blockLookingAt;
-        world->getBlockData()->removeBlockAtPosition(selected);
-    }
+void Item::onLeftClick(World* world, BlockPos* blockLookingAt, ItemStack* stack) {
+
 }
 
 std::string Item::getItemName() {
     return "item";
+}
+
+std::string Item::getIcon() {
+    return "item.png";
 }

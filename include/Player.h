@@ -10,6 +10,7 @@
 #include "ItemBlock.h"
 #include "glmh.h"
 #include "Pos.h"
+#include "Inventory.h"
 
 class World;
 
@@ -27,12 +28,14 @@ class Player final : public Listener, public Model {
         Pos getCameraNormal();
         BlockPos* getBlockLookingAt();
         SideEnum getSideOfBlockLookingAt();
-        void setItemInHand(std::unique_ptr<Item> item);
+        void setItemInHandIndex(int index);
         bool validatePosition(Pos newPosition, BlockArrayData* data);
         void setBufferedChunkLocation(BlockPos pos);
         void updateServer(World* _world);
         bool isInWater(BlockArrayData* data);
         bool canJumpInWater(BlockArrayData* data);
+        Inventory* getInventory();
+        int getItemInHandIndex();
         
     private:
         bool validatePosition(Pos newPosition, BlockArrayData* data, float* yToSnapTo);
@@ -58,7 +61,7 @@ class Player final : public Listener, public Model {
 
         SideEnum sideOfBlockLookingAt = NORTH;
 
-        std::unique_ptr<Item> itemInHand = nullptr;
+        int itemInHandIndex = 0;
 
         BlockPos bufferedChunkLocation = BlockPos(0, 0, 0);
 
@@ -80,5 +83,7 @@ class Player final : public Listener, public Model {
         int zInputDirection = 0;
 
         Pos sneakPos = pos;
+
+        Inventory inventory = Inventory(36);
 };
 #endif

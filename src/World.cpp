@@ -37,6 +37,13 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler)
 
     thePlayer->setBufferedChunkLocation(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates());
     internalBlockData.updateLoadedChunks(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates(), this);
+
+    thePlayer->getInventory()->setItemStackInSlot(0, ItemStack(std::make_shared<ItemBlock>(Blocks::dirt), 64));
+    thePlayer->getInventory()->setItemStackInSlot(1, ItemStack(std::make_shared<ItemBlock>(Blocks::cobblestone), 64));
+    thePlayer->getInventory()->setItemStackInSlot(2, ItemStack(std::make_shared<ItemBlock>(Blocks::grass), 64));
+    thePlayer->getInventory()->setItemStackInSlot(3, ItemStack(std::make_shared<ItemBlock>(Blocks::leaf), 64));
+    thePlayer->getInventory()->setItemStackInSlot(4, ItemStack(std::make_shared<ItemBlock>(Blocks::log), 64));
+    thePlayer->getInventory()->setItemStackInSlot(5, ItemStack(std::make_shared<ItemBlock>(Blocks::water), 64));
 }
 
 void World::updateGame() {
@@ -57,28 +64,7 @@ void World::updateGame() {
 }
 
 void World::generateWorld() {
-    //generate a 40x3x40 layer of blocks for now, will change later
-    /*for(int x = -1; x < 100; ++x) {
-        for(int y = 0; y < 20; ++y) {
-            for(int z = -1; z < 100; ++z) {
-                internalBlockData.setBlockAtPosition(BlockPos(x, y, z), dirt);
-            }
-        } 
-    }
 
-    internalBlockData.setBlockAtPosition(BlockPos(-1, 4, 0), cobblestone);
-
-    internalBlockData.setBlockAtPosition(BlockPos(0, 1, 10), cobblestone);
-    internalBlockData.setBlockAtPosition(BlockPos(0, 2, 10), cobblestone);
-
-    internalBlockData.setBlockAtPosition(BlockPos(4, 1, 10), cobblestone);
-    internalBlockData.setBlockAtPosition(BlockPos(5, 2, 10), cobblestone);
-
-    internalBlockData.setBlockAtPosition(BlockPos(0, 1, 10), cobblestone);
-    internalBlockData.setBlockAtPosition(BlockPos(7, 2, 10), cobblestone);
-
-    internalBlockData.setBlockAtPosition(BlockPos(15, 3, 2), cobblestone);
-    internalBlockData.setBlockAtPosition(BlockPos(15, 3, 2), cobblestone);*/
 }
 
 void World::internalKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -193,6 +179,10 @@ void World::renderGame() {
         renderer.renderBlockInWireframe(this, *thePlayer->getBlockLookingAt());
     }
 
+    renderOverlays();
+}
+bool a = true;
+void World::renderOverlays() {
     float overlay[48] = {
         -11, -11, 0, 0, 0, 1, 0, 0,
         11, -11, 0, 0, 0, 1, 1, 0,
@@ -204,6 +194,75 @@ void World::renderGame() {
     };
 
     renderer.renderOverlay(overlay, "crosshair.png");
+
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+
+    float xSize = 1500 * (float)height/(float)width;
+    float ySize = 227 * (float)height/(float)width;
+
+    float xPos = -750 * (float)height/(float)width;
+    float yPos = -999 * (float)height/(float)width;
+
+    float overlay2[48] = {
+        xPos, yPos, 0, 0, 0, 1, 0, 0,
+        xPos + xSize, yPos, 0, 0, 0, 1, 1, 0,
+        xPos, yPos + ySize, 0, 0, 0, 1, 0, 1,
+
+        xPos, yPos + ySize, 0, 0, 0, 1, 0, 1,
+        xPos + xSize, yPos, 0, 0, 0, 1, 1, 0,
+        xPos + xSize, yPos + ySize, 0, 0, 0, 1, 1, 1
+    };
+
+    renderer.renderOverlay(overlay2, "hotbar.png");
+
+    Inventory* inv = thePlayer->getInventory();
+
+    for(int i = 0; i < 9; ++i) {
+        ItemStack stack = inv->getItemStackInSlot(i);
+
+        if(stack.getItem() != nullptr && stack.getCount() > 0) {
+            float sizeX = 16;
+            float startX = (2 * (i+1) + (i) * (sizeX) + i) * xSize / 172.0f;
+            float endX = (2 * (i+1) + (i + 1) * (sizeX) + i) * xSize / 172.0f;
+
+            float startY = 2 * ySize / 20.0f;
+            float endY = (2 + sizeX) * ySize / 20.0f;
+
+            float iconoverlay[48] = {
+                xPos + startX, yPos + startY, -1, 0, 0, 1, 0, 0,
+                xPos + endX, yPos + startY, -1, 0, 0, 1, 1, 0,
+                xPos + startX, yPos + endY, -1, 0, 0, 1, 0, 1,
+
+                xPos + startX, yPos + endY, -1, 0, 0, 1, 0, 1,
+                xPos + endX, yPos + startY, -1, 0, 0, 1, 1, 0,
+                xPos + endX, yPos + endY, -1, 0, 0, 1, 1, 1
+            };
+
+            renderer.renderOverlay(iconoverlay, stack.getItem()->getIcon());
+        }
+
+        if(thePlayer->getItemInHandIndex() == i) {
+            float sizeX = 16;
+            float startX = (2 * (i + 1) + (i) * (sizeX) + i - 2) * xSize / 172.0f;
+            float endX = (2 * (i + 1) + (i + 1) * (sizeX) + i + 2) * xSize / 172.0f;
+
+            float startY = (2 - 2) * ySize / 20.0f;
+            float endY = (2 + sizeX + 2) * ySize / 20.0f;
+
+            float iconoverlay[48] = {
+                xPos + startX, yPos + startY, -2, 0, 0, 1, 0, 0,
+                xPos + endX, yPos + startY, -2, 0, 0, 1, 1, 0,
+                xPos + startX, yPos + endY, -2, 0, 0, 1, 0, 1,
+
+                xPos + startX, yPos + endY, -2, 0, 0, 1, 0, 1,
+                xPos + endX, yPos + startY, -2, 0, 0, 1, 1, 0,
+                xPos + endX, yPos + endY, -2, 0, 0, 1, 1, 1
+            };
+
+            renderer.renderOverlay(iconoverlay, "hotbar_select.png");
+        }
+    }
 }
 
 std::shared_ptr<Player> World::getPlayer() {

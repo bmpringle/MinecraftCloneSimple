@@ -9,8 +9,6 @@
 Player::Player(World* _world) : pos(Pos(0, 75, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
     world->getTimerMap()->addTimerToMap("itemUseTimer");
-
-    itemInHand = std::unique_ptr<Item>(new ItemBlock(std::shared_ptr<Block>(new BlockDirt())));
 }
 
 void updatePlayerInWorld(World* _world) {
@@ -72,31 +70,43 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         KeyPressedEvent keyEvent = *dynamic_cast<KeyPressedEvent*>(e.get());
 
         if(keyEvent.key == "1") {
-            setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::dirt)));
+            setItemInHandIndex(0);
         }
 
         if(keyEvent.key == "2") {
-            setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::cobblestone)));
+            setItemInHandIndex(1);
         }
 
         if(keyEvent.key == "3") {
-            setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::grass)));
+            setItemInHandIndex(2);
         }
 
         if(keyEvent.key == "4") {
-            setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::log)));
+            setItemInHandIndex(3);
         }
 
         if(keyEvent.key == "5") {
-            setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::leaf)));
+            setItemInHandIndex(4);
         }
 
         if(keyEvent.key == "6") {
-            setItemInHand(std::unique_ptr<Item>(new ItemBlock(Blocks::water)));
+            setItemInHandIndex(5);
+        }
+
+        if(keyEvent.key == "7") {
+            setItemInHandIndex(6);
+        }
+
+        if(keyEvent.key == "8") {
+            setItemInHandIndex(7);
+        }
+
+        if(keyEvent.key == "9") {
+            setItemInHandIndex(8);
         }
 
         if(keyEvent.key == "u") {
-            itemInHand->onRightClick(world);
+            inventory[itemInHandIndex].onUse(world);
             world->getTimerMap()->resetTimer("itemUseTimer");
         }
     }
@@ -122,7 +132,7 @@ void Player::listenTo(std::shared_ptr<Event> e) {
 
         if(keyEvent.key == "u") {
             if(std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("itemUseTimer")).count() > 200) {
-                itemInHand->onRightClick(world);
+                inventory[itemInHandIndex].onUse(world);
                 world->getTimerMap()->resetTimer("itemUseTimer");
 
             }
@@ -171,11 +181,15 @@ void Player::listenTo(std::shared_ptr<Event> e) {
 
     if(e->getEventID() == "LEFTMOUSEBUTTONPRESSED") {
         LeftMouseButtonPressedEvent mouseEvent = *dynamic_cast<LeftMouseButtonPressedEvent*>(e.get());
-        itemInHand->onLeftClick(world, blockLookingAt);
+        inventory[itemInHandIndex].onLeftClick(world, blockLookingAt);
+        if(blockLookingAt != nullptr) {
+            BlockPos selected = *blockLookingAt;
+            world->getBlockData()->removeBlockAtPosition(selected);
+        }
     }
 
     if(e->getEventID() == "RIGHTMOUSEBUTTONPRESSED") {
-        itemInHand->onRightClick(world);
+        inventory[itemInHandIndex].onUse(world);
         world->getTimerMap()->resetTimer("itemUseTimer");
     }
 }
@@ -395,8 +409,8 @@ SideEnum Player::getSideOfBlockLookingAt() {
     return sideOfBlockLookingAt;
 }
 
-void Player::setItemInHand(std::unique_ptr<Item> item) {
-    itemInHand = std::move(item);
+void Player::setItemInHandIndex(int index) {
+    itemInHandIndex = index;
 }
 
 void Player::setBufferedChunkLocation(BlockPos pos) {
@@ -583,4 +597,12 @@ bool Player::isInWater(BlockArrayData* data) {
     AABB aabb = getAABB();
     aabb.ySize += 0.05;
     return data->isAABBInWater(aabb);
+}
+
+Inventory* Player::getInventory() {
+    return &inventory;
+}
+
+int Player::getItemInHandIndex() {
+    return itemInHandIndex;
 }

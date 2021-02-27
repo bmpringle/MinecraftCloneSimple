@@ -31,6 +31,8 @@ GLFWwindow* setup(int x, int y) {
     glewExperimental = GL_TRUE;
     glewInit();
 
+    printf("Opengl Version being used is: %s\n", glGetString(GL_VERSION));
+
     return window;
 }
 

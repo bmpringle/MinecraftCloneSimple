@@ -4,6 +4,7 @@
 #include "Item.h"
 #include "Block.h"
 #include <memory>
+#include "ItemStack.h"
 
 class ItemBlock : public Item {
     public:
@@ -11,7 +12,9 @@ class ItemBlock : public Item {
 
         std::string getItemName() override;
 
-        void onRightClick(World* world) override;
+        void onUse(World* world, ItemStack* stack) override;
+
+        std::string getIcon() override;
 
     private:
         std::shared_ptr<Block> block;

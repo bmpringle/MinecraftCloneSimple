@@ -41,6 +41,8 @@ class World {
         void internalMouseCallback(GLFWwindow* window, double xpos, double ypos);
         
         void internalMouseButtonCallback(GLFWwindow* w, int button, int action, int mods);
+
+        void renderOverlays();
         
         TimerMap timerMap;
         EventQueue* worldEventQueue;
