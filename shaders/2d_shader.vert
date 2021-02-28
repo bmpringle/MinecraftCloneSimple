@@ -9,7 +9,6 @@ uniform vec3 bounds;
 
 void main()
 {
-
     gl_Position = vec4(aPos.x / bounds.x, aPos.y / bounds.y, aPos.z / bounds.z, 1);
     color = aColor;
     uv = aUV;

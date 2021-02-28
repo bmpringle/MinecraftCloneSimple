@@ -74,8 +74,8 @@ class Player final : public Listener, public Model {
  
         bool waterPhysics = false;
 
-        float standingHeight = 1.8;
-        float sneakingHeight = 1.65;
+        const float standingHeight = 1.8;
+        const float sneakingHeight = 1.65;
 
         glm::vec3 motion = glm::vec3(0, 0, 0);
 

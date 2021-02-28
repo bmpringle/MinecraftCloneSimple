@@ -153,7 +153,7 @@ void WorldRenderer::updateWorldVBO(World* world) {
     std::map<BlockPos, LoadedChunkInfo> lChunksLocations = data->getLoadedChunkLocations();
 
     std::vector<BlockPos> posToRemove = std::vector<BlockPos>();
-    for(std::pair<BlockPos, RenderChunkBuffer> buff : renderChunkBuffers) {
+    for(std::pair<const BlockPos, RenderChunkBuffer>& buff : renderChunkBuffers) {
         BlockPos loc = buff.first;
 
         try {
@@ -167,13 +167,13 @@ void WorldRenderer::updateWorldVBO(World* world) {
         renderChunkBuffers.erase(remove);
     }
     
-    for(std::pair<BlockPos, LoadedChunkInfo> lchunk : lChunksLocations) {
+    for(std::pair<const BlockPos, LoadedChunkInfo>& lchunk : lChunksLocations) {
         if(lchunk.second.update) {
             Chunk* c = data->getChunkWithBlock(lchunk.first);
 
             BlockPos pos = lchunk.first;
             try {
-                RenderChunkBuffer buffer = renderChunkBuffers.at(pos);
+                renderChunkBuffers.at(pos);
                 std::vector<BlockData> blockData = c->getBlocksInChunk();
                 std::vector<float> vectorWithColors = std::vector<float>();
                 updateChunkData(&vectorWithColors, &blockData, &textureArrayCreator);
@@ -197,7 +197,7 @@ void WorldRenderer::renderFrame(World* world) {
     glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayCreator.getGeneratedTextureArray());
     glUseProgram(shaderProgram[3]);
 
-    for(std::pair<const BlockPos, RenderChunkBuffer> cBuffer : renderChunkBuffers) {
+    for(std::pair<const BlockPos, RenderChunkBuffer>& cBuffer : renderChunkBuffers) {
         cBuffer.second.renderChunk();
     }
 }

@@ -105,6 +105,8 @@ void World::mainLoop() {
         renderGame();
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        dumpFrameTime();
     }
     
     worldEventQueue->removeEventListener(thePlayer);
@@ -181,7 +183,7 @@ void World::renderGame() {
 
     renderOverlays();
 }
-bool a = true;
+
 void World::renderOverlays() {
     float overlay[48] = {
         -11, -11, 0, 0, 0, 1, 0, 0,
@@ -198,10 +200,10 @@ void World::renderOverlays() {
     int width, height;
     glfwGetWindowSize(window, &width, &height);
 
-    float xSize = 1500 * (float)height/(float)width;
+    float xSize = 1200;
     float ySize = 227 * (float)height/(float)width;
 
-    float xPos = -750 * (float)height/(float)width;
+    float xPos = -600;
     float yPos = -999 * (float)height/(float)width;
 
     float overlay2[48] = {
@@ -275,4 +277,18 @@ TimerMap* World::getTimerMap() {
 
 int World::getChunkRenderDistance() {
     return chunkRenderDistance;
+}
+
+void World::dumpFrameTime() { 
+    float frameTime = ((float)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - prevFrameTimePoint).count()) / 1000;
+    frameTimeSum += frameTime;
+    ++frameTimeCounter;
+
+    if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - secondTimer).count() >= 1000) {
+        std::cout << "frameTime avg: " << (frameTimeSum / frameTimeCounter) << std::endl;
+        secondTimer = std::chrono::high_resolution_clock::now();
+        frameTimeSum = 0;
+        frameTimeCounter = 0;
+    }
+    prevFrameTimePoint = std::chrono::high_resolution_clock::now();
 }

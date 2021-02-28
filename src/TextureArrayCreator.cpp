@@ -46,6 +46,7 @@ unsigned int TextureArrayCreator::generateTextureArray() {
 
         glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 
+        stbi_image_free(data);
     }
 
     
@@ -72,7 +73,7 @@ int TextureArrayCreator::getTextureLayer(std::string tex) {
     }
 
     int index = it - texturePaths.begin();
-
+    
     if(textureDepths.at(index) == -1) {
         generateTextureArray();
         

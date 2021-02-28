@@ -44,6 +44,8 @@ class World {
 
         void renderOverlays();
         
+        void dumpFrameTime();
+
         TimerMap timerMap;
         EventQueue* worldEventQueue;
         InputHandler* input;
@@ -54,9 +56,16 @@ class World {
         bool paused = false;
 
         //in meters/s^2
-        float worldGravity = 32;
+        const float worldGravity = 32;
 
-        int chunkRenderDistance = 4;
+        const int chunkRenderDistance = 4;
+
+        std::chrono::high_resolution_clock::time_point prevFrameTimePoint = std::chrono::high_resolution_clock::now();
+        std::chrono::high_resolution_clock::time_point secondTimer = std::chrono::high_resolution_clock::now();
+        double frameTimeSum = 0;
+        int frameTimeCounter = 0;
+
+        std::mutex gameStateMutex;
 };
 
 bool AABBIntersectedByAABB(AABB box1, AABB box2);

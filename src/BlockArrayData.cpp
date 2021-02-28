@@ -336,13 +336,13 @@ void BlockArrayData::generateChunk(BlockPos chunkLocation) {
 
     chunkList.push_back(generatingChunk);
 
-    for(std::pair<BlockPos, int> pair: treeMap) {
+    for(std::pair<const BlockPos, int>& pair: treeMap) {
         spawnTree(this, &generatingChunk, pair.second, pair.first);
     }
 }
 
 bool BlockArrayData::isAABBInWater(AABB playerAABB) {
-    for(std::pair<BlockPos, LoadedChunkInfo> pair : loadedChunkLocations) {
+    for(std::pair<const BlockPos, LoadedChunkInfo>& pair : loadedChunkLocations) {
         Chunk* c = getChunkWithBlock(pair.first);
         if(!c->isFakeChunk()) {
             AABB chunkAABB = c->getChunkAABB();

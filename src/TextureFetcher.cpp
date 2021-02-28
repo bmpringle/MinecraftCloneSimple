@@ -45,5 +45,8 @@ unsigned int TextureFetcher::getOrLoadTexture(std::string name, int gl_setting1,
     glBindVertexArray(0);
 
     textureIDs.insert(std::make_pair(name, TBO));
+    
+    stbi_image_free(data);
+
     return TBO;
 }

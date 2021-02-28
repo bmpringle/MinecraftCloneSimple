@@ -18,7 +18,7 @@ BlockData Chunk::getBlockAtLocation(BlockPos pos) {
         if(pos.y >= getChunkCoordinates().y && pos.y < getChunkCoordinates().y + Y) {
             if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
                 AABB bAABB = AABB(pos.x, pos.y, pos.z, 1, 1, 1);
-                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>&)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>>& block) -> bool { 
                     if(AABBIntersectedByAABB(bAABB, aabb)){
                         return true;
                     }
@@ -178,7 +178,7 @@ AABB Chunk::getChunkAABB() {
 }
 
 std::vector<BlockData> Chunk::getBlocksInChunk() {
-    std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
+    std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>&)> eval = [](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>>& block) -> bool { 
         return true;
     };
     std::vector<std::optional<std::array<BlockData, 256>>*> blocksVector = blockTree.getLeafOfTree(eval);
@@ -206,7 +206,7 @@ void Chunk::removeBlockAtLocation(BlockPos pos) {
             if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
                 //blocktree version
                 AABB bAABB = AABB(pos.x, pos.y, pos.z, 1, 1, 1);
-                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>&)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>>& block) -> bool { 
                     if(AABBIntersectedByAABB(bAABB, aabb)){
                         return true;
                     }

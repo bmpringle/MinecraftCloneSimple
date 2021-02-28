@@ -21,8 +21,6 @@ class RenderChunkBuffer {
         void renderChunk();
 
     private:
-        std::vector<float> renderData = std::vector<float>();
-
         BlockPos pos = BlockPos(0, 0, 0);
 
         int chunkBufferSize = 0;

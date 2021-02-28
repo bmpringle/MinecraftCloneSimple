@@ -6,7 +6,7 @@
 #include "Blocks.h"
 #include <thread> 
 
-Player::Player(World* _world) : pos(Pos(0, 75, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
+Player::Player(World* _world) : pos(Pos(0, 37, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
     world->getTimerMap()->addTimerToMap("itemUseTimer");
 }
@@ -265,7 +265,7 @@ void Player::updatePlayerLookingAt(World* world) {
 
     std::vector<Chunk*> chunksCrossed = std::vector<Chunk*>();
 
-    for(std::pair<BlockPos, LoadedChunkInfo> pair : world->getBlockData()->getLoadedChunkLocations()) {
+    for(const std::pair<const BlockPos, LoadedChunkInfo>& pair : world->getBlockData()->getLoadedChunkLocations()) {
         Chunk* chunk = world->getBlockData()->getChunkWithBlock(pair.first);
         if(!chunk->isFakeChunk()) {
             AABB aabb = chunk->getChunkAABB();
