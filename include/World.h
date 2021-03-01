@@ -29,6 +29,11 @@ class World {
         void pause();
 
         int getChunkRenderDistance();
+
+        GLFWwindow* getWindowPtr();
+
+        WorldRenderer* getWorldRenderer();
+        
     private:
         void generateWorld();
 

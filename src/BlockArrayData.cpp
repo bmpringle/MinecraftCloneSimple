@@ -225,8 +225,8 @@ Chunk* BlockArrayData::getChunkWithBlock(BlockPos pos) {
 }
 
 bool BlockArrayData::shouldUpdateRenderer() {
-    for(std::pair<BlockPos, LoadedChunkInfo> pair : loadedChunkLocations) {
-        if(loadedChunkLocations[pair.first].update) {
+    for(std::pair<const BlockPos, LoadedChunkInfo>& pair : loadedChunkLocations) {
+        if(pair.second.update) {
             return true;
         }
     }
@@ -234,8 +234,8 @@ bool BlockArrayData::shouldUpdateRenderer() {
 }
 
 void BlockArrayData::hasUpdatedRenderer() {
-    for(std::pair<BlockPos, LoadedChunkInfo> pair : loadedChunkLocations) {
-        loadedChunkLocations[pair.first].update = false;
+    for(std::pair<const BlockPos, LoadedChunkInfo>& pair : loadedChunkLocations) {
+        pair.second.update = false;
     }
 }
 
@@ -245,19 +245,19 @@ const std::map<BlockPos, LoadedChunkInfo> BlockArrayData::getLoadedChunkLocation
 
 //used when world is loaded to force a rendering update
 void BlockArrayData::setAllLoadedChunksToBeUpdated() {
-    for(std::pair<BlockPos, LoadedChunkInfo> pair : loadedChunkLocations) {
-        loadedChunkLocations[pair.first].update = true;
+    for(std::pair<const BlockPos, LoadedChunkInfo>& pair : loadedChunkLocations) {
+        pair.second.update = true;
     }
 }
 
 bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
-    for(std::pair<BlockPos, LoadedChunkInfo> pair : loadedChunkLocations) {
+    for(std::pair<const BlockPos, LoadedChunkInfo>& pair : loadedChunkLocations) {
         Chunk* c = getChunkWithBlock(pair.first);
         if(!c->isFakeChunk()) {
             AABB chunkAABB = c->getChunkAABB();
             if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
                 auto tree = c->getBlockTree();
-                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [playerAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>&)> eval = [playerAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>>& block) -> bool { 
                     if(AABBIntersectedByAABB(playerAABB, aabb)){
                         return true;
                     }

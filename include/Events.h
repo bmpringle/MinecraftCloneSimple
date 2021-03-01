@@ -45,18 +45,32 @@ class KeyReleasedEvent : public Event {
         std::string key;
 };
 
-class MouseMovedEvent : public Event {
+class MouseMovedOffsetEvent : public Event {
     public:
-        MouseMovedEvent(double _xOffset, double _yOffset) : xOffset(_xOffset), yOffset(_yOffset) {
+        MouseMovedOffsetEvent(double _xOffset, double _yOffset) : xOffset(_xOffset), yOffset(_yOffset) {
 
         }
 
         std::string getEventID() {
-            return "MOUSEMOVED";
+            return "MOUSEMOVEDOFFSET";
         }
 
         double xOffset;
         double yOffset;
+};
+
+class MousePosEvent : public Event {
+    public:
+        MousePosEvent(double x, double y) : x(x), y(y) {
+
+        }
+
+        std::string getEventID() {
+            return "MOUSEPOS";
+        }
+
+        double x;
+        double y;
 };
 
 class LeftMouseButtonPressedEvent : public Event {

@@ -32,6 +32,12 @@ class WorldRenderer {
 
         static glm::mat4x4 calculatePerspectiveMatrix(double FOV, double aspectRatio, double zNear, double zFar);
 
+        int getWidth();
+
+        int getHeight();
+
+        std::array<int, 2> overlayDimensions();
+
     private:
         void renderSetup();
 
@@ -61,5 +67,8 @@ class WorldRenderer {
         std::map<BlockPos, RenderChunkBuffer> renderChunkBuffers = std::map<BlockPos, RenderChunkBuffer>();
 
         std::vector<RenderChunkBuffer> renderChunkBuffersOld = std::vector<RenderChunkBuffer>();
+
+        int width = 0;
+        int height = 0;
 };
 #endif

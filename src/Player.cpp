@@ -6,7 +6,7 @@
 #include "Blocks.h"
 #include <thread> 
 
-Player::Player(World* _world) : pos(Pos(0, 37, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)) {
+Player::Player(World* _world) : pos(Pos(0, 37, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)), gui(nullptr) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
     world->getTimerMap()->addTimerToMap("itemUseTimer");
 }
@@ -69,128 +69,157 @@ void Player::listenTo(std::shared_ptr<Event> e) {
     if(e->getEventID() == "KEYPRESSED") {
         KeyPressedEvent keyEvent = *dynamic_cast<KeyPressedEvent*>(e.get());
 
-        if(keyEvent.key == "1") {
-            setItemInHandIndex(0);
+        if(gui == nullptr) {
+            if(keyEvent.key == "1") {
+                setItemInHandIndex(0);
+            }
+
+            if(keyEvent.key == "2") {
+                setItemInHandIndex(1);
+            }
+
+            if(keyEvent.key == "3") {
+                setItemInHandIndex(2);
+            }
+
+            if(keyEvent.key == "4") {
+                setItemInHandIndex(3);
+            }
+
+            if(keyEvent.key == "5") {
+                setItemInHandIndex(4);
+            }
+
+            if(keyEvent.key == "6") {
+                setItemInHandIndex(5);
+            }
+
+            if(keyEvent.key == "7") {
+                setItemInHandIndex(6);
+            }
+
+            if(keyEvent.key == "8") {
+                setItemInHandIndex(7);
+            }
+
+            if(keyEvent.key == "9") {
+                setItemInHandIndex(8);
+            }
+
+            if(keyEvent.key == "u") {
+                inventory[itemInHandIndex].onUse(world);
+                world->getTimerMap()->resetTimer("itemUseTimer");
+            }
         }
 
-        if(keyEvent.key == "2") {
-            setItemInHandIndex(1);
-        }
-
-        if(keyEvent.key == "3") {
-            setItemInHandIndex(2);
-        }
-
-        if(keyEvent.key == "4") {
-            setItemInHandIndex(3);
-        }
-
-        if(keyEvent.key == "5") {
-            setItemInHandIndex(4);
-        }
-
-        if(keyEvent.key == "6") {
-            setItemInHandIndex(5);
-        }
-
-        if(keyEvent.key == "7") {
-            setItemInHandIndex(6);
-        }
-
-        if(keyEvent.key == "8") {
-            setItemInHandIndex(7);
-        }
-
-        if(keyEvent.key == "9") {
-            setItemInHandIndex(8);
-        }
-
-        if(keyEvent.key == "u") {
-            inventory[itemInHandIndex].onUse(world);
-            world->getTimerMap()->resetTimer("itemUseTimer");
+        if(keyEvent.key == "e") {
+            if(gui == nullptr) {
+                glfwSetInputMode(world->getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL); 
+                gui = std::make_unique<InventoryGui>(world->getWorldRenderer(), &inventory);
+            }else if(gui->getID() == 1) {  
+                glfwSetInputMode(world->getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
+                gui = nullptr;
+            }
         }
     }
     
     if(e->getEventID() == "KEYHELD") {
         KeyHeldEvent keyEvent = *dynamic_cast<KeyHeldEvent*>(e.get());
-
-        if(keyEvent.key == "w") {
-            ++zInputDirection;
-        }
-
-        if(keyEvent.key == "a") {
-            --xInputDirection;
-        }
-
-        if(keyEvent.key == "s") {
-            --zInputDirection;
-        }
-
-        if(keyEvent.key == "d") {
-            ++xInputDirection;
-        }
-
-        if(keyEvent.key == "u") {
-            if(std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("itemUseTimer")).count() > 200) {
-                inventory[itemInHandIndex].onUse(world);
-                world->getTimerMap()->resetTimer("itemUseTimer");
-
+        
+        if(gui == nullptr) {
+            if(keyEvent.key == "w") {
+                ++zInputDirection;
             }
-        }
 
-        if(keyEvent.key == " ") {
-            if(isGrounded || canJumpInWater(world->getBlockData())) {
-                isJumping = true;
-                motion[1] = 0.21 * ((waterPhysics) ? 0.4 : 1);
+            if(keyEvent.key == "a") {
+                --xInputDirection;
             }
-        }
 
-        if(keyEvent.key == "RIGHT_SHIFT") {
-            isSneaking = true;
-        }
+            if(keyEvent.key == "s") {
+                --zInputDirection;
+            }
 
-        if(keyEvent.key == "LEFT_SHIFT") {
-            isSprinting = true;
+            if(keyEvent.key == "d") {
+                ++xInputDirection;
+            }
+
+            if(keyEvent.key == "u") {
+                if(std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("itemUseTimer")).count() > 200) {
+                    inventory[itemInHandIndex].onUse(world);
+                    world->getTimerMap()->resetTimer("itemUseTimer");
+
+                }
+            }
+
+            if(keyEvent.key == " ") {
+                if(isGrounded || canJumpInWater(world->getBlockData())) {
+                    isJumping = true;
+                    motion[1] = 0.21 * ((waterPhysics) ? 0.4 : 1);
+                }
+            }
+
+            if(keyEvent.key == "RIGHT_SHIFT") {
+                isSneaking = true;
+            }
+
+            if(keyEvent.key == "LEFT_SHIFT") {
+                isSprinting = true;
+            }
         }
     }
 
     if(e->getEventID() == "KEYRELEASED") {
         KeyReleasedEvent keyEvent = *dynamic_cast<KeyReleasedEvent*>(e.get());
+        if(gui == nullptr) {
+            if(keyEvent.key == "RIGHT_SHIFT") {
+                isSneaking = false;
+            }
 
-        if(keyEvent.key == "RIGHT_SHIFT") {
-            isSneaking = false;
-        }
-
-        if(keyEvent.key == "LEFT_SHIFT") {
-            isSprinting = false;
+            if(keyEvent.key == "LEFT_SHIFT") {
+                isSprinting = false;
+            }
         }
     }
 
-    if(e->getEventID() == "MOUSEMOVED") {
-        MouseMovedEvent mouseEvent = *dynamic_cast<MouseMovedEvent*>(e.get());
-        yaw -= mouseEvent.xOffset;
-        pitch -= mouseEvent.yOffset;
+    if(e->getEventID() == "MOUSEMOVEDOFFSET") {
+        if(gui == nullptr) {
+            MouseMovedOffsetEvent mouseEvent = *dynamic_cast<MouseMovedOffsetEvent*>(e.get());
+            yaw -= mouseEvent.xOffset;
+            pitch -= mouseEvent.yOffset;
 
-        if(pitch > 89) {
-            pitch = 89;
+            if(pitch > 89) {
+                pitch = 89;
+            }
+            if(pitch < -89) {
+                pitch = -89;
+            }
         }
-        if(pitch < -89) {
-            pitch = -89;
-        }
+    }
+
+    if(e->getEventID() == "MOUSEPOS") {
+        MousePosEvent mouseEvent = *dynamic_cast<MousePosEvent*>(e.get());
+        mouseX = mouseEvent.x;
+        mouseY = mouseEvent.y;
     }
 
     if(e->getEventID() == "LEFTMOUSEBUTTONPRESSED") {
-        LeftMouseButtonPressedEvent mouseEvent = *dynamic_cast<LeftMouseButtonPressedEvent*>(e.get());
-        inventory[itemInHandIndex].onLeftClick(world, blockLookingAt);
-        if(blockLookingAt != nullptr) {
-            BlockPos selected = *blockLookingAt;
-            world->getBlockData()->removeBlockAtPosition(selected);
+        if(gui == nullptr) {
+            LeftMouseButtonPressedEvent mouseEvent = *dynamic_cast<LeftMouseButtonPressedEvent*>(e.get());
+            inventory[itemInHandIndex].onLeftClick(world, blockLookingAt);
+            if(blockLookingAt != nullptr) {
+                BlockPos selected = *blockLookingAt;
+                world->getBlockData()->removeBlockAtPosition(selected);
+            }
+        }else {
+            gui->mouseClick(mouseX, mouseY);
         }
     }
 
     if(e->getEventID() == "RIGHTMOUSEBUTTONPRESSED") {
-        inventory[itemInHandIndex].onUse(world);
-        world->getTimerMap()->resetTimer("itemUseTimer");
+        if(gui == nullptr) {
+            inventory[itemInHandIndex].onUse(world);
+            world->getTimerMap()->resetTimer("itemUseTimer");
+        }
     }
 }
 
@@ -605,4 +634,10 @@ Inventory* Player::getInventory() {
 
 int Player::getItemInHandIndex() {
     return itemInHandIndex;
+}
+
+void Player::displayGui(WorldRenderer* renderer) {
+    if(gui != nullptr) {
+        gui->displayGui(renderer, mouseX, mouseY);
+    }
 }

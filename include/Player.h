@@ -11,6 +11,7 @@
 #include "glmh.h"
 #include "Pos.h"
 #include "Inventory.h"
+#include "InventoryGui.h"
 
 class World;
 
@@ -36,7 +37,8 @@ class Player final : public Listener, public Model {
         bool canJumpInWater(BlockArrayData* data);
         Inventory* getInventory();
         int getItemInHandIndex();
-        
+        void displayGui(WorldRenderer* renderer);
+
     private:
         bool validatePosition(Pos newPosition, BlockArrayData* data, float* yToSnapTo);
         void updatePlayerLookingAt(World* world);
@@ -85,5 +87,10 @@ class Player final : public Listener, public Model {
         Pos sneakPos = pos;
 
         Inventory inventory = Inventory(36);
+
+        std::unique_ptr<Gui> gui = nullptr; 
+
+        int mouseX = 0;
+        int mouseY = 0;
 };
 #endif

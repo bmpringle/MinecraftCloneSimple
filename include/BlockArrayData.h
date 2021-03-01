@@ -74,7 +74,7 @@ class BlockArrayData {
 
         const int averageTerrainHeight = 10;
         const double amplifier = 3;
-        const int waterLevel = 7;
+        const int waterLevel = 13;
 
         noise::module::Perlin noise;
 };

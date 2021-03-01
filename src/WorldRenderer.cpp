@@ -243,11 +243,11 @@ void WorldRenderer::setUniforms(World* world, int programIndex) {
     int playerPosLocation = glGetUniformLocation(shaderProgram[programIndex], "playerPos");
     Pos camera = world->getPlayer()->getCameraPosition();
 
-    glUniform3f(playerPosLocation, camera.x, camera.y, camera.z);
+    glUniform3f(playerPosLocation, camera.x, camera.y, camera.z); 
 
     int perspectiveMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "perspectiveMatrix");
     
-    glm::mat4x4 perspectiveMatrix = WorldRenderer::calculatePerspectiveMatrix(90, aspectRatio, 0.1, 100);
+    glm::mat4x4 perspectiveMatrix = WorldRenderer::calculatePerspectiveMatrix(90, aspectRatio, 0.0001, 100);
 
     GLfloat matrixFloat [16] = {0};
 
@@ -283,6 +283,9 @@ void WorldRenderer::updateAspectRatio(GLFWwindow* window) {
     int width, height;
     glfwGetWindowSize(window, &width, &height);
     aspectRatio = (float)width/(float)height;
+
+    this->width = width;
+    this->height = height;
 }
 
 void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
@@ -539,4 +542,16 @@ void WorldRenderer::updateChunkData(std::vector<float>* buffer, std::vector<Bloc
             }
         }
     }
+}
+
+int WorldRenderer::getWidth() {
+    return width;
+}
+
+int WorldRenderer::getHeight() {
+    return height;
+}
+
+std::array<int, 2> WorldRenderer::overlayDimensions() {
+    return {1000, 1000};
 }

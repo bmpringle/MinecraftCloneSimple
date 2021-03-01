@@ -66,11 +66,13 @@ void InputHandler::handleMouseInput(GLFWwindow* window, double xpos, double ypos
     double xOffset = sensitivity*(xpos - previousXPos);
     double yOffset = sensitivity*(ypos - previousYPos);
     if(xOffset != 0 || yOffset != 0) {
-        e->callEvent(std::shared_ptr<MouseMovedEvent>(new MouseMovedEvent(xOffset, yOffset)));
+        e->callEvent(std::shared_ptr<MouseMovedOffsetEvent>(new MouseMovedOffsetEvent(xOffset, yOffset)));
     }
 
     previousXPos = xpos;
     previousYPos = ypos;
+
+    e->callEvent(std::shared_ptr<MousePosEvent>(new MousePosEvent(xpos, ypos)));
 }
 
 void InputHandler::handleMouseButtonInput(GLFWwindow* window, int button, int action, int mods, EventQueue* e, TimerMap* timerMap) {

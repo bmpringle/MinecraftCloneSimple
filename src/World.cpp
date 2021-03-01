@@ -44,6 +44,14 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler)
     thePlayer->getInventory()->setItemStackInSlot(3, ItemStack(std::make_shared<ItemBlock>(Blocks::leaf), 64));
     thePlayer->getInventory()->setItemStackInSlot(4, ItemStack(std::make_shared<ItemBlock>(Blocks::log), 64));
     thePlayer->getInventory()->setItemStackInSlot(5, ItemStack(std::make_shared<ItemBlock>(Blocks::water), 64));
+
+    thePlayer->getInventory()->setItemStackInSlot(6, ItemStack(std::make_shared<ItemBlock>(Blocks::dirt), 69));
+    thePlayer->getInventory()->setItemStackInSlot(7, ItemStack(std::make_shared<ItemBlock>(Blocks::cobblestone), 42));
+    thePlayer->getInventory()->setItemStackInSlot(8, ItemStack(std::make_shared<ItemBlock>(Blocks::leaf), 1));
+
+    for(int i = 9; i < 27; ++i) {
+        thePlayer->getInventory()->setItemStackInSlot(i, ItemStack(std::make_shared<ItemBlock>(Blocks::dirt), 69));
+    }
 }
 
 void World::updateGame() {
@@ -178,9 +186,11 @@ void World::renderGame() {
     renderer.updateAspectRatio(window);
     renderer.renderFrame(this);
     if(thePlayer->getBlockLookingAt() != nullptr) {
-        renderer.renderBlockInWireframe(this, *thePlayer->getBlockLookingAt());
+        if(internalBlockData.getBlockAtPosition(*thePlayer->getBlockLookingAt()).getBlockType() != nullptr) { //this is needed to fix some whack bug on windows :/
+            renderer.renderBlockInWireframe(this, *thePlayer->getBlockLookingAt());
+        }
     }
-
+    glClear(GL_DEPTH_BUFFER_BIT);
     renderOverlays();
 }
 
@@ -265,6 +275,7 @@ void World::renderOverlays() {
             renderer.renderOverlay(iconoverlay, "hotbar_select.png");
         }
     }
+    thePlayer->displayGui(&renderer);
 }
 
 std::shared_ptr<Player> World::getPlayer() {
@@ -291,4 +302,12 @@ void World::dumpFrameTime() {
         frameTimeCounter = 0;
     }
     prevFrameTimePoint = std::chrono::high_resolution_clock::now();
+}
+
+GLFWwindow* World::getWindowPtr() {
+    return window;
+}
+
+WorldRenderer* World::getWorldRenderer() {
+    return &renderer;
 }
