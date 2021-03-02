@@ -45,12 +45,12 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler)
     thePlayer->getInventory()->setItemStackInSlot(4, ItemStack(std::make_shared<ItemBlock>(Blocks::log), 64));
     thePlayer->getInventory()->setItemStackInSlot(5, ItemStack(std::make_shared<ItemBlock>(Blocks::water), 64));
 
-    thePlayer->getInventory()->setItemStackInSlot(6, ItemStack(std::make_shared<ItemBlock>(Blocks::dirt), 69));
+    thePlayer->getInventory()->setItemStackInSlot(6, ItemStack(std::make_shared<ItemBlock>(Blocks::dirt), 32));
     thePlayer->getInventory()->setItemStackInSlot(7, ItemStack(std::make_shared<ItemBlock>(Blocks::cobblestone), 42));
     thePlayer->getInventory()->setItemStackInSlot(8, ItemStack(std::make_shared<ItemBlock>(Blocks::leaf), 1));
 
     for(int i = 9; i < 27; ++i) {
-        thePlayer->getInventory()->setItemStackInSlot(i, ItemStack(std::make_shared<ItemBlock>(Blocks::dirt), 69));
+        thePlayer->getInventory()->setItemStackInSlot(i, ItemStack(std::make_shared<ItemBlock>(Blocks::dirt), 14));
     }
 }
 

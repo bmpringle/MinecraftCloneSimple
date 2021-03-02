@@ -34,6 +34,7 @@ if COMPILE_LIBS == 1 and env['PLATFORM'] != 'win32' and env['PLATFORM'] != 'msys
     command7 = 'rm -rf temp/'
     command8 = 'git clone https://github.com/g-truc/glm'
     command9 = 'curl https://raw.githubusercontent.com/nothings/stb/master/stb_image.h -o stb_image.h'
+    command9b = 'curl https://raw.githubusercontent.com/nothings/stb/master/stb_truetype.h -o stb_truetype.h'
     command10 = 'curl https://raw.githubusercontent.com/bmpringle/BinaryTree/master/BinaryNode.h -o BinaryNode.h'
     command11 = 'curl https://raw.githubusercontent.com/bmpringle/BinaryTree/master/BinaryTree.h -o BinaryTree.h'
     
@@ -78,6 +79,12 @@ if COMPILE_LIBS == 1 and env['PLATFORM'] != 'win32' and env['PLATFORM'] != 'msys
 
     process9 = subprocess.Popen(shell='true', cwd='./stbi/', args=command9, stdout=subprocess.PIPE)
     output, error = process9.communicate()
+
+    process9b = subprocess.Popen(shell='true', cwd='./stbi/', args=command9b, stdout=subprocess.PIPE)
+    output, error = process9b.communicate()
+
+    process9c = subprocess.Popen(shell='true', cwd='./stbi/', args='curl https://raw.githubusercontent.com/nothings/stb/master/stb_image_write.h -o stb_image_write.h', stdout=subprocess.PIPE)
+    output, error = process9c.communicate()
 
     process10 = subprocess.Popen(shell='true', cwd='./BinaryTree/', args=command10, stdout=subprocess.PIPE)
     output, error = process10.communicate()

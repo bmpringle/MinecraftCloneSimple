@@ -1,5 +1,6 @@
 #include "ItemStack.h"
 #include <iostream>
+#include "RenderInclude.h"
 
 ItemStack::ItemStack(std::shared_ptr<Item> item, int count) : item(item), count(count) {
 
@@ -40,9 +41,22 @@ void ItemStack::onUse(World* world) {
 }
 
 void ItemStack::onLeftClick(World* world, BlockPos* posLookingAt) {
-
+    if(item != nullptr) {
+        item->onLeftClick(world, posLookingAt, this);
+    }
 }
 
 ItemStack::ItemStack() {
 
+}
+
+unsigned int ItemStack::getCountTBO(WorldRenderer* renderer) {
+    if(tboCount != count) {
+        tboCount = count;
+        glDeleteTextures(1, &TBO);
+        TBO = renderer->textTextureBuffer(std::to_string(count));
+        return TBO;
+    }else {
+        return TBO;
+    }
 }

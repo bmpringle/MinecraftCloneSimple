@@ -19,3 +19,7 @@ std::string Item::getItemName() {
 std::string Item::getIcon() {
     return "item.png";
 }
+
+int Item::maxStack() {
+    return 64;
+}

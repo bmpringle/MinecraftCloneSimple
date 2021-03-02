@@ -55,31 +55,13 @@ void InventoryGui::displayGui(WorldRenderer* renderer, int mouseX, int mouseY) {
             };
 
             renderer->renderOverlay(itemoverlay, stack.getItem()->getIcon());
-        }   
-        double mouseOverlayX = (double)mouseX / (double)renderer->getWidth() * dims[0] * 2 - dims[0];
-        double mouseOverlayY = (dims[1] * (2 * (1 - (double)mouseY / (double)renderer->getHeight()) - 1)) * (double)renderer->getHeight() / (double)renderer->getWidth();
 
-        if(mouseOverlayX >= modX + rowStartX + xStart && mouseOverlayX <= modX + rowStartX + end) {
-            if(mouseOverlayY >= modY + rowStartY && mouseOverlayY <= modY + rowStartY + endY) {
-                float selectoverlay[48] = {
-                    modX + rowStartX + xStart, modY + rowStartY, -5, 0, 0, 1, 0, 0,
-                    modX + rowStartX + end, modY + rowStartY, -5, 0, 0, 1, 1, 0,
-                    modX + rowStartX + xStart, modY + rowStartY + endY, -5, 0, 0, 1, 0, 1,
+            float xSize = (end - xStart) * 0.35;
+            float ySize = (endY + itemSizeY) * 0.40;
+            float xPos = modX + rowStartX + xStart + xSize * 1.8;
+            float yPos = modY + rowStartY + ySize * 0.2;
 
-                    modX + rowStartX + xStart, modY + rowStartY + endY, -5, 0, 0, 1, 0, 1,
-                    modX + rowStartX + end, modY + rowStartY, -5, 0, 0, 1, 1, 0,
-                    modX + rowStartX + end, modY + rowStartY + endY, -5, 0, 0, 1, 1, 1
-                };
-                renderer->renderOverlay(selectoverlay, "inventory_select.png");
-            }
-        }
-
-        if(!itemStackHeld.isEmpty()) {
-            float xSize = modX + rowStartX + end - (modX + rowStartX + xStart);
-            float ySize = modY + rowStartY + endY - (modY + rowStartY);
-            float xPos = mouseOverlayX - xSize / 2;
-            float yPos = mouseOverlayY - ySize / 2;
-            float selectoverlay[48] = {
+            float numberoverlay[48] = {
                 xPos, yPos, -5, 0, 0, 1, 0, 0,
                 xPos + xSize, yPos, -5, 0, 0, 1, 1, 0,
                 xPos, yPos + ySize, -5, 0, 0, 1, 0, 1,
@@ -88,7 +70,68 @@ void InventoryGui::displayGui(WorldRenderer* renderer, int mouseX, int mouseY) {
                 xPos + xSize, yPos, -5, 0, 0, 1, 1, 0,
                 xPos + xSize, yPos + ySize, -5, 0, 0, 1, 1, 1
             };
+
+            /*float numberoverlay[48] = {
+                modX + rowStartX + xStart, modY + rowStartY, -5, 0, 0, 1, 0, 0,
+                modX + rowStartX + end, modY + rowStartY, -5, 0, 0, 1, 1, 0,
+                modX + rowStartX + xStart, modY + rowStartY + endY, -5, 0, 0, 1, 0, 1,
+
+                modX + rowStartX + xStart, modY + rowStartY + endY, -5, 0, 0, 1, 0, 1,
+                modX + rowStartX + end, modY + rowStartY, -5, 0, 0, 1, 1, 0,
+                modX + rowStartX + end, modY + rowStartY + endY, -5, 0, 0, 1, 1, 1
+            };*/
+
+            renderer->renderOverlay(numberoverlay, stack.getCountTBO(renderer));
+        }   
+        double mouseOverlayX = (double)mouseX / (double)renderer->getWidth() * dims[0] * 2 - dims[0];
+        double mouseOverlayY = (dims[1] * (2 * (1 - (double)mouseY / (double)renderer->getHeight()) - 1)) * (double)renderer->getHeight() / (double)renderer->getWidth();
+
+        if(mouseOverlayX >= modX + rowStartX + xStart && mouseOverlayX <= modX + rowStartX + end) {
+            if(mouseOverlayY >= modY + rowStartY && mouseOverlayY <= modY + rowStartY + endY) {
+                float selectoverlay[48] = {
+                    modX + rowStartX + xStart, modY + rowStartY, -8, 0, 0, 1, 0, 0,
+                    modX + rowStartX + end, modY + rowStartY, -8, 0, 0, 1, 1, 0,
+                    modX + rowStartX + xStart, modY + rowStartY + endY, -8, 0, 0, 1, 0, 1,
+
+                    modX + rowStartX + xStart, modY + rowStartY + endY, -8, 0, 0, 1, 0, 1,
+                    modX + rowStartX + end, modY + rowStartY, -8, 0, 0, 1, 1, 0,
+                    modX + rowStartX + end, modY + rowStartY + endY, -8, 0, 0, 1, 1, 1
+                };
+                renderer->renderOverlay(selectoverlay, "inventory_select.png");
+            }
+        }
+
+        if(!itemStackHeld.isEmpty()) {
+            float xSize = (end - xStart);
+            float ySize = (endY + itemSizeY);
+            float xPos = mouseOverlayX - xSize / 2;
+            float yPos = mouseOverlayY - ySize / 2;
+            float selectoverlay[48] = {
+                xPos, yPos, -9, 0, 0, 1, 0, 0,
+                xPos + xSize, yPos, -9, 0, 0, 1, 1, 0,
+                xPos, yPos + ySize, -9, 0, 0, 1, 0, 1,
+
+                xPos, yPos + ySize, -9, 0, 0, 1, 0, 1,
+                xPos + xSize, yPos, -9, 0, 0, 1, 1, 0,
+                xPos + xSize, yPos + ySize, -9, 0, 0, 1, 1, 1
+            };
             renderer->renderOverlay(selectoverlay, itemStackHeld.getItem()->getIcon());
+
+            xSize = (end - xStart) * 0.35;
+            ySize = (endY + itemSizeY) * 0.40;
+            xPos = mouseOverlayX + xSize * 0.40;
+            yPos = mouseOverlayY - ySize;
+
+            float numberoverlay[48] = {
+                xPos, yPos, -10, 0, 0, 1, 0, 0,
+                xPos + xSize, yPos, -10, 0, 0, 1, 1, 0,
+                xPos, yPos + ySize, -10, 0, 0, 1, 0, 1,
+
+                xPos, yPos + ySize, -10, 0, 0, 1, 0, 1,
+                xPos + xSize, yPos, -10, 0, 0, 1, 1, 0,
+                xPos + xSize, yPos + ySize, -10, 0, 0, 1, 1, 1
+            };
+            renderer->renderOverlay(numberoverlay, itemStackHeld.getCountTBO(renderer));
         }
     }
 }
@@ -136,7 +179,8 @@ int InventoryGui::getIndexHoveredOver(WorldRenderer* renderer, int mouseX, int m
 void InventoryGui::mouseClick(int mouseX, int mouseY) {
     int hoveringOver = getIndexHoveredOver(renderer, mouseX, mouseY);
     if(hoveringOver != -1) {
-        ItemStack stack = inventory->getItemStackInSlot(hoveringOver);
+        itemStackHeld = inventory->interactHeldItemAtSlot(itemStackHeld, hoveringOver);
+        /*ItemStack stack = inventory->getItemStackInSlot(hoveringOver);
         if(stack.isEmpty()) {
             if(!itemStackHeld.isEmpty()) {
                 inventory->setItemStackInSlot(hoveringOver, itemStackHeld);
@@ -147,9 +191,10 @@ void InventoryGui::mouseClick(int mouseX, int mouseY) {
                 itemStackHeld = stack;
                 inventory->setItemStackInSlot(hoveringOver, ItemStack(nullptr, 0));
             }
-        }
+        }*/
     }else {
         //todo: drop item.
+        //todo: fix counter but while stuff is picked up
     }
 }
 

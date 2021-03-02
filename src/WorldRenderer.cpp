@@ -7,7 +7,7 @@
 
 #define WORLDSIZE_CONST 100
 
-WorldRenderer::WorldRenderer() : textureFetcher(TextureFetcher()), textureArrayCreator(TextureArrayCreator()) {
+WorldRenderer::WorldRenderer() : textureFetcher(TextureFetcher()), textureArrayCreator(TextureArrayCreator()), fontLoader("src/assets/courier.ttf") {
     Blocks::initTextureArrayCreator(&textureArrayCreator);
     textureArrayCreator.generateTextureArray();
 
@@ -204,6 +204,7 @@ void WorldRenderer::renderFrame(World* world) {
 
 void WorldRenderer::renderOverlay(float rectangle[48], std::string texture) {
     glEnable(GL_BLEND);
+    glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
     float overlay[48] = {0};
 
@@ -231,6 +232,37 @@ void WorldRenderer::renderOverlay(float rectangle[48], std::string texture) {
 
     
     glDisable(GL_BLEND);
+    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+}
+
+void WorldRenderer::renderOverlay(float rectangle[48], unsigned int TBO) {
+    glEnable(GL_BLEND);
+    glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+
+    float overlay[48] = {0};
+
+    for(int i = 0; i < 48; ++i) {
+        overlay[i] = rectangle[i] * ((i % 8 == 1) ? aspectRatio : 1);
+    }
+    
+    glBindVertexArray(VAO[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+
+    glUseProgram(shaderProgram[2]);
+
+    int boundsVec3Location = glGetUniformLocation(shaderProgram[2], "bounds");
+
+    glUniform3f(boundsVec3Location, 1000, 1000, 1000);
+
+    glBindTexture(GL_TEXTURE_2D, TBO);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(overlay), &overlay[0], GL_STATIC_DRAW);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    
+    glDisable(GL_BLEND);
+    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 }
 
 void WorldRenderer::setUniforms(World* world, int programIndex) {
@@ -247,7 +279,7 @@ void WorldRenderer::setUniforms(World* world, int programIndex) {
 
     int perspectiveMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "perspectiveMatrix");
     
-    glm::mat4x4 perspectiveMatrix = WorldRenderer::calculatePerspectiveMatrix(90, aspectRatio, 0.0001, 100);
+    glm::mat4x4 perspectiveMatrix = WorldRenderer::calculatePerspectiveMatrix(90, aspectRatio, 0.01, 100);
 
     GLfloat matrixFloat [16] = {0};
 
@@ -554,4 +586,43 @@ int WorldRenderer::getHeight() {
 
 std::array<int, 2> WorldRenderer::overlayDimensions() {
     return {1000, 1000};
+}
+
+unsigned int WorldRenderer::textTextureBuffer(std::string text) {
+    unsigned char* bitmap = fontLoader.getTextBitmap(text);
+
+    int b_h = fontLoader.getBH();
+    int b_w = fontLoader.getBW();
+
+    unsigned char* bitmap4Channel = (unsigned char*)calloc(b_h * b_w * 4, sizeof(unsigned char));
+
+    for(int i = 0; i < b_h * b_w; ++i) {
+        unsigned char c = bitmap[i];
+        bitmap4Channel[4 * i] = 1;
+        bitmap4Channel[4 * i + 1] = 1;
+        bitmap4Channel[4 * i + 2] = 1;
+        bitmap4Channel[4 * i + 3] = c;
+    }
+     
+    unsigned int TBO;
+
+    glGenTextures(1, &TBO);
+
+    glBindTexture(GL_TEXTURE_2D, TBO); 
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+    glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, b_w, b_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap4Channel);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glBindVertexArray(0);
+
+    free(bitmap);
+    free(bitmap4Channel);
+
+    return TBO;
 }

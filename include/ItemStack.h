@@ -3,6 +3,7 @@
 
 #include "Item.h"
 #include <memory>
+#include "WorldRenderer.h"
 
 class ItemStack {
     public:
@@ -28,8 +29,13 @@ class ItemStack {
 
         void onLeftClick(World* world, BlockPos* posLookingAt);
 
+        unsigned int getCountTBO(WorldRenderer* renderer);
+
     private:
         std::shared_ptr<Item> item = nullptr;
         int count = 0;
+
+        unsigned int TBO = -1;
+        int tboCount = -1;
 };
 #endif

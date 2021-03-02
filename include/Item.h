@@ -20,6 +20,8 @@ class Item {
 
         virtual void onLeftClick(World* world, BlockPos* blockLookingAt, ItemStack* stack);
 
+        virtual int maxStack();
+
         virtual ~Item() = default;
     private:
 };

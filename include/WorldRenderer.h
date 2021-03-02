@@ -11,6 +11,7 @@
 #include "RenderInclude.h"
 #include "TextureArrayCreator.h"
 #include "RenderChunkBuffer.h"
+#include "FontLoader.h"
 
 class World;
 
@@ -20,9 +21,12 @@ class WorldRenderer {
 
         void renderFrame(World* world);
         void renderOverlay(float rectangle[48], std::string texture);
+        void renderOverlay(float rectangle[48], unsigned int TBO);
         void renderBlockInWireframe(World* world, BlockPos pos);
         void updateAspectRatio(GLFWwindow* window);
         void updateWorldVBO(World* world);
+
+        unsigned int textTextureBuffer(std::string text);
 
         template<class T>
         static void appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T> vectorToAppend);
@@ -63,6 +67,8 @@ class WorldRenderer {
         TextureFetcher textureFetcher;
 
         TextureArrayCreator textureArrayCreator;
+
+        FontLoader fontLoader;
 
         std::map<BlockPos, RenderChunkBuffer> renderChunkBuffers = std::map<BlockPos, RenderChunkBuffer>();
 
