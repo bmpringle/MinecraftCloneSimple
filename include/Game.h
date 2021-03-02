@@ -16,6 +16,7 @@ class Game {
         GLFWwindow* window;
         EventQueue eventQueue;
         InputHandler input;
+        WorldRenderer renderer;
         World world;
         std::shared_ptr<GameEventHandler> gameEventHandler;
 

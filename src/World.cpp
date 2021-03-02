@@ -13,7 +13,7 @@
  */
 #define WORLDSIZE_CONST 100
 
-World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler) : timerMap(TimerMap()), worldEventQueue(queue), input(inputHandler), renderer(WorldRenderer()), internalBlockData(BlockArrayData(WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST)), window(window_), thePlayer(std::shared_ptr<Player>(new Player(this))) {
+World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler, WorldRenderer* renderer) : timerMap(TimerMap()), worldEventQueue(queue), input(inputHandler), internalBlockData(BlockArrayData(WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST)), window(window_), thePlayer(std::shared_ptr<Player>(new Player(this))), renderer(renderer) {
     generateWorld();
     glfwSetWindowUserPointer(window, this);
 
@@ -33,7 +33,7 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler)
     glfwSetCursorPosCallback(window, func2);
     glfwSetMouseButtonCallback(window, func3);
 
-    renderer.updateWorldVBO(this);
+    renderer->updateWorldVBO(this);
 
     thePlayer->setBufferedChunkLocation(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates());
     internalBlockData.updateLoadedChunks(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates(), this);
@@ -180,14 +180,14 @@ bool AABBIntersectedByAABBVocal(AABB box1, AABB box2) {
 
 void World::renderGame() {
     if(internalBlockData.shouldUpdateRenderer()) {
-        renderer.updateWorldVBO(this);
+        renderer->updateWorldVBO(this);
         internalBlockData.hasUpdatedRenderer();
     }
-    renderer.updateAspectRatio(window);
-    renderer.renderFrame(this);
+    renderer->updateAspectRatio(window);
+    renderer->renderFrame(this);
     if(thePlayer->getBlockLookingAt() != nullptr) {
         if(internalBlockData.getBlockAtPosition(*thePlayer->getBlockLookingAt()).getBlockType() != nullptr) { //this is needed to fix some whack bug on windows :/
-            renderer.renderBlockInWireframe(this, *thePlayer->getBlockLookingAt());
+            renderer->renderBlockInWireframe(this, *thePlayer->getBlockLookingAt());
         }
     }
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -205,7 +205,7 @@ void World::renderOverlays() {
         11, 11, 0, 0, 0, 1, 1, 1
     };
 
-    renderer.renderOverlay(overlay, "crosshair.png");
+    renderer->renderOverlay(overlay, "crosshair.png");
 
     int width, height;
     glfwGetWindowSize(window, &width, &height);
@@ -226,7 +226,7 @@ void World::renderOverlays() {
         xPos + xSize, yPos + ySize, 0, 0, 0, 1, 1, 1
     };
 
-    renderer.renderOverlay(overlay2, "hotbar.png");
+    renderer->renderOverlay(overlay2, "hotbar.png");
 
     Inventory* inv = thePlayer->getInventory();
 
@@ -251,7 +251,7 @@ void World::renderOverlays() {
                 xPos + endX, yPos + endY, -1, 0, 0, 1, 1, 1
             };
 
-            renderer.renderOverlay(iconoverlay, stack.getItem()->getIcon());
+            renderer->renderOverlay(iconoverlay, stack.getItem()->getIcon());
         }
 
         if(thePlayer->getItemInHandIndex() == i) {
@@ -272,10 +272,10 @@ void World::renderOverlays() {
                 xPos + endX, yPos + endY, -2, 0, 0, 1, 1, 1
             };
 
-            renderer.renderOverlay(iconoverlay, "hotbar_select.png");
+            renderer->renderOverlay(iconoverlay, "hotbar_select.png");
         }
     }
-    thePlayer->displayGui(&renderer);
+    thePlayer->displayGui(renderer);
 }
 
 std::shared_ptr<Player> World::getPlayer() {
@@ -309,5 +309,5 @@ GLFWwindow* World::getWindowPtr() {
 }
 
 WorldRenderer* World::getWorldRenderer() {
-    return &renderer;
+    return renderer;
 }

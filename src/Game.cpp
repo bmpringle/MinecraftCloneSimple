@@ -1,6 +1,6 @@
 #include "Game.h"
 
-Game::Game(GLFWwindow* _window) : window(_window), eventQueue(EventQueue()), input(InputHandler()), world(World(_window, &eventQueue, &input)), gameEventHandler(std::make_shared<GameEventHandler>(GameEventHandler(this))) {
+Game::Game(GLFWwindow* _window) : window(_window), eventQueue(EventQueue()), input(InputHandler()), gameEventHandler(std::make_shared<GameEventHandler>(GameEventHandler(this))), renderer(WorldRenderer()), world(World(_window, &eventQueue, &input, &renderer)) {
     eventQueue.addEventListener(gameEventHandler);
 }
 

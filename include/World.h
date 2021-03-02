@@ -10,7 +10,7 @@
 
 class World {
     public:
-        World(GLFWwindow* window, EventQueue* queue, InputHandler* inputHandler);
+        World(GLFWwindow* window, EventQueue* queue, InputHandler* inputHandler, WorldRenderer* renderer);
 
         void mainLoop();
 
@@ -54,7 +54,7 @@ class World {
         TimerMap timerMap;
         EventQueue* worldEventQueue;
         InputHandler* input;
-        WorldRenderer renderer;
+        WorldRenderer* renderer;
         BlockArrayData internalBlockData;
         GLFWwindow* window;
         std::shared_ptr<Player> thePlayer;
