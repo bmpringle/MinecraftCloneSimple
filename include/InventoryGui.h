@@ -9,7 +9,7 @@ class InventoryGui : public Gui  {
         InventoryGui(WorldRenderer* renderer, Inventory* inv);
         void displayGui(WorldRenderer* renderer, int mouseX, int mouseY) override;
         int getID() override;
-        int getIndexHoveredOver(WorldRenderer* renderer, int mouseX, int mouseY) override;
+        int getIndexHoveredOver(WorldRenderer* renderer, int mouseX, int mouseY);
         void mouseClick(int mouseX, int mouseY) override;
         void close() override;
     private:

@@ -10,7 +10,7 @@
 
 class World {
     public:
-        World(GLFWwindow* window, EventQueue* queue, InputHandler* inputHandler, WorldRenderer* renderer);
+        World(GLFWwindow* window, EventQueue* queue, InputHandler* inputHandler, WorldRenderer* renderer, TimerMap* map);
 
         void mainLoop();
 
@@ -28,6 +28,8 @@ class World {
 
         void pause();
 
+        void quit();
+
         int getChunkRenderDistance();
 
         GLFWwindow* getWindowPtr();
@@ -41,17 +43,11 @@ class World {
 
         void renderGame();
 
-        void internalKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
-        void internalMouseCallback(GLFWwindow* window, double xpos, double ypos);
-        
-        void internalMouseButtonCallback(GLFWwindow* w, int button, int action, int mods);
-
         void renderOverlays();
         
         void dumpFrameTime();
 
-        TimerMap timerMap;
+        TimerMap* timerMap;
         EventQueue* worldEventQueue;
         InputHandler* input;
         WorldRenderer* renderer;
@@ -59,18 +55,16 @@ class World {
         GLFWwindow* window;
         std::shared_ptr<Player> thePlayer;
         bool paused = false;
+        bool quitting = false;
 
-        //in meters/s^2
-        const float worldGravity = 32;
-
-        const int chunkRenderDistance = 4;
+        int chunkRenderDistance = 4;
 
         std::chrono::high_resolution_clock::time_point prevFrameTimePoint = std::chrono::high_resolution_clock::now();
         std::chrono::high_resolution_clock::time_point secondTimer = std::chrono::high_resolution_clock::now();
         double frameTimeSum = 0;
         int frameTimeCounter = 0;
 
-        std::mutex gameStateMutex;
+        float worldGravity = 32;
 };
 
 bool AABBIntersectedByAABB(AABB box1, AABB box2);

@@ -12,5 +12,7 @@ class GameEventHandler final : public Listener {
         void listenTo(std::shared_ptr<Event> e);
     private:
         Game* game;
+        int mouseX = 0;
+        int mouseY = 0;
 };
 #endif

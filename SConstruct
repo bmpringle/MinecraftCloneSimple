@@ -161,7 +161,7 @@ LIBNOISEINC = '/usr/local/include/'
 if int(ARGUMENTS.get('W64', 0))==1:
     LIBNOISEINC = '../libnoise-w64/include/'
 
-CCFLAGS='-static -O{} -I {} -I {} -I {} -I {} -I {} -I {} -D _USE_MATH_DEFINES -Wall -g -std=c++2a -DGLEW_STATIC'.format(OPT, "./glm/", './', './include/', GLFW_INCLUDE, GLEW_INCLUDE, LIBNOISEINC)
+CCFLAGS='-static -O{} -I {} -I {} -I {} -I {} -I {} -I {} {} -D _USE_MATH_DEFINES -Wall -g -std=c++2a -DGLEW_STATIC'.format(OPT, "./glm/", './', './include/', GLFW_INCLUDE, GLEW_INCLUDE, LIBNOISEINC, '-DDBG' if DBG==1 else '')
 
 LIBSSTATIC = Glob(os.sep.join(['lib', '*.a']))
 

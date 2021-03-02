@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <Blocks.h>
 
-BlockArrayData::BlockArrayData(int xSize, int ySize, int zSize) : chunkList(std::vector<Chunk>()), noise(noise::module::Perlin()) {
+BlockArrayData::BlockArrayData(int xSize, int ySize, int zSize) : chunkList(std::vector<Chunk>()) {
     size[0] = xSize; 
     size[1] = ySize; 
     size[2] = zSize;

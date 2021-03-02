@@ -66,16 +66,16 @@ class BlockArrayData {
 
         std::map<BlockPos, LoadedChunkInfo> loadedChunkLocations = std::map<BlockPos,LoadedChunkInfo>();
 
-        const double SEED = abs(rand() % 10000);
+        double SEED = abs(rand() % 10000);
         double zNoise = rand() % 1 - 0.5;
 
-        const double width = Chunk::getChunkSize()[0];
-        const double height = Chunk::getChunkSize()[2];
+        double width = Chunk::getChunkSize()[0];
+        double height = Chunk::getChunkSize()[2];
 
-        const int averageTerrainHeight = 10;
-        const double amplifier = 3;
-        const int waterLevel = 7;
+        int averageTerrainHeight = 10;
+        double amplifier = 3;
+        int waterLevel = 7;
 
-        noise::module::Perlin noise;
+        noise::module::Perlin noise = noise::module::Perlin();
 };
 #endif

@@ -180,21 +180,8 @@ void InventoryGui::mouseClick(int mouseX, int mouseY) {
     int hoveringOver = getIndexHoveredOver(renderer, mouseX, mouseY);
     if(hoveringOver != -1) {
         itemStackHeld = inventory->interactHeldItemAtSlot(itemStackHeld, hoveringOver);
-        /*ItemStack stack = inventory->getItemStackInSlot(hoveringOver);
-        if(stack.isEmpty()) {
-            if(!itemStackHeld.isEmpty()) {
-                inventory->setItemStackInSlot(hoveringOver, itemStackHeld);
-                itemStackHeld = ItemStack(nullptr, 0);
-            }
-        }else {
-            if(itemStackHeld.isEmpty()) {
-                itemStackHeld = stack;
-                inventory->setItemStackInSlot(hoveringOver, ItemStack(nullptr, 0));
-            }
-        }*/
     }else {
         //todo: drop item.
-        //todo: fix counter but while stuff is picked up
     }
 }
 

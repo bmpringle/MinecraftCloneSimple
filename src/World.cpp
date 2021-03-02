@@ -13,25 +13,8 @@
  */
 #define WORLDSIZE_CONST 100
 
-World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler, WorldRenderer* renderer) : timerMap(TimerMap()), worldEventQueue(queue), input(inputHandler), internalBlockData(BlockArrayData(WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST)), window(window_), thePlayer(std::shared_ptr<Player>(new Player(this))), renderer(renderer) {
+World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler, WorldRenderer* renderer, TimerMap* map) : timerMap(map), worldEventQueue(queue), input(inputHandler), renderer(renderer), internalBlockData(BlockArrayData(WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST)), window(window_), thePlayer(std::shared_ptr<Player>(new Player(this))) {
     generateWorld();
-    glfwSetWindowUserPointer(window, this);
-
-    auto func = [](GLFWwindow* w, int key, int scancode, int action, int mods) {
-        static_cast<World*>(glfwGetWindowUserPointer(w))->internalKeyCallback(w, key, scancode, action, mods);
-    };
-
-    auto func2 = [](GLFWwindow* w, double xpos, double ypos) {
-        static_cast<World*>(glfwGetWindowUserPointer(w))->internalMouseCallback(w, xpos, ypos);
-    };
-
-    auto func3 = [](GLFWwindow* w, int button, int action, int mods) {
-        static_cast<World*>(glfwGetWindowUserPointer(w))->internalMouseButtonCallback(w, button, action, mods);
-    };
-
-    glfwSetKeyCallback(window, func);
-    glfwSetCursorPosCallback(window, func2);
-    glfwSetMouseButtonCallback(window, func3);
 
     renderer->updateWorldVBO(this);
 
@@ -64,7 +47,7 @@ void World::updateGame() {
         }
     }*/
     
-    input->callRegularEvents(worldEventQueue, &timerMap);
+    input->callRegularEvents(worldEventQueue, timerMap);
     
     thePlayer->updateClient(this);
 
@@ -73,18 +56,6 @@ void World::updateGame() {
 
 void World::generateWorld() {
 
-}
-
-void World::internalKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    input->handleInput(window, key, scancode, action, mods, worldEventQueue, &timerMap);
-}
-
-void World::internalMouseCallback(GLFWwindow* window, double xpos, double ypos) {
-    input->handleMouseInput(window, xpos, ypos, worldEventQueue, &timerMap);
-}
-
-void World::internalMouseButtonCallback(GLFWwindow* w, int button, int action, int mods) {
-    input->handleMouseButtonInput(w, button, action, mods, worldEventQueue, &timerMap);
 }
 
 void World::mainLoop() {
@@ -97,7 +68,7 @@ void World::mainLoop() {
     double lag = 0.0;
     const double MS_PER_UPDATE = 16.666;
 
-    while (!glfwWindowShouldClose(window) && !paused) {
+    while (!glfwWindowShouldClose(window) && !paused && !quitting) {
         auto current = std::chrono::high_resolution_clock::now();
         double elapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(current - previous)).count();
         previous = current;
@@ -114,7 +85,9 @@ void World::mainLoop() {
         glfwSwapBuffers(window);
         glfwPollEvents();
 
+        #if DBG
         dumpFrameTime();
+        #endif
     }
     
     worldEventQueue->removeEventListener(thePlayer);
@@ -127,7 +100,7 @@ void World::pause() {
 
 void World::resume() {
     paused = false;
-    timerMap.resetAllTimers();
+    timerMap->resetAllTimers();
     input->setFirstMouse();
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
 
@@ -283,7 +256,7 @@ std::shared_ptr<Player> World::getPlayer() {
 }
 
 TimerMap* World::getTimerMap() {
-    return &timerMap;
+    return timerMap;
 }
 
 int World::getChunkRenderDistance() {
@@ -310,4 +283,9 @@ GLFWwindow* World::getWindowPtr() {
 
 WorldRenderer* World::getWorldRenderer() {
     return renderer;
+}
+
+void World::quit() {
+    pause();
+    quitting = true;
 }

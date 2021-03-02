@@ -35,9 +35,9 @@ FontLoader::FontLoader(std::string file) {
 }
 
 unsigned char* FontLoader::getTextBitmap(std::string text) {    
-    l_h = 32; /* line height */
+    l_h = 256; /* line height */
     b_h = l_h; /* bitmap height */
-    b_w = text.size() * 32; /* bitmap width */
+    b_w = text.size() * 256; /* bitmap width */
 
     /* create a bitmap for the phrase */
     unsigned char* bitmap = (unsigned char*)calloc(b_w * b_h, sizeof(unsigned char));
