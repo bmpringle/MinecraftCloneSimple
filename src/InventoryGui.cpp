@@ -57,7 +57,7 @@ void InventoryGui::displayGui(WorldRenderer* renderer, int mouseX, int mouseY) {
             renderer->renderOverlay(itemoverlay, stack.getItem()->getIcon());
 
             float xSize = (end - xStart) * 0.35;
-            float ySize = (endY + itemSizeY) * 0.40;
+            float ySize = (endY) * 0.40;
             float xPos = modX + rowStartX + xStart + xSize * 1.8;
             float yPos = modY + rowStartY + ySize * 0.2;
 
@@ -70,16 +70,6 @@ void InventoryGui::displayGui(WorldRenderer* renderer, int mouseX, int mouseY) {
                 xPos + xSize, yPos, -5, 0, 0, 1, 1, 0,
                 xPos + xSize, yPos + ySize, -5, 0, 0, 1, 1, 1
             };
-
-            /*float numberoverlay[48] = {
-                modX + rowStartX + xStart, modY + rowStartY, -5, 0, 0, 1, 0, 0,
-                modX + rowStartX + end, modY + rowStartY, -5, 0, 0, 1, 1, 0,
-                modX + rowStartX + xStart, modY + rowStartY + endY, -5, 0, 0, 1, 0, 1,
-
-                modX + rowStartX + xStart, modY + rowStartY + endY, -5, 0, 0, 1, 0, 1,
-                modX + rowStartX + end, modY + rowStartY, -5, 0, 0, 1, 1, 0,
-                modX + rowStartX + end, modY + rowStartY + endY, -5, 0, 0, 1, 1, 1
-            };*/
 
             renderer->renderOverlay(numberoverlay, stack.getCountTBO(renderer));
         }   
@@ -103,9 +93,9 @@ void InventoryGui::displayGui(WorldRenderer* renderer, int mouseX, int mouseY) {
 
         if(!itemStackHeld.isEmpty()) {
             float xSize = (end - xStart);
-            float ySize = (endY + itemSizeY);
+            float ySize = endY;
             float xPos = mouseOverlayX - xSize / 2;
-            float yPos = mouseOverlayY - ySize / 2;
+            float yPos = (mouseOverlayY - ySize / 2);
             float selectoverlay[48] = {
                 xPos, yPos, -9, 0, 0, 1, 0, 0,
                 xPos + xSize, yPos, -9, 0, 0, 1, 1, 0,
@@ -118,7 +108,7 @@ void InventoryGui::displayGui(WorldRenderer* renderer, int mouseX, int mouseY) {
             renderer->renderOverlay(selectoverlay, itemStackHeld.getItem()->getIcon());
 
             xSize = (end - xStart) * 0.35;
-            ySize = (endY + itemSizeY) * 0.40;
+            ySize = (endY) * 0.40;
             xPos = mouseOverlayX + xSize * 0.40;
             yPos = mouseOverlayY - ySize;
 

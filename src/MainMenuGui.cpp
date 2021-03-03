@@ -1,7 +1,9 @@
 #include "MainMenuGui.h"
 
-MainMenuGui::MainMenuGui(WorldRenderer* renderer) : singleplayer(Button(-400, 200, 800, 200, "Singleplayer", renderer)), quit(Button(-400, -400, 800, 200, "Quit Game", renderer)), options(Button(-400, -100, 800, 200, "Options (No-OP)", renderer)), renderer(renderer) {
-
+MainMenuGui::MainMenuGui(WorldRenderer* renderer) : singleplayer(Button(0, 0, 0, 200, "Singleplayer", renderer)), quit(Button(0, 0, 0, 200, "Quit Game", renderer)), options(Button(0, -0, 0, 200, "Options (No-OP)", renderer)), renderer(renderer) {
+    singleplayer.autoSize(0, 400);
+    quit.autoSize(0, -400);
+    options.autoSize(0, 0);
 }
 
 void MainMenuGui::displayGui(WorldRenderer* renderer, int mouseX, int mouseY) {

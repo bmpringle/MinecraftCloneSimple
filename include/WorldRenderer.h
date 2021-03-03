@@ -42,6 +42,10 @@ class WorldRenderer {
 
         std::array<int, 2> overlayDimensions();
 
+        int getBitmapHeight();
+
+        int getBitmapWidth();
+
     private:
         void renderSetup();
 

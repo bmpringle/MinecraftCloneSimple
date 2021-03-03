@@ -17,12 +17,17 @@ class Button {
 
         void setPressed();
 
+        void autoSize(int middleX, int middleY);
+
     private:
         float x;
         float y;
         float width;
         float height;
+
         unsigned int TBO = -1;
+        int b_w = 0;
+        int b_h = 0;
 
         bool pressed = false;
 };

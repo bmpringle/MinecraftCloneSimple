@@ -621,8 +621,16 @@ unsigned int WorldRenderer::textTextureBuffer(std::string text) {
 
     glBindVertexArray(0);
 
-    free(bitmap);
     free(bitmap4Channel);
+    free(bitmap);
 
     return TBO;
+}
+
+int WorldRenderer::getBitmapHeight() {
+    return fontLoader.getBH();
+}
+
+int WorldRenderer::getBitmapWidth() {
+    return fontLoader.getBW();
 }

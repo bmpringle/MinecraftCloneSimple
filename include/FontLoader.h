@@ -16,9 +16,10 @@ class FontLoader {
         int getBW();
     private:
         stbtt_fontinfo info;
-
+        unsigned char* fontBuffer = nullptr;
+        unsigned char* bitmap = nullptr;
         int l_h = 0;
-        int b_h = 0;
         int b_w = 0;
+        int b_h = 0;
 };
 #endif
