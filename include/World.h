@@ -1,16 +1,17 @@
 #ifndef WORLD_H
 #define WORLD_H
 #include "InputHandler.h"
-#include "WorldRenderer.h"
+#include "Renderer.h"
 #include "EventLib/EventQueue.h"
 #include "BlockArrayData.h"
 #include "Player.h"
 #include "RenderInclude.h"
 #include "TimerMapLib/TimerMap.h"
+#include "GameSettings.h"
 
 class World {
     public:
-        World(GLFWwindow* window, EventQueue* queue, InputHandler* inputHandler, WorldRenderer* renderer, TimerMap* map);
+        World(GLFWwindow* window, EventQueue* queue, InputHandler* inputHandler, Renderer* renderer, TimerMap* map, GameSettings* settings);
 
         void mainLoop();
 
@@ -34,7 +35,9 @@ class World {
 
         GLFWwindow* getWindowPtr();
 
-        WorldRenderer* getWorldRenderer();
+        Renderer* getRenderer();
+
+        GameSettings* getSettings();
         
     private:
         void generateWorld();
@@ -47,13 +50,17 @@ class World {
         
         void dumpFrameTime();
 
+        //these are all pointers because they cannot go out of scope before this World object.
         TimerMap* timerMap;
         EventQueue* worldEventQueue;
         InputHandler* input;
-        WorldRenderer* renderer;
-        BlockArrayData internalBlockData;
+        Renderer* renderer;
         GLFWwindow* window;
+        GameSettings* settings;
+
+        BlockArrayData internalBlockData;
         std::shared_ptr<Player> thePlayer;
+
         bool paused = false;
         bool quitting = false;
 
@@ -61,6 +68,7 @@ class World {
 
         std::chrono::high_resolution_clock::time_point prevFrameTimePoint = std::chrono::high_resolution_clock::now();
         std::chrono::high_resolution_clock::time_point secondTimer = std::chrono::high_resolution_clock::now();
+
         double frameTimeSum = 0;
         int frameTimeCounter = 0;
 

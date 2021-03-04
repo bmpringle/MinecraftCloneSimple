@@ -1,7 +1,10 @@
 #include "Game.h"
 #include "MainMenuGui.h"
+#include "OptionsGui.h"
 
-Game::Game(GLFWwindow* _window) : window(_window), eventQueue(EventQueue()), map(TimerMap()), input(InputHandler()), renderer(WorldRenderer()), world(nullptr), gameEventHandler(std::make_shared<GameEventHandler>(GameEventHandler(this))), gui(MainMenuGui(&renderer)) {
+Game::Game(GLFWwindow* _window) : window(_window), eventQueue(EventQueue()), map(TimerMap()), input(InputHandler()), renderer(Renderer()), world(nullptr), gameEventHandler(std::make_shared<GameEventHandler>(GameEventHandler(this))), gui(std::make_shared<MainMenuGui>(&renderer)), settings(GameSettings()) {
+    settings.initSettings();
+    
     eventQueue.addEventListener(gameEventHandler);
 
     glfwSetWindowUserPointer(window, this);
@@ -18,9 +21,14 @@ Game::Game(GLFWwindow* _window) : window(_window), eventQueue(EventQueue()), map
         static_cast<Game*>(glfwGetWindowUserPointer(w))->internalMouseButtonCallback(w, button, action, mods);
     };
 
+    auto func4 = [](GLFWwindow* w, double offsetX, double offsetY) {
+        static_cast<Game*>(glfwGetWindowUserPointer(w))->internalScrollCall(w, offsetX, offsetY);
+    };
+
     glfwSetKeyCallback(window, func);
     glfwSetCursorPosCallback(window, func2);
     glfwSetMouseButtonCallback(window, func3);
+    glfwSetScrollCallback(window, func4);
 }
 
 void Game::start() {    
@@ -30,18 +38,33 @@ void Game::start() {
 
         renderer.updateAspectRatio(window);
 
-        gui.displayGui(&renderer, 0, 0);
+        gui->displayGui(&renderer, 0, 0);
 
-        if(gui.singleplayer.isPressed()) {
-            if(world != nullptr) {
-                delete(world);
+        if(gui->getID() == 1) {
+            std::shared_ptr<MainMenuGui> menuGui = std::dynamic_pointer_cast<MainMenuGui>(gui);
+            if(menuGui->singleplayer.isPressed()) {
+                if(world != nullptr) {
+                    delete(world);
+                }
+
+                world = new World(window, &eventQueue, &input, &renderer, &map, &settings);
+                world->resume();
             }
-            world = new World(window, &eventQueue, &input, &renderer, &map);
-            world->resume();
-        }
-        
-        if(gui.quit.isPressed()){
-            break;
+            
+            if(menuGui->quit.isPressed()){
+                break;
+            }
+
+            if(menuGui->options.isPressed()) {
+                gui->close();
+                gui = std::make_shared<OptionsGui>(&renderer, &settings);
+            }
+        }else if(gui->getID() == 2) {
+            std::shared_ptr<OptionsGui> optionsGui = std::dynamic_pointer_cast<OptionsGui>(gui);
+            if(optionsGui->done.isPressed()) {
+                gui = std::make_shared<MainMenuGui>(&renderer);
+            }
+            //todo: options menu
         }
 
         input.callRegularEvents(&eventQueue, &map);
@@ -63,8 +86,8 @@ void Game::pauseOrResume() {
     }
 }
 
-MainMenuGui* Game::getGui() {
-    return &gui;
+std::shared_ptr<Gui> Game::getGui() {
+    return gui;
 }
 
 void Game::internalKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -80,5 +103,11 @@ void Game::internalMouseButtonCallback(GLFWwindow* w, int button, int action, in
 }
 
 void Game::quitToMainMenu() {
-    world->quit();
+    if(world != nullptr) {
+        world->quit();
+    }
+}
+
+void Game::internalScrollCall(GLFWwindow* window, double offsetX, double offsetY) {
+    input.handleScrollInput(window, offsetX, offsetY, &eventQueue, &map);
 }

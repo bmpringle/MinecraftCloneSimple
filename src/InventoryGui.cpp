@@ -1,10 +1,10 @@
 #include "InventoryGui.h"
 
-InventoryGui::InventoryGui(WorldRenderer* renderer, Inventory* inv) : inventory(inv), renderer(renderer) {
+InventoryGui::InventoryGui(Renderer* renderer, Inventory* inv) : inventory(inv), renderer(renderer) {
 
 }
 
-void InventoryGui::displayGui(WorldRenderer* renderer, int mouseX, int mouseY) {
+void InventoryGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
     
     std::array<int, 2> dims = renderer->overlayDimensions();
     float modX = dims[0] * x * 0.8;
@@ -127,10 +127,10 @@ void InventoryGui::displayGui(WorldRenderer* renderer, int mouseX, int mouseY) {
 }
 
 int InventoryGui::getID() {
-    return 1;
+    return 0;
 }
 
-int InventoryGui::getIndexHoveredOver(WorldRenderer* renderer, int mouseX, int mouseY) {
+int InventoryGui::getIndexHoveredOver(Renderer* renderer, int mouseX, int mouseY) {
     std::array<int, 2> dims = renderer->overlayDimensions();
     float modX = dims[0] * x * 0.8;
     float modY = dims[1] * y * 0.75;
@@ -176,5 +176,9 @@ void InventoryGui::mouseClick(int mouseX, int mouseY) {
 }
 
 void InventoryGui::close() {
+    
+}
+
+void InventoryGui::scrollHandle(double offsetX, double offsetY) { 
     
 }

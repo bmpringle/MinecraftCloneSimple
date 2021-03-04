@@ -102,3 +102,8 @@ void InputHandler::callRegularEvents(EventQueue* e, TimerMap* timerMap) {
         e->callEvent(std::shared_ptr<KeyHeldEvent>(new KeyHeldEvent(held.at(i), duration)));
     }
 }
+
+void InputHandler::handleScrollInput(GLFWwindow* window, double offsetX, double offsetY, EventQueue* e, TimerMap* timerMap) {
+    double sensitivity = 2;
+    e->callEvent(std::shared_ptr<ScrollEvent>(new ScrollEvent(sensitivity * offsetX, sensitivity * offsetY)));
+}

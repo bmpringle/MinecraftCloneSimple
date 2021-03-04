@@ -5,17 +5,18 @@
 
 class MainMenuGui : public Gui {
     public:
-        MainMenuGui(WorldRenderer* renderer);
-        void displayGui(WorldRenderer* renderer, int mouseX, int mouseY);
-        int getID();
-        void mouseClick(int mouseX, int mouseY);
-        void close();
+        MainMenuGui(Renderer* renderer);
+        void displayGui(Renderer* renderer, int mouseX, int mouseY) override; 
+        int getID() override;
+        void mouseClick(int mouseX, int mouseY) override;
+        void scrollHandle(double offsetX, double offsetY) override;
+        void close() override;
 
         Button singleplayer;
         Button quit;
         Button options;
 
     private:
-        WorldRenderer* renderer;
+        Renderer* renderer;
 };
 #endif

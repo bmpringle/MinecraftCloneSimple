@@ -80,7 +80,7 @@ class LeftMouseButtonPressedEvent : public Event {
         }
 
         std::string getEventID() {
-            return "LEFTMOUSEBUTTONPRESSED";
+            return "LEFT_CLICK";
         }
 };
 
@@ -91,7 +91,21 @@ class RightMouseButtonPressedEvent : public Event {
         }
 
         std::string getEventID() {
-            return "RIGHTMOUSEBUTTONPRESSED";
+            return "RIGHT_CLICK";
         }
+};
+
+class ScrollEvent : public Event {
+    public:
+        ScrollEvent(int x, int y) : offsetX(x), offsetY(y) {
+
+        }
+
+        std::string getEventID() {
+            return "SCROLL";
+        }
+    
+        int offsetX;
+        int offsetY;
 };
 #endif

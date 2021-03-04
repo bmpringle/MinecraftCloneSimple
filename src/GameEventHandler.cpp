@@ -1,12 +1,25 @@
 #include "GameEventHandler.h"
 #include "Events.h"
 #include "Game.h"
+#include "OptionsGui.h"
 
 GameEventHandler::GameEventHandler(Game* _game) : game(_game) {
 
 }
 
 void GameEventHandler::listenTo(std::shared_ptr<Event> e) {
+    if(game->getGui() != nullptr) {
+        if(game->getGui()->getID() == 2) {
+            std::shared_ptr<OptionsGui> optionsGui = std::dynamic_pointer_cast<OptionsGui>(game->getGui());
+            if(e->getEventID() != "KEYPRESSED" && (e->getEventID() == "LEFT_CLICK" || e->getEventID() == "RIGHT_CLICK")) {
+                optionsGui->handleOptionInput(e->getEventID());
+            }else if(e->getEventID() == "KEYPRESSED") {
+                KeyPressedEvent keyEvent = *dynamic_cast<KeyPressedEvent*>(e.get());
+                optionsGui->handleOptionInput(keyEvent.key);
+            }
+        }
+    }
+
     if(e->getEventID() == "KEYPRESSED") {
         KeyPressedEvent keyEvent = *dynamic_cast<KeyPressedEvent*>(e.get());
 
@@ -21,9 +34,16 @@ void GameEventHandler::listenTo(std::shared_ptr<Event> e) {
         mouseY = mouseEvent.y;
     }
 
-    if(e->getEventID() == "LEFTMOUSEBUTTONPRESSED") {
+    if(e->getEventID() == "LEFT_CLICK") {
         if(game->getGui() != nullptr) {
             game->getGui()->mouseClick(mouseX, mouseY);
+        }
+    }
+
+    if(e->getEventID() == "SCROLL") {
+        ScrollEvent scrollEvent = *dynamic_cast<ScrollEvent*>(e.get());
+        if(game->getGui() != nullptr) {
+            game->getGui()->scrollHandle(scrollEvent.offsetX, scrollEvent.offsetY);
         }
     }
 }

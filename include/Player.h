@@ -12,6 +12,7 @@
 #include "Pos.h"
 #include "Inventory.h"
 #include "InventoryGui.h"
+#include "GameSettings.h"
 
 class World;
 
@@ -37,7 +38,7 @@ class Player final : public Listener, public Model {
         bool canJumpInWater(BlockArrayData* data);
         Inventory* getInventory();
         int getItemInHandIndex();
-        void displayGui(WorldRenderer* renderer);
+        void displayGui(Renderer* renderer);
 
     private:
         bool validatePosition(Pos newPosition, BlockArrayData* data, float* yToSnapTo);
@@ -47,18 +48,21 @@ class Player final : public Listener, public Model {
         void move(glm::vec3* moveVec);
         bool isBlockUnderPlayer();
 
+        World* world;
+        GameSettings* settings;
+
         Pos pos;
 
         //in m/s
         float speed = 4.3;
-        World* world;
+        
 
         float yaw = 0;
         float pitch = 0;
 
         BlockPos* blockLookingAt = nullptr;
 
-        //this exists to prevent the pointer you should use from going stale DO NOT READ THIS POINTER
+        //this exists to prevent the pointer you should use from going stale DO NOT READ THIS
         BlockPos internalBlockLookingAt = BlockPos(0, 0, 0);
 
         SideEnum sideOfBlockLookingAt = NORTH;

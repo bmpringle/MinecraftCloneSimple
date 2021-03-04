@@ -1,5 +1,5 @@
-#ifndef WORLDRENDERER_H
-#define WORLDRENDERER_H
+#ifndef RENDERER_H
+#define RENDERER_H
 
 #include <sstream>
 #include <string>
@@ -15,13 +15,14 @@
 
 class World;
 
-class WorldRenderer {
+class Renderer {
     public:
-        WorldRenderer();
+        Renderer();
 
         void renderFrame(World* world);
         void renderOverlay(float rectangle[48], std::string texture);
         void renderOverlay(float rectangle[48], unsigned int TBO);
+        void renderRectangle(float rectangle[36]);
         void renderBlockInWireframe(World* world, BlockPos pos);
         void updateAspectRatio(GLFWwindow* window);
         void updateWorldVBO(World* world);
@@ -63,10 +64,10 @@ class WorldRenderer {
 
         void setUniforms(World* world, int programIndex);
 
-        unsigned int VAO[3];
-        unsigned int VBO[3];
+        unsigned int VAO[4];
+        unsigned int VBO[4];
 
-        unsigned int shaderProgram[4];
+        unsigned int shaderProgram[5];
 
         TextureFetcher textureFetcher;
 

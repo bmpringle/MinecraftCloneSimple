@@ -6,7 +6,7 @@
 #include "Blocks.h"
 #include <thread> 
 
-Player::Player(World* _world) : pos(Pos(0, 37, 0)), world(_world), bufferedChunkLocation(BlockPos(0, 0, 0)), gui(nullptr) {
+Player::Player(World* _world) : world(_world), settings(_world->getSettings()), pos(Pos(0, 37, 0)), bufferedChunkLocation(BlockPos(0, 0, 0)), gui(nullptr) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
     world->getTimerMap()->addTimerToMap("itemUseTimer");
 }
@@ -70,53 +70,53 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         KeyPressedEvent keyEvent = *dynamic_cast<KeyPressedEvent*>(e.get());
 
         if(gui == nullptr) {
-            if(keyEvent.key == "1") {
+            if(keyEvent.key == settings->getSetting(SLOT1)) {
                 setItemInHandIndex(0);
             }
 
-            if(keyEvent.key == "2") {
+            if(keyEvent.key == settings->getSetting(SLOT2)) {
                 setItemInHandIndex(1);
             }
 
-            if(keyEvent.key == "3") {
+            if(keyEvent.key == settings->getSetting(SLOT3)) {
                 setItemInHandIndex(2);
             }
 
-            if(keyEvent.key == "4") {
+            if(keyEvent.key == settings->getSetting(SLOT4)) {
                 setItemInHandIndex(3);
             }
 
-            if(keyEvent.key == "5") {
+            if(keyEvent.key == settings->getSetting(SLOT5)) {
                 setItemInHandIndex(4);
             }
 
-            if(keyEvent.key == "6") {
+            if(keyEvent.key == settings->getSetting(SLOT6)) {
                 setItemInHandIndex(5);
             }
 
-            if(keyEvent.key == "7") {
+            if(keyEvent.key == settings->getSetting(SLOT7)) {
                 setItemInHandIndex(6);
             }
 
-            if(keyEvent.key == "8") {
+            if(keyEvent.key == settings->getSetting(SLOT8)) {
                 setItemInHandIndex(7);
             }
 
-            if(keyEvent.key == "9") {
+            if(keyEvent.key == settings->getSetting(SLOT9)) {
                 setItemInHandIndex(8);
             }
 
-            if(keyEvent.key == "u") {
+            if(keyEvent.key == settings->getSetting(USE_SECOND)) {
                 inventory[itemInHandIndex].onUse(world);
                 world->getTimerMap()->resetTimer("itemUseTimer");
             }
         }
 
-        if(keyEvent.key == "e") {
+        if(keyEvent.key == settings->getSetting(INVENTORY)) {
             if(gui == nullptr) {
                 glfwSetInputMode(world->getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL); 
-                gui = std::make_unique<InventoryGui>(world->getWorldRenderer(), &inventory);
-            }else if(gui->getID() == 1) {  
+                gui = std::make_unique<InventoryGui>(world->getRenderer(), &inventory);
+            }else if(gui->getID() == 0) {  
                 glfwSetInputMode(world->getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
                 gui = nullptr;
             }
@@ -127,23 +127,23 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         KeyHeldEvent keyEvent = *dynamic_cast<KeyHeldEvent*>(e.get());
         
         if(gui == nullptr) {
-            if(keyEvent.key == "w") {
+            if(keyEvent.key == settings->getSetting(MOVE_FORWARD)) {
                 ++zInputDirection;
             }
 
-            if(keyEvent.key == "a") {
+            if(keyEvent.key == settings->getSetting(MOVE_LEFT)) {
                 --xInputDirection;
             }
 
-            if(keyEvent.key == "s") {
+            if(keyEvent.key == settings->getSetting(MOVE_BACK)) {
                 --zInputDirection;
             }
 
-            if(keyEvent.key == "d") {
+            if(keyEvent.key == settings->getSetting(MOVE_RIGHT)) {
                 ++xInputDirection;
             }
 
-            if(keyEvent.key == "u") {
+            if(keyEvent.key == settings->getSetting(USE_SECOND)) {
                 if(std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("itemUseTimer")).count() > 200) {
                     inventory[itemInHandIndex].onUse(world);
                     world->getTimerMap()->resetTimer("itemUseTimer");
@@ -151,18 +151,18 @@ void Player::listenTo(std::shared_ptr<Event> e) {
                 }
             }
 
-            if(keyEvent.key == " ") {
+            if(keyEvent.key == settings->getSetting(JUMP)) {
                 if(isGrounded || canJumpInWater(world->getBlockData())) {
                     isJumping = true;
                     motion[1] = 0.21 * ((waterPhysics) ? 0.4 : 1);
                 }
             }
 
-            if(keyEvent.key == "RIGHT_SHIFT") {
+            if(keyEvent.key == settings->getSetting(SNEAK)) {
                 isSneaking = true;
             }
 
-            if(keyEvent.key == "LEFT_SHIFT") {
+            if(keyEvent.key == settings->getSetting(SPRINT)) {
                 isSprinting = true;
             }
         }
@@ -171,11 +171,11 @@ void Player::listenTo(std::shared_ptr<Event> e) {
     if(e->getEventID() == "KEYRELEASED") {
         KeyReleasedEvent keyEvent = *dynamic_cast<KeyReleasedEvent*>(e.get());
         if(gui == nullptr) {
-            if(keyEvent.key == "RIGHT_SHIFT") {
+            if(keyEvent.key == settings->getSetting(SNEAK)) {
                 isSneaking = false;
             }
 
-            if(keyEvent.key == "LEFT_SHIFT") {
+            if(keyEvent.key == settings->getSetting(SPRINT)) {
                 isSprinting = false;
             }
         }
@@ -202,9 +202,10 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         mouseY = mouseEvent.y;
     }
 
-    if(e->getEventID() == "LEFTMOUSEBUTTONPRESSED") {
+    if(e->getEventID() == settings->getSetting(ATTACK)) {
         if(gui == nullptr) {
             LeftMouseButtonPressedEvent mouseEvent = *dynamic_cast<LeftMouseButtonPressedEvent*>(e.get());
+            
             inventory[itemInHandIndex].onLeftClick(world, blockLookingAt);
             if(blockLookingAt != nullptr) {
                 BlockPos selected = *blockLookingAt;
@@ -215,7 +216,7 @@ void Player::listenTo(std::shared_ptr<Event> e) {
         }
     }
 
-    if(e->getEventID() == "RIGHTMOUSEBUTTONPRESSED") {
+    if(e->getEventID() == settings->getSetting(USE)) {
         if(gui == nullptr) {
             inventory[itemInHandIndex].onUse(world);
             world->getTimerMap()->resetTimer("itemUseTimer");
@@ -284,7 +285,7 @@ bool Player::validatePosition(Pos newPosition, BlockArrayData* data, float* yToS
 
 Pos Player::getCameraPosition() {
     glm::vec3 nonRotatedPos = glm::vec3(getPos().x + getAABB().xSize / 2, getPos().y + getAABB().ySize * 3.0 / 4.0, getPos().z + getAABB().zSize / 2);
-    glm::vec3 rotatedPos = (WorldRenderer::calculateXRotationMatrix(-getXRotation()) * glm::vec3(0, 0, 0));
+    glm::vec3 rotatedPos = (Renderer::calculateXRotationMatrix(-getXRotation()) * glm::vec3(0, 0, 0));
     
     return Pos(rotatedPos.x + nonRotatedPos.x, rotatedPos.y + nonRotatedPos.y, rotatedPos.z + nonRotatedPos.z);
 }
@@ -366,9 +367,9 @@ Pos Player::getCameraNormal() {
     d[1] = 0;
     d[2] = 1;
 
-    glm::vec3 n1 = WorldRenderer::calculateYRotationMatrix(-getYRotation()) * d;
+    glm::vec3 n1 = Renderer::calculateYRotationMatrix(-getYRotation()) * d;
 
-    glm::vec3 n2 = WorldRenderer::calculateXRotationMatrix(-getXRotation()) * n1;
+    glm::vec3 n2 = Renderer::calculateXRotationMatrix(-getXRotation()) * n1;
 
     return Pos(n2[0], n2[1], n2[2]);
 }
@@ -636,7 +637,7 @@ int Player::getItemInHandIndex() {
     return itemInHandIndex;
 }
 
-void Player::displayGui(WorldRenderer* renderer) {
+void Player::displayGui(Renderer* renderer) {
     if(gui != nullptr) {
         gui->displayGui(renderer, mouseX, mouseY);
     }

@@ -1,4 +1,4 @@
-#include "WorldRenderer.h"
+#include "Renderer.h"
 #include "World.h"
 #include <algorithm>
 #include <thread>
@@ -7,14 +7,14 @@
 
 #define WORLDSIZE_CONST 100
 
-WorldRenderer::WorldRenderer() : textureFetcher(TextureFetcher()), textureArrayCreator(TextureArrayCreator()), fontLoader("src/assets/courier.ttf") {
+Renderer::Renderer() : textureFetcher(TextureFetcher()), textureArrayCreator(TextureArrayCreator()), fontLoader("src/assets/courier.ttf") {
     Blocks::initTextureArrayCreator(&textureArrayCreator);
     textureArrayCreator.generateTextureArray();
 
     renderSetup();
 }
 
-unsigned int WorldRenderer::compileShaderProgramFromFiles(std::string vertexShaderPath, std::string fragmentShaderPath) {
+unsigned int Renderer::compileShaderProgramFromFiles(std::string vertexShaderPath, std::string fragmentShaderPath) {
     unsigned int _shaderProgram;
 
     std::ifstream filestream = std::ifstream(vertexShaderPath);
@@ -83,7 +83,7 @@ unsigned int WorldRenderer::compileShaderProgramFromFiles(std::string vertexShad
     return _shaderProgram;
 }
 
-void WorldRenderer::renderSetup() {  
+void Renderer::renderSetup() {  
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);  
     //glEnable(GL_BLEND);
@@ -95,9 +95,10 @@ void WorldRenderer::renderSetup() {
     shaderProgram[1] = compileShaderProgramFromFiles("./shaders/texture_shader.vert", "./shaders/texture_shader.frag");
     shaderProgram[2] = compileShaderProgramFromFiles("./shaders/2d_shader.vert", "./shaders/2d_shader.frag");
     shaderProgram[3] = compileShaderProgramFromFiles("./shaders/world_shader.vert", "./shaders/world_shader.frag");
+    shaderProgram[4] = compileShaderProgramFromFiles("./shaders/2d_shader_untextured.vert", "./shaders/2d_shader_untextured.frag");
 
-    glGenVertexArrays(3, &VAO[0]);  
-    glGenBuffers(3, &VBO[0]); 
+    glGenVertexArrays(4, &VAO[0]);  
+    glGenBuffers(4, &VBO[0]); 
 
     //world VAO
     glBindVertexArray(VAO[0]);
@@ -144,9 +145,20 @@ void WorldRenderer::renderSetup() {
 
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
+
+    //non-textured overlay vbo
+    glBindVertexArray(VAO[3]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);  
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);  
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);  
 }
 
-void WorldRenderer::updateWorldVBO(World* world) {
+void Renderer::updateWorldVBO(World* world) {
     
     BlockArrayData* data = world->getBlockData();
 
@@ -188,7 +200,7 @@ void WorldRenderer::updateWorldVBO(World* world) {
     }
 }
 
-void WorldRenderer::renderFrame(World* world) {
+void Renderer::renderFrame(World* world) {
 
     setUniforms(world, 0);
     setUniforms(world, 1);
@@ -202,7 +214,7 @@ void WorldRenderer::renderFrame(World* world) {
     }
 }
 
-void WorldRenderer::renderOverlay(float rectangle[48], std::string texture) {
+void Renderer::renderOverlay(float rectangle[48], std::string texture) {
     glEnable(GL_BLEND);
     glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
@@ -235,7 +247,7 @@ void WorldRenderer::renderOverlay(float rectangle[48], std::string texture) {
     glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 }
 
-void WorldRenderer::renderOverlay(float rectangle[48], unsigned int TBO) {
+void Renderer::renderOverlay(float rectangle[48], unsigned int TBO) {
     glEnable(GL_BLEND);
     glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
@@ -265,7 +277,7 @@ void WorldRenderer::renderOverlay(float rectangle[48], unsigned int TBO) {
     glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 }
 
-void WorldRenderer::setUniforms(World* world, int programIndex) {
+void Renderer::setUniforms(World* world, int programIndex) {
 
     glUseProgram(shaderProgram[programIndex]);
 
@@ -279,7 +291,7 @@ void WorldRenderer::setUniforms(World* world, int programIndex) {
 
     int perspectiveMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "perspectiveMatrix");
     
-    glm::mat4x4 perspectiveMatrix = WorldRenderer::calculatePerspectiveMatrix(90, aspectRatio, 0.01, 100);
+    glm::mat4x4 perspectiveMatrix = Renderer::calculatePerspectiveMatrix(90, aspectRatio, 0.01, 100);
 
     GLfloat matrixFloat [16] = {0};
 
@@ -293,8 +305,8 @@ void WorldRenderer::setUniforms(World* world, int programIndex) {
     int rotationMatrixXLocation = glGetUniformLocation(shaderProgram[programIndex], "rotationMatrixX");
     int rotationMatrixYLocation = glGetUniformLocation(shaderProgram[programIndex], "rotationMatrixY");
 
-    glm::mat3x3 rotationMatrixX = WorldRenderer::calculateXRotationMatrix(world->getPlayer()->getXRotation());
-    glm::mat3x3 rotationMatrixY = WorldRenderer::calculateYRotationMatrix(world->getPlayer()->getYRotation());
+    glm::mat3x3 rotationMatrixX = Renderer::calculateXRotationMatrix(world->getPlayer()->getXRotation());
+    glm::mat3x3 rotationMatrixY = Renderer::calculateYRotationMatrix(world->getPlayer()->getYRotation());
 
     GLfloat rotationMatrixFloat [9] = {0};
 
@@ -311,7 +323,7 @@ void WorldRenderer::setUniforms(World* world, int programIndex) {
     glUniformMatrix3fv(rotationMatrixYLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);
 }
 
-void WorldRenderer::updateAspectRatio(GLFWwindow* window) {
+void Renderer::updateAspectRatio(GLFWwindow* window) {
     int width, height;
     glfwGetWindowSize(window, &width, &height);
     aspectRatio = (float)width/(float)height;
@@ -320,7 +332,7 @@ void WorldRenderer::updateAspectRatio(GLFWwindow* window) {
     this->height = height;
 }
 
-void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
+void Renderer::renderBlockInWireframe(World* world, BlockPos pos) {
     BlockData block = world->getBlockData()->getBlockAtPosition(pos);
     RenderedModel model = block.getBlockType()->getRenderedModel().toRenderedModel();
 
@@ -438,13 +450,13 @@ void WorldRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
 }
 
 template<class T>
-void WorldRenderer::appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T> vectorToAppend) {
+void Renderer::appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T> vectorToAppend) {
     for(T item : vectorToAppend) {
         vectorToAppendTo->push_back(item);
     }
 }
 
-glm::mat4x4 WorldRenderer::calculatePerspectiveMatrix(double FOV, double aspectRatio, double zNear, double zFar) {
+glm::mat4x4 Renderer::calculatePerspectiveMatrix(double FOV, double aspectRatio, double zNear, double zFar) {
     float n = zNear, r = 0, l = 0, t = 0, b = 0, f = zFar;
     
     float scale = tan(FOV * 0.5 * M_PI / 180) * n;
@@ -478,7 +490,7 @@ glm::mat4x4 WorldRenderer::calculatePerspectiveMatrix(double FOV, double aspectR
     return perspectiveMatrix;
 }
 
-glm::mat3x3 WorldRenderer::calculateXRotationMatrix(double xRotation) {
+glm::mat3x3 Renderer::calculateXRotationMatrix(double xRotation) {
     glm::mat3x3 rotationMatrix = glm::mat3x3();
 
     double xRads = xRotation * M_PI / 180;
@@ -498,7 +510,7 @@ glm::mat3x3 WorldRenderer::calculateXRotationMatrix(double xRotation) {
     return rotationMatrix;
 }
 
-glm::mat3x3 WorldRenderer::calculateYRotationMatrix(double yRotation) {
+glm::mat3x3 Renderer::calculateYRotationMatrix(double yRotation) {
 
     glm::mat3x3 rotationMatrix = glm::mat3x3(1.0f);
 
@@ -519,7 +531,7 @@ glm::mat3x3 WorldRenderer::calculateYRotationMatrix(double yRotation) {
     return rotationMatrix;
 }
 
-void WorldRenderer::updateChunkData(std::vector<float>* buffer, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator) {    
+void Renderer::updateChunkData(std::vector<float>* buffer, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator) {    
     for(int i = 0; i < blocksInChunk->size(); ++i) {
         BlockData blockData = blocksInChunk->at(i);
 
@@ -576,19 +588,19 @@ void WorldRenderer::updateChunkData(std::vector<float>* buffer, std::vector<Bloc
     }
 }
 
-int WorldRenderer::getWidth() {
+int Renderer::getWidth() {
     return width;
 }
 
-int WorldRenderer::getHeight() {
+int Renderer::getHeight() {
     return height;
 }
 
-std::array<int, 2> WorldRenderer::overlayDimensions() {
+std::array<int, 2> Renderer::overlayDimensions() {
     return {1000, 1000};
 }
 
-unsigned int WorldRenderer::textTextureBuffer(std::string text) {
+unsigned int Renderer::textTextureBuffer(std::string text) {
     unsigned char* bitmap = fontLoader.getTextBitmap(text);
 
     int b_h = fontLoader.getBH();
@@ -627,10 +639,39 @@ unsigned int WorldRenderer::textTextureBuffer(std::string text) {
     return TBO;
 }
 
-int WorldRenderer::getBitmapHeight() {
+int Renderer::getBitmapHeight() {
     return fontLoader.getBH();
 }
 
-int WorldRenderer::getBitmapWidth() {
+int Renderer::getBitmapWidth() {
     return fontLoader.getBW();
+}
+
+
+void Renderer::renderRectangle(float rectangle[36]) {
+    glEnable(GL_BLEND);
+    glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+
+    float overlay[36] = {0};
+
+    for(int i = 0; i < 36; ++i) {
+        overlay[i] = rectangle[i];// * ((i % 6 == 1) ? aspectRatio : 1);
+    }
+    
+    glBindVertexArray(VAO[3]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
+
+    glUseProgram(shaderProgram[4]);
+
+    int boundsVec3Location = glGetUniformLocation(shaderProgram[4], "bounds");
+
+    glUniform3f(boundsVec3Location, 1000, 1000, 1000);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(overlay), &overlay[0], GL_STATIC_DRAW);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    
+    glDisable(GL_BLEND);
+    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 }

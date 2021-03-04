@@ -47,7 +47,9 @@ std::optional<std::string> fromKeyCode(int keycode) {
         {GLFW_KEY_SPACE, [](std::string& result){ result = " "; }},
         {GLFW_KEY_LEFT_SHIFT, [](std::string& result){ result = "LEFT_SHIFT"; }},
         {GLFW_KEY_RIGHT_SHIFT, [](std::string& result){ result = "RIGHT_SHIFT"; }}, 
-        {GLFW_KEY_ESCAPE, [](std::string& result){ result = "ESC"; }} 
+        {GLFW_KEY_ESCAPE, [](std::string& result){ result = "ESC"; }}, 
+        {GLFW_KEY_LEFT_CONTROL, [](std::string& result){ result = "LEFT_CONTROL"; }},
+        {GLFW_KEY_RIGHT_CONTROL, [](std::string& result){ result = "RIGHT_CONTROL"; }} 
     };
     static const auto end = keyMap.end();
     auto it = keyMap.find(keycode);
@@ -105,7 +107,9 @@ std::optional<int> toKeyCode(std::string c) {
         {" ", [](int& result){ result = GLFW_KEY_SPACE; }},
         {"LEFT_SHIFT", [](int& result){ result = GLFW_KEY_LEFT_SHIFT; }},
         {"RIGHT_SHIFT", [](int& result){ result = GLFW_KEY_RIGHT_SHIFT; }},
-        {"ESC", [](int& result){ result = GLFW_KEY_ESCAPE; }} 
+        {"ESC", [](int& result){ result = GLFW_KEY_ESCAPE; }},
+        {"LEFT_CONTROL", [](int& result){ result = GLFW_KEY_LEFT_CONTROL; }}, 
+        {"RIGHT_CONTROL", [](int& result){ result = GLFW_KEY_RIGHT_CONTROL; }} 
     };
     static const auto end = keyMap.end();
     auto it = keyMap.find(c);
