@@ -69,7 +69,7 @@ class GameSettings {
         static const std::string settingToString(Setting s) {
             switch(s) {
                 case FOV:
-                    return "FOV";
+                    return "FOV (NO-OP)";
                 case MOVE_FORWARD:
                     return "MOVE_FORWARD";
                 case MOVE_BACK:

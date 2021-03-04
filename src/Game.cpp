@@ -44,10 +44,10 @@ void Game::start() {
             std::shared_ptr<MainMenuGui> menuGui = std::dynamic_pointer_cast<MainMenuGui>(gui);
             if(menuGui->singleplayer.isPressed()) {
                 if(world != nullptr) {
-                    delete(world);
+                    world = nullptr;
                 }
 
-                world = new World(window, &eventQueue, &input, &renderer, &map, &settings);
+                world = std::make_shared<World>(window, &eventQueue, &input, &renderer, &map, &settings);
                 world->resume();
             }
             

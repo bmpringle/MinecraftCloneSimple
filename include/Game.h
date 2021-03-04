@@ -32,7 +32,7 @@ class Game {
         TimerMap map;
         InputHandler input;
         Renderer renderer;
-        World* world;
+        std::shared_ptr<World> world;
         std::shared_ptr<GameEventHandler> gameEventHandler;
 
         std::shared_ptr<Gui> gui;

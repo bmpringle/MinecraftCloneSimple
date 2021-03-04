@@ -29,14 +29,14 @@ void InputHandler::handleInput(GLFWwindow* window, int key, int scancode, int ac
 
     switch(action) {
         case GLFW_PRESS:
-            e->callEvent(std::shared_ptr<KeyPressedEvent>(new KeyPressedEvent(c)));
+            e->callEvent(std::shared_ptr<KeyPressedEvent>(std::make_shared<KeyPressedEvent>(c)));
             if(timerMap->getTimerDuration(c).count() == 0) {
                 timerMap->addTimerToMap(c);
             }
             safeAddToVector(&held, c);
             break;
         case GLFW_RELEASE:
-            e->callEvent(std::shared_ptr<KeyReleasedEvent>(new KeyReleasedEvent(c)));
+            e->callEvent(std::shared_ptr<KeyReleasedEvent>(std::make_shared<KeyReleasedEvent>(c)));
             timerMap->removeTimerFromMap(c);
             safeRemoveFromVector(&held, c);
             break;
@@ -66,13 +66,13 @@ void InputHandler::handleMouseInput(GLFWwindow* window, double xpos, double ypos
     double xOffset = sensitivity*(xpos - previousXPos);
     double yOffset = sensitivity*(ypos - previousYPos);
     if(xOffset != 0 || yOffset != 0) {
-        e->callEvent(std::shared_ptr<MouseMovedOffsetEvent>(new MouseMovedOffsetEvent(xOffset, yOffset)));
+        e->callEvent(std::shared_ptr<MouseMovedOffsetEvent>(std::make_shared<MouseMovedOffsetEvent>(xOffset, yOffset)));
     }
 
     previousXPos = xpos;
     previousYPos = ypos;
 
-    e->callEvent(std::shared_ptr<MousePosEvent>(new MousePosEvent(xpos, ypos)));
+    e->callEvent(std::shared_ptr<MousePosEvent>(std::make_shared<MousePosEvent>(xpos, ypos)));
 }
 
 void InputHandler::handleMouseButtonInput(GLFWwindow* window, int button, int action, int mods, EventQueue* e, TimerMap* timerMap) {
@@ -80,13 +80,13 @@ void InputHandler::handleMouseButtonInput(GLFWwindow* window, int button, int ac
         case GLFW_MOUSE_BUTTON_LEFT:
             switch(action) {
                 case GLFW_PRESS:
-                    e->callEvent(std::shared_ptr<LeftMouseButtonPressedEvent>(new LeftMouseButtonPressedEvent()));
+                    e->callEvent(std::shared_ptr<LeftMouseButtonPressedEvent>(std::make_shared<LeftMouseButtonPressedEvent>()));
             }
             break;
         case GLFW_MOUSE_BUTTON_RIGHT:
             switch(action) {
                 case GLFW_PRESS:
-                    e->callEvent(std::shared_ptr<RightMouseButtonPressedEvent>(new RightMouseButtonPressedEvent()));
+                    e->callEvent(std::shared_ptr<RightMouseButtonPressedEvent>(std::make_shared<RightMouseButtonPressedEvent>()));
             }
             break;
     }
@@ -99,11 +99,11 @@ void InputHandler::setFirstMouse() {
 void InputHandler::callRegularEvents(EventQueue* e, TimerMap* timerMap) {
     for(int i = 0; i < held.size(); ++i) {
         std::chrono::system_clock::duration duration = std::chrono::duration_cast<std::chrono::milliseconds>(timerMap->getTimerDurationAndReset(held.at(i)));
-        e->callEvent(std::shared_ptr<KeyHeldEvent>(new KeyHeldEvent(held.at(i), duration)));
+        e->callEvent(std::shared_ptr<KeyHeldEvent>(std::make_shared<KeyHeldEvent>(held.at(i), duration)));
     }
 }
 
 void InputHandler::handleScrollInput(GLFWwindow* window, double offsetX, double offsetY, EventQueue* e, TimerMap* timerMap) {
     double sensitivity = 2;
-    e->callEvent(std::shared_ptr<ScrollEvent>(new ScrollEvent(sensitivity * offsetX, sensitivity * offsetY)));
+    e->callEvent(std::shared_ptr<ScrollEvent>(std::make_shared<ScrollEvent>(sensitivity * offsetX, sensitivity * offsetY)));
 }
