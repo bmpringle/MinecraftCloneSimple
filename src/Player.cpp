@@ -66,162 +66,23 @@ void Player::updateServer(World* _world) {
 
 //todo -> speed up validation checks and lookat checks
 void Player::listenTo(std::shared_ptr<Event> e) {
+    std::string key = "";
+
     if(e->getEventID() == "KEYPRESSED") {
-        KeyPressedEvent keyEvent = *dynamic_cast<KeyPressedEvent*>(e.get());
-
-        if(gui == nullptr) {
-            if(keyEvent.key == settings->getSetting(SLOT1)) {
-                setItemInHandIndex(0);
-            }
-
-            if(keyEvent.key == settings->getSetting(SLOT2)) {
-                setItemInHandIndex(1);
-            }
-
-            if(keyEvent.key == settings->getSetting(SLOT3)) {
-                setItemInHandIndex(2);
-            }
-
-            if(keyEvent.key == settings->getSetting(SLOT4)) {
-                setItemInHandIndex(3);
-            }
-
-            if(keyEvent.key == settings->getSetting(SLOT5)) {
-                setItemInHandIndex(4);
-            }
-
-            if(keyEvent.key == settings->getSetting(SLOT6)) {
-                setItemInHandIndex(5);
-            }
-
-            if(keyEvent.key == settings->getSetting(SLOT7)) {
-                setItemInHandIndex(6);
-            }
-
-            if(keyEvent.key == settings->getSetting(SLOT8)) {
-                setItemInHandIndex(7);
-            }
-
-            if(keyEvent.key == settings->getSetting(SLOT9)) {
-                setItemInHandIndex(8);
-            }
-
-            if(keyEvent.key == settings->getSetting(USE_SECOND)) {
-                inventory[itemInHandIndex].onUse(world);
-                world->getTimerMap()->resetTimer("itemUseTimer");
-            }
-        }
-
-        if(keyEvent.key == settings->getSetting(INVENTORY)) {
-            if(gui == nullptr) {
-                glfwSetInputMode(world->getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL); 
-                gui = std::make_unique<InventoryGui>(world->getRenderer(), &inventory);
-            }else if(gui->getID() == 0) {  
-                glfwSetInputMode(world->getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
-                gui = nullptr;
-            }
-        }
+        KeyPressedEvent event = *dynamic_cast<KeyPressedEvent*>(e.get());
+        key = event.key;
     }
-    
+
     if(e->getEventID() == "KEYHELD") {
-        KeyHeldEvent keyEvent = *dynamic_cast<KeyHeldEvent*>(e.get());
-        
-        if(gui == nullptr) {
-            if(keyEvent.key == settings->getSetting(MOVE_FORWARD)) {
-                ++zInputDirection;
-            }
-
-            if(keyEvent.key == settings->getSetting(MOVE_LEFT)) {
-                --xInputDirection;
-            }
-
-            if(keyEvent.key == settings->getSetting(MOVE_BACK)) {
-                --zInputDirection;
-            }
-
-            if(keyEvent.key == settings->getSetting(MOVE_RIGHT)) {
-                ++xInputDirection;
-            }
-
-            if(keyEvent.key == settings->getSetting(USE_SECOND)) {
-                if(std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("itemUseTimer")).count() > 200) {
-                    inventory[itemInHandIndex].onUse(world);
-                    world->getTimerMap()->resetTimer("itemUseTimer");
-
-                }
-            }
-
-            if(keyEvent.key == settings->getSetting(JUMP)) {
-                if(isGrounded || canJumpInWater(world->getBlockData())) {
-                    isJumping = true;
-                    motion[1] = 0.21 * ((waterPhysics) ? 0.4 : 1);
-                }
-            }
-
-            if(keyEvent.key == settings->getSetting(SNEAK)) {
-                isSneaking = true;
-            }
-
-            if(keyEvent.key == settings->getSetting(SPRINT)) {
-                isSprinting = true;
-            }
-        }
+        KeyHeldEvent event = *dynamic_cast<KeyHeldEvent*>(e.get());
+        key = event.key;
     }
 
     if(e->getEventID() == "KEYRELEASED") {
-        KeyReleasedEvent keyEvent = *dynamic_cast<KeyReleasedEvent*>(e.get());
-        if(gui == nullptr) {
-            if(keyEvent.key == settings->getSetting(SNEAK)) {
-                isSneaking = false;
-            }
-
-            if(keyEvent.key == settings->getSetting(SPRINT)) {
-                isSprinting = false;
-            }
-        }
+        KeyReleasedEvent event = *dynamic_cast<KeyReleasedEvent*>(e.get());
+        key = event.key;
     }
-
-    if(e->getEventID() == "MOUSEMOVEDOFFSET") {
-        if(gui == nullptr) {
-            MouseMovedOffsetEvent mouseEvent = *dynamic_cast<MouseMovedOffsetEvent*>(e.get());
-            yaw -= mouseEvent.xOffset;
-            pitch -= mouseEvent.yOffset;
-
-            if(pitch > 89) {
-                pitch = 89;
-            }
-            if(pitch < -89) {
-                pitch = -89;
-            }
-        }
-    }
-
-    if(e->getEventID() == "MOUSEPOS") {
-        MousePosEvent mouseEvent = *dynamic_cast<MousePosEvent*>(e.get());
-        mouseX = mouseEvent.x;
-        mouseY = mouseEvent.y;
-    }
-
-    if(e->getEventID() == settings->getSetting(ATTACK)) {
-        if(gui == nullptr) {
-            LeftMouseButtonPressedEvent mouseEvent = *dynamic_cast<LeftMouseButtonPressedEvent*>(e.get());
-            
-            inventory[itemInHandIndex].onLeftClick(world, blockLookingAt);
-            if(blockLookingAt != nullptr) {
-                BlockPos selected = *blockLookingAt;
-                world->getBlockData()->removeBlockAtPosition(selected);
-            }
-        }else {
-            gui->mouseClick(mouseX, mouseY);
-        }
-    }
-
-    if(e->getEventID() == settings->getSetting(USE)) {
-        if(gui == nullptr) {
-            inventory[itemInHandIndex].onUse(world);
-            world->getTimerMap()->resetTimer("itemUseTimer");
-        }
-    }
+    processInput(e->getEventID(), key, e);
 }
 
 AABB Player::getAABB() {
@@ -640,5 +501,157 @@ int Player::getItemInHandIndex() {
 void Player::displayGui(Renderer* renderer) {
     if(gui != nullptr) {
         gui->displayGui(renderer, mouseX, mouseY);
+    }
+}
+
+void Player::processInput(std::string event, std::string key, std::shared_ptr<Event> e) {
+    if(event == "KEYPRESSED" || key == "") {
+        if(gui == nullptr) {
+            if(e->getEventID() == settings->getSetting(SLOT1) || key == settings->getSetting(SLOT1)) {
+                setItemInHandIndex(0);
+            }
+
+            if(e->getEventID() == settings->getSetting(SLOT2) || key == settings->getSetting(SLOT2)) {
+                setItemInHandIndex(1);
+            }
+
+            if(e->getEventID() == settings->getSetting(SLOT3) || key == settings->getSetting(SLOT3)) {
+                setItemInHandIndex(2);
+            }
+
+            if(e->getEventID() == settings->getSetting(SLOT4) || key == settings->getSetting(SLOT4)) {
+                setItemInHandIndex(3);
+            }
+
+            if(e->getEventID() == settings->getSetting(SLOT5) || key == settings->getSetting(SLOT5)) {
+                setItemInHandIndex(4);
+            }
+
+            if(e->getEventID() == settings->getSetting(SLOT6) || key == settings->getSetting(SLOT6)) {
+                setItemInHandIndex(5);
+            }
+
+            if(e->getEventID() == settings->getSetting(SLOT7) || key == settings->getSetting(SLOT7)) {
+                setItemInHandIndex(6);
+            }
+
+            if(e->getEventID() == settings->getSetting(SLOT8) || key == settings->getSetting(SLOT8)) {
+                setItemInHandIndex(7);
+            }
+
+            if(e->getEventID() == settings->getSetting(SLOT9) || key == settings->getSetting(SLOT9)) {
+                setItemInHandIndex(8);
+            }
+
+            if(e->getEventID() == settings->getSetting(USE_SECOND) || key == settings->getSetting(USE_SECOND)) {
+                inventory[itemInHandIndex].onUse(world);
+                world->getTimerMap()->resetTimer("itemUseTimer");
+            }
+        }
+
+        if(e->getEventID() == settings->getSetting(INVENTORY) || key == settings->getSetting(INVENTORY)) {
+            if(gui == nullptr) {
+                glfwSetInputMode(world->getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL); 
+                gui = std::make_unique<InventoryGui>(world->getRenderer(), &inventory);
+            }else if(gui->getID() == 0) {  
+                glfwSetInputMode(world->getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
+                gui = nullptr;
+            }
+        }
+
+        if(e->getEventID() == settings->getSetting(ATTACK) || key == settings->getSetting(ATTACK)) {
+            if(gui == nullptr) {                
+                inventory[itemInHandIndex].onLeftClick(world, blockLookingAt);
+                if(blockLookingAt != nullptr) {
+                    BlockPos selected = *blockLookingAt;
+                    world->getBlockData()->removeBlockAtPosition(selected);
+                }
+            }else {
+                gui->mouseClick(mouseX, mouseY);
+            }
+        }
+
+        if(e->getEventID() == settings->getSetting(USE) || key == settings->getSetting(USE)) {
+            if(gui == nullptr) {
+                inventory[itemInHandIndex].onUse(world);
+                world->getTimerMap()->resetTimer("itemUseTimer");
+            }
+        }
+    }
+    
+    if(event == "KEYHELD" || key == "") {        
+        if(gui == nullptr) {
+            if(key == settings->getSetting(MOVE_FORWARD)) {
+                ++zInputDirection;
+            }
+
+            if(key == settings->getSetting(MOVE_LEFT)) {
+                --xInputDirection;
+            }
+
+            if(key == settings->getSetting(MOVE_BACK)) {
+                --zInputDirection;
+            }
+
+            if(key == settings->getSetting(MOVE_RIGHT)) {
+                ++xInputDirection;
+            }
+
+            if(key == settings->getSetting(USE_SECOND) || event == settings->getSetting(USE_SECOND)) {
+                if(std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("itemUseTimer")).count() > 200) {
+                    inventory[itemInHandIndex].onUse(world);
+                    world->getTimerMap()->resetTimer("itemUseTimer");
+
+                }
+            }
+
+            if(key == settings->getSetting(JUMP) || event == settings->getSetting(JUMP)) {
+                if(isGrounded || canJumpInWater(world->getBlockData())) {
+                    isJumping = true;
+                    motion[1] = 0.21 * ((waterPhysics) ? 0.4 : 1);
+                }
+            }
+
+            if(key == settings->getSetting(SNEAK)) {
+                isSneaking = true;
+            }
+
+            if(key == settings->getSetting(SPRINT)) {
+                isSprinting = true;
+            }
+        }
+    }
+
+    if(event == "KEYRELEASED") {
+        if(gui == nullptr) {
+            if(key == settings->getSetting(SNEAK)) {
+                isSneaking = false;
+            }
+
+            if(key == settings->getSetting(SPRINT)) {
+                isSprinting = false;
+            }
+        }
+    }
+
+    if(event == "MOUSEMOVEDOFFSET") {
+        if(gui == nullptr) {
+            MouseMovedOffsetEvent mouseEvent = *dynamic_cast<MouseMovedOffsetEvent*>(e.get());
+            yaw -= mouseEvent.xOffset;
+            pitch -= mouseEvent.yOffset;
+
+            if(pitch > 89) {
+                pitch = 89;
+            }
+            if(pitch < -89) {
+                pitch = -89;
+            }
+        }
+    }
+
+    if(event == "MOUSEPOS") {
+        MousePosEvent mouseEvent = *dynamic_cast<MousePosEvent*>(e.get());
+        mouseX = mouseEvent.x;
+        mouseY = mouseEvent.y;
     }
 }

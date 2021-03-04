@@ -48,6 +48,8 @@ class Player final : public Listener, public Model {
         void move(glm::vec3* moveVec);
         bool isBlockUnderPlayer();
 
+        void processInput(std::string event, std::string key, std::shared_ptr<Event> e);
+
         World* world;
         GameSettings* settings;
 
