@@ -3,7 +3,8 @@
 #include "OptionsGui.h"
 
 Game::Game(GLFWwindow* _window) : window(_window), eventQueue(EventQueue()), map(TimerMap()), input(InputHandler()), renderer(Renderer()), world(nullptr), gameEventHandler(std::make_shared<GameEventHandler>(GameEventHandler(this))), gui(std::make_shared<MainMenuGui>(&renderer)), settings(GameSettings()) {
-    settings.initSettings();
+    settings.initDefaultSettings();
+    settings.parseOptionsFromFile("src/assets/options.txt");
     
     eventQueue.addEventListener(gameEventHandler);
 
@@ -74,6 +75,8 @@ void Game::start() {
     }
     glfwDestroyWindow(window);
     glfwTerminate();
+
+    settings.saveOptionsToFile("src/assets/options.txt");
 }
 
 void Game::pauseOrResume() {
