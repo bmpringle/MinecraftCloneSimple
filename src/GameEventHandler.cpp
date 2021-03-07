@@ -2,6 +2,7 @@
 #include "Events.h"
 #include "Game.h"
 #include "OptionsGui.h"
+#include "SingleplayerSelectGui.h"
 
 GameEventHandler::GameEventHandler(Game* _game) : game(_game) {
 
@@ -16,6 +17,12 @@ void GameEventHandler::listenTo(std::shared_ptr<Event> e) {
             }else if(e->getEventID() == "KEYPRESSED") {
                 KeyPressedEvent keyEvent = *dynamic_cast<KeyPressedEvent*>(e.get());
                 optionsGui->handleOptionInput(keyEvent.key);
+            }
+        } else if(game->getGui()->getID() == 3) {
+            if(e->getEventID() == "KEYPRESSED") {
+                KeyPressedEvent keyEvent = *dynamic_cast<KeyPressedEvent*>(e.get());
+                std::shared_ptr<SingleplayerSelectGui> singleplayerGui = std::dynamic_pointer_cast<SingleplayerSelectGui>(game->getGui());
+                singleplayerGui->handleKeyPressed(keyEvent.key);
             }
         }
     }

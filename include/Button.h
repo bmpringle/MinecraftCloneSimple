@@ -35,6 +35,10 @@ class Button {
 
         void setLayer(double layer);
 
+        void setText(Renderer* renderer, std::string text);
+
+        std::string getText();
+
     private:
         float x;
         float y;

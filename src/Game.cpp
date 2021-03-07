@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "MainMenuGui.h"
 #include "OptionsGui.h"
+#include "SingleplayerSelectGui.h"
 
 Game::Game(GLFWwindow* _window) : window(_window), eventQueue(EventQueue()), map(TimerMap()), input(InputHandler()), renderer(Renderer()), world(nullptr), gameEventHandler(std::make_shared<GameEventHandler>(GameEventHandler(this))), gui(std::make_shared<MainMenuGui>(&renderer)), settings(GameSettings()) {
     settings.initDefaultSettings();
@@ -47,24 +48,7 @@ void Game::start() {
                 if(world != nullptr) {
                     world = nullptr;
                 }
-                std::cout << "TEMPORARY WORLD CREATION METHOD: ENTER WORLD NAME: " << std::endl;
-                std::string worldname;
-                std::cin >> worldname;
-
-                if(!std::filesystem::exists("./worlds/"+worldname+"/data/")) {
-                    std::filesystem::create_directories("./worlds/"+worldname+"/data/");
-                    int seed;
-                    std::cout << "WORLD DOES NOT EXIST. CREATING WORLD" << std::endl;
-                    std::cout << "ENTER WORLD SEED:" << std::endl; 
-                    std::cin >> seed;
-                    world = std::make_shared<World>(window, &eventQueue, &input, &renderer, &map, &settings, worldname, "./worlds/"+worldname+"/", seed);
-                }else {
-                    std::ifstream seedIn("./worlds/"+worldname+"/data/seed.cdat");
-                    std::string buffer;
-                    std::getline(seedIn, buffer);
-                    world = std::make_shared<World>(window, &eventQueue, &input, &renderer, &map, &settings, worldname, "./worlds/"+worldname+"/", std::stoi(buffer));
-                }
-                world->resume();
+                gui = std::make_shared<SingleplayerSelectGui>(&renderer);
             }
             
             if(menuGui->quit.isPressed()){
@@ -80,7 +64,40 @@ void Game::start() {
             if(optionsGui->done.isPressed()) {
                 gui = std::make_shared<MainMenuGui>(&renderer);
             }
-            //todo: options menu
+        }else if(gui->getID() == 3) {
+            std::shared_ptr<SingleplayerSelectGui> singleplayerGui = std::dynamic_pointer_cast<SingleplayerSelectGui>(gui);
+            if(singleplayerGui->done) {
+                if(world != nullptr) {
+                    world = nullptr;
+                }
+
+                std::string worldname = singleplayerGui->worldName;
+                int seed = singleplayerGui->worldSeed;
+                try {
+                    if(seed == -1) {
+                        std::ifstream seedIn("./worlds/"+worldname+"/data/seed.cdat");
+                        std::string buffer;
+                        std::getline(seedIn, buffer);
+                        world = std::make_shared<World>(window, &eventQueue, &input, &renderer, &map, &settings, worldname, "./worlds/"+worldname+"/", std::stoi(buffer));
+                    }
+                }catch(std::exception e) {
+                    std::cout << "failed to load world. quitting to main menu" << std::endl;
+                    gui = std::make_shared<MainMenuGui>(&renderer);
+                }
+                if(seed != -1) {
+                    if(std::filesystem::exists("./worlds/"+worldname+"/data/")) {
+                        std::cout << "world already exists. will not overwrite. quitting to main menu" << std::endl;
+                        gui = std::make_shared<MainMenuGui>(&renderer);
+                    }else {
+                        std::filesystem::create_directories("./worlds/"+worldname+"/data/");
+                        world = std::make_shared<World>(window, &eventQueue, &input, &renderer, &map, &settings, worldname, "./worlds/"+worldname+"/", seed);
+                    }
+                }
+
+                if(world != nullptr) {
+                    world->resume();
+                }
+            }
         }
 
         input.callRegularEvents(&eventQueue, &map);
@@ -123,6 +140,11 @@ void Game::internalMouseButtonCallback(GLFWwindow* w, int button, int action, in
 void Game::quitToMainMenu() {
     if(world != nullptr) {
         world->quit();
+    }
+
+    if(gui->getID() != 1) {
+        gui->close();
+        gui = std::make_shared<MainMenuGui>(&renderer);
     }
 }
 

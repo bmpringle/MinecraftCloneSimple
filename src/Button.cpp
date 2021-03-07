@@ -1,9 +1,7 @@
 #include "Button.h"
 
 Button::Button(int x, int y, int width, int height, std::string texture, Renderer* renderer) : x(x), y(y), width(width), height(height), text(texture) {
-    TBO = renderer->textTextureBuffer(texture);
-    b_h = renderer->getBitmapHeight();
-    b_w = renderer->getBitmapWidth();
+    setText(renderer, text);
 }
 
 Button::Button() : x(0), y(0), width(0), height(0), text("") {
@@ -40,6 +38,7 @@ void Button::render(Renderer* renderer, double offsetX, double offsetY) {
         (float)(x + width + offsetX) * aspect, (float)(y + offsetY) * aspect, layer, 0, 0, 1, 1, 0,
         (float)(x + width + offsetX) * aspect, (float)(y + height + offsetY) * aspect, layer, 0, 0, 1, 1, 1
     };
+
     renderer->renderOverlay(numberoverlay, TBO);
 }
 
@@ -61,7 +60,7 @@ void Button::autoSize(int middleX, int middleY) {
     int _height = height;
     int _y = middleY - _height / 2.0;
 
-    double conversionFactor = b_w / b_h;
+    double conversionFactor = (double)b_w / (double)b_h;
 
     int _width = height * conversionFactor;
     int _x = middleX - _width / 2.0;
@@ -90,4 +89,22 @@ double Button::getHeight() {
 
 void Button::setLayer(double layer) {
     this->layer = layer;
+}
+
+void Button::setText(Renderer* renderer, std::string text) {
+    this->text = text;
+    if(text == "") {
+        TBO = renderer->textTextureBuffer(" ");
+        b_h = renderer->getBitmapHeight();
+        b_w = renderer->getBitmapWidth();
+        return;
+    }
+    TBO = renderer->textTextureBuffer(text);
+    b_h = renderer->getBitmapHeight();
+    b_w = renderer->getBitmapWidth();
+    autoSize(x + width/2.0, y + height/2.0);
+}
+
+std::string Button::getText() {
+    return text;
 }

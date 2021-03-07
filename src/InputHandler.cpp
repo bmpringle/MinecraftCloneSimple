@@ -18,7 +18,7 @@ void safeAddToVector(std::vector<std::string>* vector, std::string add) {
     vector->push_back(add);
 }
 
-void InputHandler::handleInput(GLFWwindow* window, int key, int scancode, int action, int mods, EventQueue* e, TimerMap* timerMap) {
+void InputHandler::handleInput(GLFWwindow* window, int key, int scancode, int action, int mods, EventQueue* e, TimerMap* timerMap) { 
     std::optional<std::string> cOptional = fromKeyCode(key);
 
     if(!cOptional.has_value()) {
