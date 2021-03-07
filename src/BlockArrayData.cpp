@@ -4,8 +4,9 @@
 #include "World.h"
 #include <algorithm>
 #include <Blocks.h>
+#include <filesystem>
 
-BlockArrayData::BlockArrayData(int xSize, int ySize, int zSize) : chunkList(std::vector<Chunk>()) {
+BlockArrayData::BlockArrayData(int xSize, int ySize, int zSize, std::string _worldFolder, int seed) : chunkList(std::vector<Chunk>()), SEED(seed), worldFolder(_worldFolder) {
     size[0] = xSize; 
     size[1] = ySize; 
     size[2] = zSize;
@@ -40,7 +41,15 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
                     loadedChunkLocations[chunkLocation] = LoadedChunkInfo(chunkLocation, true);
                 }
             }else {
-                generateChunk(playerBlock);
+                int x = floor((float)playerBlock.x / (float)Chunk::getChunkSize()[0]);
+                int z = floor((float)playerBlock.z / (float)Chunk::getChunkSize()[2]);
+                std::string chunkPath = worldFolder+"/data/"+std::to_string(x)+"-"+std::to_string(z)+".cdat";
+                if(std::filesystem::exists(chunkPath)) {
+                    loadChunkFromFile(chunkPath, playerBlock);
+                }else {
+                    generateChunk(playerBlock);
+                }
+
                 LoadedChunkInfo info = LoadedChunkInfo(BlockPos(0, 0, 0), false);
                 BlockPos chunkLocation = getChunkWithBlock(playerBlock)->getChunkCoordinates();
                 try {
@@ -257,15 +266,15 @@ bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
             AABB chunkAABB = c->getChunkAABB();
             if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
                 auto tree = c->getBlockTree();
-                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>&)> eval = [playerAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>>& block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<SBDA>&)> eval = [playerAABB](AABB aabb, bool isLeaf, std::optional<SBDA>& block) -> bool { 
                     if(AABBIntersectedByAABB(playerAABB, aabb)){
                         return true;
                     }
                     return false;
                 };
-                std::vector<std::optional<std::array<BlockData, 256>>*> blocksVector = tree->getLeafOfTree(eval);
+                std::vector<std::optional<SBDA>*> blocksVector = tree->getLeafOfTree(eval);
                 if(blocksVector.size() > 0) {
-                    for(std::optional<std::array<BlockData, 256>>* blocksColumn : blocksVector) {
+                    for(std::optional<SBDA>* blocksColumn : blocksVector) {
                         for(int i = 0; i < 256; ++i) {
                             BlockData block = (*blocksColumn).value()[i];
                             if(block.getBlockType() != nullptr && block.getBlockType()->isSolid()) {
@@ -348,15 +357,15 @@ bool BlockArrayData::isAABBInWater(AABB playerAABB) {
             AABB chunkAABB = c->getChunkAABB();
             if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
                 auto tree = c->getBlockTree();
-                std::function<bool(AABB, bool, std::optional<std::array<BlockData, 256>>)> eval = [playerAABB](AABB aabb, bool isLeaf, std::optional<std::array<BlockData, 256>> block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<SBDA>)> eval = [playerAABB](AABB aabb, bool isLeaf, std::optional<SBDA> block) -> bool { 
                     if(AABBIntersectedByAABB(playerAABB, aabb)){
                         return true;
                     }
                     return false;
                 };
-                std::vector<std::optional<std::array<BlockData, 256>>*> blocksVector = tree->getLeafOfTree(eval);
+                std::vector<std::optional<SBDA>*> blocksVector = tree->getLeafOfTree(eval);
                 if(blocksVector.size() > 0) {
-                    for(std::optional<std::array<BlockData, 256>>* blocksColumn : blocksVector) {
+                    for(std::optional<SBDA>* blocksColumn : blocksVector) {
                         for(int i = 0; i < 256; ++i) {
                             BlockData block = (*blocksColumn).value()[i];
                             if(block.getBlockType() != nullptr && block.getBlockType()->getName() == "water") {
@@ -372,4 +381,27 @@ bool BlockArrayData::isAABBInWater(AABB playerAABB) {
         }
     }
     return false;
+}
+
+void BlockArrayData::setWorldFolder(std::string path) {
+    worldFolder = path;
+}
+
+void BlockArrayData::loadChunkFromFile(std::string chunkPath, BlockPos chunkLocation) {
+    Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize()[0]), floor((float)chunkLocation.z / (float)Chunk::getChunkSize()[2]));
+    std::ifstream t(chunkPath);
+    t.seekg(0, std::ios::end);
+    size_t size = t.tellg();
+    std::string buffer(size, ' ');
+    t.seekg(0);
+    t.read(&buffer[0], size); 
+
+    auto tree = generatingChunk.getBlockTree();
+    tree->deserialize(buffer);
+
+    chunkList.push_back(generatingChunk);
+}
+
+int BlockArrayData::getSeed() {
+    return SEED;
 }

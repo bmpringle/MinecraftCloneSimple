@@ -7,13 +7,19 @@ const std::shared_ptr<Block> Blocks::log = std::make_shared<BlockLog>();
 const std::shared_ptr<Block> Blocks::leaf = std::make_shared<BlockLeaf>();
 const std::shared_ptr<Block> Blocks::water = std::make_shared<BlockWater>();
 
+std::map<std::string, std::shared_ptr<Block>> Blocks::blockMap = {
+            {dirt->getName(), dirt},
+            {cobblestone->getName(), cobblestone},
+            {grass->getName(), grass},
+            {log->getName(), log},
+            {leaf->getName(), leaf},
+            {water->getName(), water},
+};
+
 void Blocks::initTextureArrayCreator(TextureArrayCreator* texCreator) {
-    for(int i = 0; i < 6; ++i) {
-        texCreator->addTextureToList(Blocks::dirt->getTextureName(SideEnum(i)));
-        texCreator->addTextureToList(Blocks::cobblestone->getTextureName(SideEnum(i)));
-        texCreator->addTextureToList(Blocks::grass->getTextureName(SideEnum(i)));
-        texCreator->addTextureToList(Blocks::log->getTextureName(SideEnum(i)));
-        texCreator->addTextureToList(Blocks::leaf->getTextureName(SideEnum(i)));
-        texCreator->addTextureToList(Blocks::water->getTextureName(SideEnum(i)));
+    for(std::pair<std::string, std::shared_ptr<Block>> nameBlockPair : blockMap) {
+        for(int i = 0; i < 6; ++i) {
+            texCreator->addTextureToList(nameBlockPair.second->getTextureName(SideEnum(i)));
+        }
     }
 }

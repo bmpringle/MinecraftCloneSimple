@@ -9,4 +9,13 @@ EventLib/**
 BinaryTree/**
 lib/**
 glm/**
+dist/**
 glm/
+worlds/**
+worlds/
+MinecraftCloneSimple/**
+MinecraftCloneSimple/
+*.DS_Store
+.vscode/**
+.vscode/
+*.sconsign.dblite

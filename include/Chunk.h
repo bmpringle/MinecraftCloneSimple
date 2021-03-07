@@ -6,6 +6,7 @@
 #include <array>
 #include "BinaryTree/BinaryTree.h"
 #include "BlockData.h"
+#include <SBDA.h>
 
 class Chunk {
     public:
@@ -35,7 +36,7 @@ class Chunk {
 
         bool isFakeChunk();
 
-        BinaryTree<std::array<BlockData, 256>, AABB, std::array<BlockData, 256>>* const getBlockTree();
+        BinaryTree<SBDA, AABB, SBDA>* const getBlockTree();
 
     private:
         void initTree();
@@ -45,7 +46,7 @@ class Chunk {
         static const int Z = 16;
         BlockPos chunkCoordinates; 
         AABB chunkAABB;
-        BinaryTree<std::array<BlockData, 256>, AABB, std::array<BlockData, 256>> blockTree;
+        BinaryTree<SBDA, AABB, SBDA> blockTree;
 
         std::vector<BlockPos> blocksToUpdate = std::vector<BlockPos>();
         

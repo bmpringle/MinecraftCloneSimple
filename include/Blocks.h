@@ -10,15 +10,18 @@
 #ifndef BLOCKS_H
 #define BLOCKS_H
 
+#include <map>
+
 class Blocks {
     public: 
+        static std::map<std::string, std::shared_ptr<Block>> blockMap;
 
-        const static std::shared_ptr<Block> dirt;
-        const static std::shared_ptr<Block> cobblestone;
-        const static std::shared_ptr<Block> grass;
-        const static std::shared_ptr<Block> log;
-        const static std::shared_ptr<Block> leaf;
-        const static std::shared_ptr<Block> water;
+        static const std::shared_ptr<Block> dirt;
+        static const std::shared_ptr<Block> cobblestone;
+        static const std::shared_ptr<Block> grass;
+        static const std::shared_ptr<Block> log;
+        static const std::shared_ptr<Block> leaf;
+        static const std::shared_ptr<Block> water;
 
         static void initTextureArrayCreator(TextureArrayCreator* texCreator);
 };

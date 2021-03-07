@@ -11,7 +11,7 @@
 
 class World {
     public:
-        World(GLFWwindow* window, EventQueue* queue, InputHandler* inputHandler, Renderer* renderer, TimerMap* map, GameSettings* settings);
+        World(GLFWwindow* window, EventQueue* queue, InputHandler* inputHandler, Renderer* renderer, TimerMap* map, GameSettings* settings, std::string name, std::string worldFolder, int seed);
 
         void mainLoop();
 
@@ -49,6 +49,8 @@ class World {
         void renderOverlays();
         
         void dumpFrameTime();
+
+        std::string name;
 
         //these are all pointers because they cannot go out of scope before this World object.
         TimerMap* timerMap;

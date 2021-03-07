@@ -47,8 +47,23 @@ void Game::start() {
                 if(world != nullptr) {
                     world = nullptr;
                 }
+                std::cout << "TEMPORARY WORLD CREATION METHOD: ENTER WORLD NAME: " << std::endl;
+                std::string worldname;
+                std::cin >> worldname;
 
-                world = std::make_shared<World>(window, &eventQueue, &input, &renderer, &map, &settings);
+                if(!std::filesystem::exists("./worlds/"+worldname+"/data/")) {
+                    std::filesystem::create_directories("./worlds/"+worldname+"/data/");
+                    int seed;
+                    std::cout << "WORLD DOES NOT EXIST. CREATING WORLD" << std::endl;
+                    std::cout << "ENTER WORLD SEED:" << std::endl; 
+                    std::cin >> seed;
+                    world = std::make_shared<World>(window, &eventQueue, &input, &renderer, &map, &settings, worldname, "./worlds/"+worldname+"/", seed);
+                }else {
+                    std::ifstream seedIn("./worlds/"+worldname+"/data/seed.cdat");
+                    std::string buffer;
+                    std::getline(seedIn, buffer);
+                    world = std::make_shared<World>(window, &eventQueue, &input, &renderer, &map, &settings, worldname, "./worlds/"+worldname+"/", std::stoi(buffer));
+                }
                 world->resume();
             }
             

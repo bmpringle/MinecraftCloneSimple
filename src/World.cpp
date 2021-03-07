@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Blocks.h"
 #include <thread>
+#include <filesystem>
 
 /**
  * @brief 
@@ -13,13 +14,13 @@
  */
 #define WORLDSIZE_CONST 100
 
-World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler, Renderer* renderer, TimerMap* map, GameSettings* settings) : timerMap(map), worldEventQueue(queue), input(inputHandler), renderer(renderer), window(window_), settings(settings), internalBlockData(BlockArrayData(WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST)), thePlayer(std::make_shared<Player>(this)) {
+World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler, Renderer* renderer, TimerMap* map, GameSettings* settings, std::string _name, std::string worldFolder, int seed) : name(_name), timerMap(map), worldEventQueue(queue), input(inputHandler), renderer(renderer), window(window_), settings(settings), internalBlockData(BlockArrayData(WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST, worldFolder, seed)), thePlayer(std::make_shared<Player>(this)) {
     generateWorld();
-
-    renderer->updateWorldVBO(this);
 
     thePlayer->setBufferedChunkLocation(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates());
     internalBlockData.updateLoadedChunks(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates(), this);
+
+    renderer->updateWorldVBO(this);
 
     thePlayer->getInventory()->setItemStackInSlot(0, ItemStack(std::make_shared<ItemBlock>(Blocks::dirt), 64));
     thePlayer->getInventory()->setItemStackInSlot(1, ItemStack(std::make_shared<ItemBlock>(Blocks::cobblestone), 64));
@@ -91,6 +92,21 @@ void World::mainLoop() {
     }
     
     worldEventQueue->removeEventListener(thePlayer);
+
+    std::vector<Chunk> chunks = internalBlockData.getRawChunkArray();
+    if(!std::filesystem::exists("./worlds/"+name+"/data/")) {
+        std::filesystem::create_directories("./worlds/"+name+"/data/");
+    }
+    for(Chunk& c : chunks) {
+        auto tree = c.getBlockTree();
+        std::string data = tree->serialize();
+        std::string dataname = std::to_string(c.getChunkCoordinates().x / Chunk::getChunkSize()[0]) + "-" + std::to_string(c.getChunkCoordinates().z / Chunk::getChunkSize()[2]);
+        std::ofstream chunkFile("./worlds/"+name+"/data/"+dataname+".cdat");
+        chunkFile.write(data.c_str(), data.length());
+    }
+    std::string seed = std::to_string(internalBlockData.getSeed());
+    std::ofstream chunkFile("./worlds/"+name+"/data/seed.cdat");
+    chunkFile.write(seed.c_str(), seed.length());
 }
 
 void World::pause() {

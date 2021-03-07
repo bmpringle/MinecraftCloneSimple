@@ -15,7 +15,7 @@ class World;
 
 class BlockArrayData {
     public:
-        BlockArrayData(int xSize, int ySize, int zSize);
+        BlockArrayData(int xSize, int ySize, int zSize, std::string worldFolder_, int seed);
 
         void updateBlockAtPosition(BlockPos pos);
 
@@ -26,6 +26,8 @@ class BlockArrayData {
         void setColumnAtPosition(BlockPos pos, std::vector<std::shared_ptr<Block>> block, std::vector<int> amount);
 
         void softSetColumnAtPosition(BlockPos pos, std::vector<std::shared_ptr<Block>> block, std::vector<int> amount);
+
+        void setWorldFolder(std::string path);
 
         std::vector<Chunk> getRawChunkArray();
 
@@ -57,6 +59,10 @@ class BlockArrayData {
 
         bool isAABBInWater(AABB playerAABB);
 
+        void loadChunkFromFile(std::string chunkPath, BlockPos chunkLocation);
+
+        int getSeed();
+
     private:
         std::vector<Chunk> chunkList;
 
@@ -66,7 +72,7 @@ class BlockArrayData {
 
         std::map<BlockPos, LoadedChunkInfo> loadedChunkLocations = std::map<BlockPos,LoadedChunkInfo>();
 
-        double SEED = abs(rand() % 10000);
+        int SEED;
         double zNoise = rand() % 1 - 0.5;
 
         double width = Chunk::getChunkSize()[0];
@@ -77,5 +83,7 @@ class BlockArrayData {
         int waterLevel = 7;
 
         noise::module::Perlin noise = noise::module::Perlin();
+
+        std::string worldFolder = "";
 };
 #endif
