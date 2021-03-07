@@ -6,7 +6,7 @@
 #include "Blocks.h"
 #include <thread> 
 
-Player::Player(World* _world) : world(_world), settings(_world->getSettings()), pos(Pos(0, 37, 0)), bufferedChunkLocation(BlockPos(0, 0, 0)), gui(nullptr) {
+Player::Player(World* _world) : world(_world), settings(_world->getSettings()), pos(Pos(0, 40, 0)), bufferedChunkLocation(BlockPos(0, 0, 0)), gui(nullptr) {
     world->getTimerMap()->addTimerToMap("playerUpdateTimer");
     world->getTimerMap()->addTimerToMap("itemUseTimer");
 }

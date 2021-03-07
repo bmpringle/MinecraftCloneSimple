@@ -2,11 +2,11 @@
 #define WORLD_H
 #include "InputHandler.h"
 #include "Renderer.h"
-#include "EventLib/EventQueue.h"
+#include "EventQueue/EventQueue.h"
 #include "BlockArrayData.h"
 #include "Player.h"
 #include "RenderInclude.h"
-#include "TimerMapLib/TimerMap.h"
+#include "TimerMap/TimerMap.h"
 #include "GameSettings.h"
 
 class World {

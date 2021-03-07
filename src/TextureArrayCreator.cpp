@@ -1,7 +1,7 @@
 #include "TextureArrayCreator.h"
 #include <algorithm>
 #include "RenderInclude.h"
-#include "stbi/stb_image.h"
+#include "stb/stb_image.h"
 #include <iostream>
 
 TextureArrayCreator::TextureArrayCreator() {

@@ -2,7 +2,7 @@
 #define PLAYER_H
 
 #include <memory>
-#include "EventLib/Listener.h"
+#include "EventQueue/Listener.h"
 #include "Block.h"
 #include "Model.h"
 #include <chrono>

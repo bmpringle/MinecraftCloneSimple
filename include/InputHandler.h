@@ -1,11 +1,11 @@
 #ifndef INPUTHANDLER_H
 #define INPUTHANDLER_H
 
-#include "EventLib/EventQueue.h"
+#include "EventQueue/EventQueue.h"
 #include "RenderInclude.h"
 #include <vector>
 #include <chrono>
-#include "TimerMapLib/TimerMap.h"
+#include "TimerMap/TimerMap.h"
 #include <string>
 
 class InputHandler {
