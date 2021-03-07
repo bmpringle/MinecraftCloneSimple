@@ -1,7 +1,7 @@
 #ifndef EVENTS_H
 #define EVENTS_H
 
-#include "EventLib/Event.h"
+#include "EventQueue/Event.h"
 #include <chrono>
 #include <string>
 

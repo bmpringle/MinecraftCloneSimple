@@ -439,7 +439,7 @@ void Renderer::renderBlockInWireframe(World* world, BlockPos pos) {
 
     unsigned int TBO = textureFetcher.getOrLoadTexture("wireframe.png", GL_REPEAT, GL_LINEAR);
 
-    if(TBO != -1) {
+    if((int)TBO != -1) {
         glBindTexture(GL_TEXTURE_2D, TBO);
         glUseProgram(shaderProgram[1]);
     }

@@ -277,6 +277,6 @@ void Chunk::initTree() {
     blockTree = BinaryTree<SBDA, AABB, SBDA>(leftCreate, rightCreate, getChunkAABB(), getChunkAABB(), nullarray);
 }
 
-BinaryTree<SBDA, AABB, SBDA>* const Chunk::getBlockTree() {
+BinaryTree<SBDA, AABB, SBDA>* Chunk::getBlockTree() {
     return &blockTree;
 }

@@ -3,14 +3,8 @@
 game
 obj/**
 bin/**
-stbi/**
-TimerMapLib/**
-EventLib/**
-BinaryTree/**
 lib/**
-glm/**
 dist/**
-glm/
 worlds/**
 worlds/
 MinecraftCloneSimple/**

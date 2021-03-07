@@ -1,0 +1,24 @@
+[submodule "glm"]
+	path = glm
+	url = https://github.com/g-truc/glm
+[submodule "EventQueue"]
+	path = EventQueue
+	url = https://github.com/bmpringle/EventQueue/
+[submodule "TimerMap"]
+	path = TimerMap
+	url = https://github.com/bmpringle/TimerMap/
+[submodule "BinaryTree"]
+	path = BinaryTree
+	url = https://github.com/bmpringle/BinaryTree/
+[submodule "stb"]
+	path = stb
+	url = https://github.com/nothings/stb
+[submodule "glfw"]
+	path = glfw
+	url = https://github.com/glfw/glfw
+[submodule "glew"]
+	path = glew
+	url = https://github.com/nigels-com/glew
+[submodule "libnoise"]
+	path = libnoise
+	url = https://github.com/qknight/libnoise

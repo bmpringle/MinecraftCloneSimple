@@ -94,11 +94,13 @@ void Button::setLayer(double layer) {
 void Button::setText(Renderer* renderer, std::string text) {
     this->text = text;
     if(text == "") {
+        TBOinit = true;
         TBO = renderer->textTextureBuffer(" ");
         b_h = renderer->getBitmapHeight();
         b_w = renderer->getBitmapWidth();
         return;
     }
+    TBOinit = true;
     TBO = renderer->textTextureBuffer(text);
     b_h = renderer->getBitmapHeight();
     b_w = renderer->getBitmapWidth();

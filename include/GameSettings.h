@@ -115,7 +115,7 @@ class GameSettings {
             }
         }
 
-        static const Setting stringToSetting(std::string s) {
+        static Setting stringToSetting(std::string s) {
             for(int setting = 0; setting < DUMMY_SETTING; ++setting) {
 
                 std::string str = GameSettings::settingToString((Setting)setting);

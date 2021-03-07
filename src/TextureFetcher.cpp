@@ -1,7 +1,7 @@
 #include "TextureFetcher.h"
 #include "RenderInclude.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include "stbi/stb_image.h"
+#include "stb/stb_image.h"
 
 TextureFetcher::TextureFetcher() {
 

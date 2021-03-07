@@ -1,7 +1,7 @@
 #include "TextureArrayCreator.h"
 #include <algorithm>
 #include "RenderInclude.h"
-#include "stbi/stb_image.h"
+#include "stb/stb_image.h"
 #include <iostream>
 
 TextureArrayCreator::TextureArrayCreator() {
@@ -59,7 +59,8 @@ unsigned int TextureArrayCreator::generateTextureArray() {
 }
 
 unsigned int TextureArrayCreator::getGeneratedTextureArray() {
-    if(arrayID == -1) {
+    if(!arrayInit) {
+        arrayInit = true;
         return generateTextureArray();
     }else {
         return arrayID;

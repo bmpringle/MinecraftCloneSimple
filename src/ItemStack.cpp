@@ -54,6 +54,7 @@ unsigned int ItemStack::getCountTBO(Renderer* renderer) {
     if(tboCount != count) {
         tboCount = count;
         glDeleteTextures(1, &TBO);
+        TBOinit = true;
         TBO = renderer->textTextureBuffer(std::to_string(count));
         return TBO;
     }else {

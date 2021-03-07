@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "stbi/stb_truetype.h"
+#include "stb/stb_truetype.h"
 
 class FontLoader {
     public:

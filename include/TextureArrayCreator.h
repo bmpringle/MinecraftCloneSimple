@@ -20,7 +20,8 @@ class TextureArrayCreator {
         std::vector<std::string> texturePaths = std::vector<std::string>();
         std::vector<int> textureDepths = std::vector<int>();
 
-        unsigned int arrayID = -1;
+        unsigned int arrayID = 0;
+        bool arrayInit = false;
 };
 
 #endif

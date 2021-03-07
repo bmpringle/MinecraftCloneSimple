@@ -47,7 +47,9 @@ class Button {
 
         float layer = -5;
 
-        unsigned int TBO = -1;
+        unsigned int TBO = 0;
+        bool TBOinit = false;
+
         int b_w = 0;
         int b_h = 0;
 

@@ -36,7 +36,7 @@ class Chunk {
 
         bool isFakeChunk();
 
-        BinaryTree<SBDA, AABB, SBDA>* const getBlockTree();
+        BinaryTree<SBDA, AABB, SBDA>* getBlockTree();
 
     private:
         void initTree();

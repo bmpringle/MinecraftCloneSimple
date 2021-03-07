@@ -35,7 +35,9 @@ class ItemStack {
         std::shared_ptr<Item> item = nullptr;
         int count = 0;
 
-        unsigned int TBO = -1;
+        unsigned int TBO = 0;
+        bool TBOinit = false;
+
         int tboCount = -1;
 };
 #endif

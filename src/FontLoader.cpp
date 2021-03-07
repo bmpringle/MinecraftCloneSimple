@@ -4,11 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stbi/stb_image_write.h"
+/*
+ *for debugging only
+ *#define STB_IMAGE_WRITE_IMPLEMENTATION
+ *#include "stb/stb_image_write.h"
+ */
 
 #define STB_TRUETYPE_IMPLEMENTATION 
-#include "stbi/stb_truetype.h"
+#include "stb/stb_truetype.h"
 
 FontLoader::FontLoader(std::string file) {
     /* load font file */
