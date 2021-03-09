@@ -277,7 +277,8 @@ void Renderer::renderOverlay(float rectangle[48], unsigned int TBO) {
     glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 }
 
-void Renderer::setUniforms(World* world, int programIndex) {
+//Frustrum* ptr will be filled with data if you don't pass nullptr
+void Renderer::setUniforms(World* world, int programIndex, Frustrum* frustrum) {
 
     glUseProgram(shaderProgram[programIndex]);
 
@@ -301,26 +302,64 @@ void Renderer::setUniforms(World* world, int programIndex) {
 
     glUniformMatrix4fv(perspectiveMatrixLocation, 1, GL_FALSE, &matrixFloat[0]);
 
-    
-    int rotationMatrixXLocation = glGetUniformLocation(shaderProgram[programIndex], "rotationMatrixX");
-    int rotationMatrixYLocation = glGetUniformLocation(shaderProgram[programIndex], "rotationMatrixY");
-
     glm::mat3x3 rotationMatrixX = Renderer::calculateXRotationMatrix(world->getPlayer()->getXRotation());
     glm::mat3x3 rotationMatrixY = Renderer::calculateYRotationMatrix(world->getPlayer()->getYRotation());
 
-    GLfloat rotationMatrixFloat [9] = {0};
+    glm::mat3x3 rotationMatrix = rotationMatrixY * rotationMatrixX;
 
-    for(int i = 0; i < 9; ++i) {
-        rotationMatrixFloat[i] = rotationMatrixX[i/3][i % 3];
+    GLfloat rotationMatrixFloat [16] = {0};
+
+    for(int i = 0; i < 3; ++i) {
+        rotationMatrixFloat[4 * i] = rotationMatrix[i][0];
+        rotationMatrixFloat[4 * i + 1] = rotationMatrix[i][1];
+        rotationMatrixFloat[4 * i + 2] = rotationMatrix[i][2];
+        rotationMatrixFloat[4 * i + 3] = 0;
     }
+    rotationMatrixFloat[4 * 3] = 0;
+    rotationMatrixFloat[4 * 3 + 1] = 0;
+    rotationMatrixFloat[4 * 3 + 2] = 0;
+    rotationMatrixFloat[4 * 3 + 3] = 1;
 
-    glUniformMatrix3fv(rotationMatrixXLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);
-    
-    for(int i = 0; i < 9; ++i) {
-        rotationMatrixFloat[i] = rotationMatrixY[i/3][i % 3];
-    }
+    int rotationMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "rotationMatrix");
 
-    glUniformMatrix3fv(rotationMatrixYLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);
+    glUniformMatrix4fv(rotationMatrixLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);
+
+    /*if(frustrum != nullptr) {
+        // Left clipping plane
+        p_planes[0].a = comboMatrix._41 + comboMatrix._11;
+        p_planes[0].b = comboMatrix._42 + comboMatrix._12;
+        p_planes[0].c = comboMatrix._43 + comboMatrix._13;
+        p_planes[0].d = comboMatrix._44 + comboMatrix._14;
+        // Right clipping plane
+        p_planes[1].a = comboMatrix._41 - comboMatrix._11;
+        p_planes[1].b = comboMatrix._42 - comboMatrix._12;
+        p_planes[1].c = comboMatrix._43 - comboMatrix._13;
+        p_planes[1].d = comboMatrix._44 - comboMatrix._14;
+        // Top clipping plane
+        p_planes[2].a = comboMatrix._41 - comboMatrix._21;
+        p_planes[2].b = comboMatrix._42 - comboMatrix._22;
+        p_planes[2].c = comboMatrix._43 - comboMatrix._23;
+        p_planes[2].d = comboMatrix._44 - comboMatrix._24;
+        // Bottom clipping plane
+        p_planes[3].a = comboMatrix._41 + comboMatrix._21;
+        p_planes[3].b = comboMatrix._42 + comboMatrix._22;
+        p_planes[3].c = comboMatrix._43 + comboMatrix._23;
+        p_planes[3].d = comboMatrix._44 + comboMatrix._24;
+        // Near clipping plane
+        p_planes[4].a = comboMatrix._41 + comboMatrix._31;
+        p_planes[4].b = comboMatrix._42 + comboMatrix._32;
+        p_planes[4].c = comboMatrix._43 + comboMatrix._33;
+        p_planes[4].d = comboMatrix._44 + comboMatrix._34;
+        // Far clipping plane
+        p_planes[5].a = comboMatrix._41 - comboMatrix._31;
+        p_planes[5].b = comboMatrix._42 - comboMatrix._32;
+        p_planes[5].c = comboMatrix._43 - comboMatrix._33;
+        p_planes[5].d = comboMatrix._44 - comboMatrix._34;
+    }*/
+}
+
+void Renderer::setUniforms(World* world, int programIndex) {
+    setUniforms(world, programIndex, nullptr);
 }
 
 void Renderer::updateAspectRatio(GLFWwindow* window) {
@@ -477,10 +516,11 @@ glm::mat4x4 Renderer::calculatePerspectiveMatrix(double FOV, double aspectRatio,
     perspectiveMatrix[1][2] = 0;
     perspectiveMatrix[1][3] = 0;
 
-    perspectiveMatrix[2][0] = (r+l)/(r-l);
-    perspectiveMatrix[2][1] = (t+b)/(t-b);
-    perspectiveMatrix[2][2] = -1*(f+n)/(f-n);
-    perspectiveMatrix[2][3] = -1;
+    //third column negated beacuse our z in logic is the opposite of opengl, i.e. point away vs pointing in.
+    perspectiveMatrix[2][0] = -(r+l)/(r-l);
+    perspectiveMatrix[2][1] = -(t+b)/(t-b);
+    perspectiveMatrix[2][2] = (f+n)/(f-n);
+    perspectiveMatrix[2][3] = 1;
 
     perspectiveMatrix[3][0] = 0;
     perspectiveMatrix[3][1] = 0;

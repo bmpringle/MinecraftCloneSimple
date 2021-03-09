@@ -86,9 +86,9 @@ void World::mainLoop() {
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        //#if DBG
+        #if DBG
         dumpFrameTime();
-        //#endif
+        #endif
     }
     
     worldEventQueue->removeEventListener(thePlayer);
@@ -179,7 +179,6 @@ void World::renderGame() {
             renderer->renderBlockInWireframe(this, *thePlayer->getBlockLookingAt());
         }
     }
-    glClear(GL_DEPTH_BUFFER_BIT);
     renderOverlays();
 }
 

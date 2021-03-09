@@ -12,6 +12,7 @@
 #include "TextureArrayCreator.h"
 #include "RenderChunkBuffer.h"
 #include "FontLoader.h"
+#include "Frustrum.h"
 
 class World;
 
@@ -63,6 +64,8 @@ class Renderer {
         float aspectRatio = 1;
 
         void setUniforms(World* world, int programIndex);
+
+        void setUniforms(World* world, int programIndex, Frustrum* frustrum);
 
         unsigned int VAO[4];
         unsigned int VBO[4];

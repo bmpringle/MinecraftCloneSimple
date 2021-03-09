@@ -323,7 +323,7 @@ void BlockArrayData::generateChunk(BlockPos chunkLocation) {
     for(int x = chunkLocation.x; x < chunkLocation.x + width; ++x) {
         for(int z = chunkLocation.z; z < chunkLocation.z + height; ++z) {
             double nx = x/width - 0.5, ny = z/height - 0.5;
-            double value = 1 * noise.GetValue(1 * nx, 1 * ny, zNoise) + 0.5 * noise.GetValue(2 * nx, 2 * ny, zNoise) + 0.25 * noise.GetValue(4 * nx, 4 * ny, zNoise) + 0.125 * noise.GetValue(8 * nx, 8 * ny, zNoise) + 0.0625 * noise.GetValue(16 * nx, 16 * ny, zNoise);
+            double value = 1 * noise.GetValue(1 * nx, 1 * ny, zNoise);
             int blockHeight = floor(value * amplifier) + averageTerrainHeight;
             std::vector<std::shared_ptr<Block>> blocks = {Blocks::cobblestone, Blocks::dirt, Blocks::grass};
             std::vector<int> amounts = {blockHeight - 4, 3, 1};
