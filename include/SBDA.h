@@ -70,6 +70,9 @@ class SBDA final : public BinarySerializable {
         }
 
         BlockData& operator[](int index) {
+            if(index < 0 || index >= array.size()) {
+                throw std::out_of_range("bad");
+            }
             return array[index];
         }
 

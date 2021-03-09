@@ -17,6 +17,9 @@ class Inventory {
         ItemStack interactHeldItemAtSlot(ItemStack held, int slot);
 
         ItemStack& operator[](int index) {
+            if(index < 0 || index >= items.size()) {
+                throw std::out_of_range("bad");
+            }
             return items[index];
         }
 

@@ -1,5 +1,6 @@
 #include "RenderChunkBuffer.h"
 #include "RenderInclude.h"
+#include "Chunk.h"
 
 RenderChunkBuffer::RenderChunkBuffer(std::vector<float> _renderData, BlockPos _pos) {
     pos = _pos;
@@ -36,6 +37,10 @@ unsigned int RenderChunkBuffer::getRenderDataBuffer() {
 
 int RenderChunkBuffer::getRenderDataSize() {
     return chunkBufferSize;
+}
+
+AABB RenderChunkBuffer::getAABB() {
+    return AABB(pos.x, pos.y, pos.z, pos.x + Chunk::getChunkSize()[0], pos.y + Chunk::getChunkSize()[1], pos.z + Chunk::getChunkSize()[2]);
 }
 
 BlockPos RenderChunkBuffer::getPos() {

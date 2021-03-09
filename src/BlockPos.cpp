@@ -25,6 +25,6 @@ bool operator<(BlockPos lhs, BlockPos rhs) {
     return std::tie(lhs.x, lhs.y, lhs.z) < std::tie(rhs.x, rhs.y, rhs.z);
 }
 
-void BlockPos::print() {
+void BlockPos::print() const {
     std::cout << "pos: " << x << " " << y << " " << z << std::endl;
 }

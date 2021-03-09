@@ -20,6 +20,8 @@ class RenderChunkBuffer {
 
         void renderChunk();
 
+        AABB getAABB();
+
     private:
         BlockPos pos = BlockPos(0, 0, 0);
 

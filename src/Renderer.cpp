@@ -197,17 +197,53 @@ void Renderer::updateWorldVBO(World* world) {
     }
 }
 
+float halfSpaceTest(Plane p, glm::vec3 vec) {
+    p.normalCalculate();
+    glm::vec4 n = glm::vec4(p.normal[0], p.normal[1], p.normal[2], 0);
+    glm::vec4 pointOnPlane = glm::vec4(p.normal[0] * p.d, p.normal[1] * p.d, p.normal[2] * p.d, 1);
+    glm::vec4 v = pointOnPlane - glm::vec4(vec[0], vec[1], vec[2], 1);
+    return glm::dot(n, v);
+}
+
+bool shouldRender(AABB aabb, Frustrum f) {
+    std::array<glm::vec3 , 8> points = aabb.getPoints();
+
+    for(int i = 0; i < 6; ++i) {
+        Plane& p = f[i];
+        int inCount = 8;
+
+        for(glm::vec3 point : points) {
+            if(halfSpaceTest(p, point) > 0.0f) {
+                inCount -= 1;
+            }
+        }
+        if(inCount <= 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void Renderer::renderFrame(World* world) {
+
+    Frustrum f = Frustrum();
 
     setUniforms(world, 0);
     setUniforms(world, 1);
-    setUniforms(world, 3);
+    setUniforms(world, 3, &f);
+
+
 
     glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayCreator.getGeneratedTextureArray());
     glUseProgram(shaderProgram[3]);
 
     for(std::pair<const BlockPos, RenderChunkBuffer>& cBuffer : renderChunkBuffers) {
-        cBuffer.second.renderChunk();
+        if(shouldRender(cBuffer.second.getAABB(), f)) {
+            cBuffer.second.renderChunk();
+        }else {
+            std::cout << "don't render ";
+            cBuffer.first.print();
+        }
     }
 }
 
@@ -282,22 +318,11 @@ void Renderer::setUniforms(World* world, int programIndex, Frustrum* frustrum) {
     int boundsVec3Location = glGetUniformLocation(shaderProgram[programIndex], "bounds");
     glUniform3f(boundsVec3Location, WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST);
 
-    //int playerPosLocation = glGetUniformLocation(shaderProgram[programIndex], "playerPos");
     Pos camera = world->getPlayer()->getCameraPosition();
-
-    /*glUniform3f(playerPosLocation, camera.x, camera.y, camera.z); 
-
-    int perspectiveMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "perspectiveMatrix");*/
     
     glm::mat4x4 perspectiveMatrix = Renderer::calculatePerspectiveMatrix(90, aspectRatio, 0.01, 100);
 
     GLfloat matrixFloat [16] = {0};
-
-    /*for(int i = 0; i < 16; ++i) {
-        matrixFloat[i] = perspectiveMatrix[i/4][i % 4];
-    }
-
-    glUniformMatrix4fv(perspectiveMatrixLocation, 1, GL_FALSE, &matrixFloat[0]);*/
 
     glm::mat3x3 rotationMatrixX = Renderer::calculateXRotationMatrix(world->getPlayer()->getXRotation());
     glm::mat3x3 rotationMatrixY = Renderer::calculateYRotationMatrix(world->getPlayer()->getYRotation());
@@ -318,9 +343,6 @@ void Renderer::setUniforms(World* world, int programIndex, Frustrum* frustrum) {
     rotationMatrixFloat[4 * 3 + 3] = 1;
 
     glm::mat4x4 rotationMatrix4x4 = glm::mat4x4(rotationMatrix);
-    /*int rotationMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "rotationMatrix");
-
-    glUniformMatrix4fv(rotationMatrixLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);*/
 
     glm::mat4x4 viewMatrix = glm::mat4x4(1.0f);
     viewMatrix[3] = glm::vec4(glm::vec3(-camera.x, -camera.y, -camera.z), 1);
@@ -336,38 +358,42 @@ void Renderer::setUniforms(World* world, int programIndex, Frustrum* frustrum) {
 
     glUniformMatrix4fv(combinedMatrixLocation, 1, GL_FALSE, &matrixFloat[0]);
 
-    /*if(frustrum != nullptr) {
+    if(frustrum != nullptr) {v
         // Left clipping plane
-        p_planes[0].a = comboMatrix._41 + comboMatrix._11;
-        p_planes[0].b = comboMatrix._42 + comboMatrix._12;
-        p_planes[0].c = comboMatrix._43 + comboMatrix._13;
-        p_planes[0].d = comboMatrix._44 + comboMatrix._14;
+        Plane leftPlane = Plane(combinedMatrix[3][0] + combinedMatrix[0][0], combinedMatrix[3][1] + 
+          combinedMatrix[0][1], combinedMatrix[3][2] + combinedMatrix[0][2], combinedMatrix[3][3] + 
+          combinedMatrix[0][3]);
+
         // Right clipping plane
-        p_planes[1].a = comboMatrix._41 - comboMatrix._11;
-        p_planes[1].b = comboMatrix._42 - comboMatrix._12;
-        p_planes[1].c = comboMatrix._43 - comboMatrix._13;
-        p_planes[1].d = comboMatrix._44 - comboMatrix._14;
+        Plane rightPlane = Plane(combinedMatrix[3][0] - combinedMatrix[0][0], combinedMatrix[3][1] - 
+          combinedMatrix[0][1], combinedMatrix[3][2] - combinedMatrix[0][2], combinedMatrix[3][3] - 
+          combinedMatrix[0][3]);
+
         // Top clipping plane
-        p_planes[2].a = comboMatrix._41 - comboMatrix._21;
-        p_planes[2].b = comboMatrix._42 - comboMatrix._22;
-        p_planes[2].c = comboMatrix._43 - comboMatrix._23;
-        p_planes[2].d = comboMatrix._44 - comboMatrix._24;
+        Plane topPlane = Plane(combinedMatrix[3][0] - combinedMatrix[1][0], combinedMatrix[3][1] - 
+          combinedMatrix[1][1], combinedMatrix[3][2] - combinedMatrix[1][2], combinedMatrix[3][3] - 
+          combinedMatrix[1][3]);
+
         // Bottom clipping plane
-        p_planes[3].a = comboMatrix._41 + comboMatrix._21;
-        p_planes[3].b = comboMatrix._42 + comboMatrix._22;
-        p_planes[3].c = comboMatrix._43 + comboMatrix._23;
-        p_planes[3].d = comboMatrix._44 + comboMatrix._24;
+        Plane bottomPlane = Plane(combinedMatrix[3][0] + combinedMatrix[1][0], combinedMatrix[3][1] + 
+          combinedMatrix[0][1], combinedMatrix[3][2] + combinedMatrix[1][2], combinedMatrix[3][3] + 
+          combinedMatrix[1][3]);
         // Near clipping plane
-        p_planes[4].a = comboMatrix._41 + comboMatrix._31;
-        p_planes[4].b = comboMatrix._42 + comboMatrix._32;
-        p_planes[4].c = comboMatrix._43 + comboMatrix._33;
-        p_planes[4].d = comboMatrix._44 + comboMatrix._34;
+        Plane nearPlane = Plane(combinedMatrix[3][0] + combinedMatrix[2][0], combinedMatrix[3][1] + 
+          combinedMatrix[0][1], combinedMatrix[3][2] + combinedMatrix[2][2], combinedMatrix[3][3] + 
+          combinedMatrix[2][3]);
         // Far clipping plane
-        p_planes[5].a = comboMatrix._41 - comboMatrix._31;
-        p_planes[5].b = comboMatrix._42 - comboMatrix._32;
-        p_planes[5].c = comboMatrix._43 - comboMatrix._33;
-        p_planes[5].d = comboMatrix._44 - comboMatrix._34;
-    }*/
+        Plane farPlane = Plane(combinedMatrix[3][0] - combinedMatrix[2][0], combinedMatrix[3][1] -
+          combinedMatrix[0][1], combinedMatrix[3][2] - combinedMatrix[2][2], combinedMatrix[3][3] - 
+          combinedMatrix[2][3]);
+
+        frustrum->left = leftPlane;
+        frustrum->right = rightPlane;
+        frustrum->top = topPlane;
+        frustrum->bottom = bottomPlane;
+        frustrum->near = nearPlane;
+        frustrum->far = farPlane;
+    }
 }
 
 void Renderer::setUniforms(World* world, int programIndex) {
