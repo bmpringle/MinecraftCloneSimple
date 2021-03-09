@@ -282,22 +282,11 @@ void Renderer::setUniforms(World* world, int programIndex, Frustrum* frustrum) {
     int boundsVec3Location = glGetUniformLocation(shaderProgram[programIndex], "bounds");
     glUniform3f(boundsVec3Location, WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST);
 
-    //int playerPosLocation = glGetUniformLocation(shaderProgram[programIndex], "playerPos");
     Pos camera = world->getPlayer()->getCameraPosition();
-
-    /*glUniform3f(playerPosLocation, camera.x, camera.y, camera.z); 
-
-    int perspectiveMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "perspectiveMatrix");*/
     
     glm::mat4x4 perspectiveMatrix = Renderer::calculatePerspectiveMatrix(90, aspectRatio, 0.01, 100);
 
     GLfloat matrixFloat [16] = {0};
-
-    /*for(int i = 0; i < 16; ++i) {
-        matrixFloat[i] = perspectiveMatrix[i/4][i % 4];
-    }
-
-    glUniformMatrix4fv(perspectiveMatrixLocation, 1, GL_FALSE, &matrixFloat[0]);*/
 
     glm::mat3x3 rotationMatrixX = Renderer::calculateXRotationMatrix(world->getPlayer()->getXRotation());
     glm::mat3x3 rotationMatrixY = Renderer::calculateYRotationMatrix(world->getPlayer()->getYRotation());
@@ -318,9 +307,6 @@ void Renderer::setUniforms(World* world, int programIndex, Frustrum* frustrum) {
     rotationMatrixFloat[4 * 3 + 3] = 1;
 
     glm::mat4x4 rotationMatrix4x4 = glm::mat4x4(rotationMatrix);
-    /*int rotationMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "rotationMatrix");
-
-    glUniformMatrix4fv(rotationMatrixLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);*/
 
     glm::mat4x4 viewMatrix = glm::mat4x4(1.0f);
     viewMatrix[3] = glm::vec4(glm::vec3(-camera.x, -camera.y, -camera.z), 1);

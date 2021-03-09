@@ -33,6 +33,14 @@ class Button {
 
         double getHeight();
 
+        void setX(double x);
+
+        void setY(double y);
+
+        void setWidth(double width);
+
+        void setHeight(double height);
+
         void setLayer(double layer);
 
         void setText(Renderer* renderer, std::string text);

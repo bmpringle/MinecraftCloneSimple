@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
 
 /*
  *for debugging only
@@ -44,14 +45,23 @@ unsigned char* FontLoader::getTextBitmap(std::string text) {
 
     float scale = stbtt_ScaleForMappingEmToPixels(&info, l_h);
 
+    std::vector<int> lineb_ws = std::vector<int>();
+
+    int b_w_buffer = 0;
+
     for (int i = 0; i < strlen(word); ++i) {
+        if(word[i] == '\n') {
+            b_w = std::max(b_w, b_w_buffer);
+            lineb_ws.push_back(b_w_buffer);
+            b_w_buffer = 0;
+        }
         int ax;
         int lsb;
         stbtt_GetCodepointHMetrics(&info, word[i], &ax, &lsb);
-        b_w += scale * ax;
+        b_w_buffer += scale * ax;
     }
-    
-    int x = 0;
+    b_w = std::max(b_w, b_w_buffer);
+    lineb_ws.push_back(b_w_buffer);
     
     int ascent, descent, lineGap;
     stbtt_GetFontVMetrics(&info, &ascent, &descent, &lineGap);
@@ -61,12 +71,30 @@ unsigned char* FontLoader::getTextBitmap(std::string text) {
 
     b_h = abs(ascent) + abs(descent);
     
+    int newlines = 0;
+    for(char c : text) {
+        if(c == '\n') {
+            ++newlines;
+        }
+    }
+
+    b_h = b_h * (newlines + 1);
+
+    int x = (b_w - lineb_ws[0])/2;
+
     /* create a bitmap for the phrase */
     bitmap = (unsigned char*)calloc(b_w * b_h, sizeof(unsigned char));
     
     int i;
+    int l = 0;
     for (i = 0; i < strlen(word); ++i)
     {
+        if(word[i] == '\n') {
+            ++i;
+            ++l;
+            x = (b_w - lineb_ws[l])/2;
+        }
+
         /* how wide is this character */
         int ax;
         int lsb;
@@ -77,7 +105,7 @@ unsigned char* FontLoader::getTextBitmap(std::string text) {
         stbtt_GetCodepointBitmapBox(&info, word[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
         
         /* compute y (different characters have different heights */
-        int y = ascent + c_y1;
+        int y = ascent + c_y1 + l * l_h;
         
         /* render character (stride and offset is important here) */
         int byteOffset = x + roundf(lsb * scale) + (y * b_w);

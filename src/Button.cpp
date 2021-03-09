@@ -110,3 +110,19 @@ void Button::setText(Renderer* renderer, std::string text) {
 std::string Button::getText() {
     return text;
 }
+
+void Button::setX(double x) {
+    this->x = x;
+}
+
+void Button::setY(double y) {
+    this->y = y;
+}
+
+void Button::setWidth(double width) {
+    this->width = width;
+}
+
+void Button::setHeight(double height) {
+    this->height = height;
+}

@@ -16,8 +16,15 @@ void SingleplayerSelectGui::handleKeyPressed(std::string keyPressed) {
             if(worldName == "") {
                 worldName = textBuffer.getText();
                 textBuffer.setText(renderer, "");
-                textPrefix.setText(renderer, "Enter new world seed:");
+                textPrefix.setText(renderer, "Enter new world seed:\n(Enter nothing for a random seed.)");
+                textPrefix.setHeight(250);
+                textPrefix.autoSize(0, 400);
             }else {
+                if(textBuffer.getText().size() == 0) {
+                    worldSeed = abs(rand() % 9999999);
+                    done = true;
+                    return;
+                }
                 try {
                     int pSeed = std::stoi(textBuffer.getText());
                     if(!(pSeed == abs(pSeed))) {
