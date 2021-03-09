@@ -86,9 +86,9 @@ void World::mainLoop() {
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        #if DBG
+        //#if DBG
         dumpFrameTime();
-        #endif
+        //#endif
     }
     
     worldEventQueue->removeEventListener(thePlayer);
