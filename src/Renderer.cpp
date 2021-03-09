@@ -106,17 +106,14 @@ void Renderer::renderSetup() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);  
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);  
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);  
 
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(6 * sizeof(float)));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
-
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(9 * sizeof(float)));
-    glEnableVertexAttribArray(3);
 
     //overlay VAO
     glBindVertexArray(VAO[1]);
@@ -285,22 +282,22 @@ void Renderer::setUniforms(World* world, int programIndex, Frustrum* frustrum) {
     int boundsVec3Location = glGetUniformLocation(shaderProgram[programIndex], "bounds");
     glUniform3f(boundsVec3Location, WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST);
 
-    int playerPosLocation = glGetUniformLocation(shaderProgram[programIndex], "playerPos");
+    //int playerPosLocation = glGetUniformLocation(shaderProgram[programIndex], "playerPos");
     Pos camera = world->getPlayer()->getCameraPosition();
 
-    glUniform3f(playerPosLocation, camera.x, camera.y, camera.z); 
+    /*glUniform3f(playerPosLocation, camera.x, camera.y, camera.z); 
 
-    int perspectiveMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "perspectiveMatrix");
+    int perspectiveMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "perspectiveMatrix");*/
     
     glm::mat4x4 perspectiveMatrix = Renderer::calculatePerspectiveMatrix(90, aspectRatio, 0.01, 100);
 
     GLfloat matrixFloat [16] = {0};
 
-    for(int i = 0; i < 16; ++i) {
+    /*for(int i = 0; i < 16; ++i) {
         matrixFloat[i] = perspectiveMatrix[i/4][i % 4];
     }
 
-    glUniformMatrix4fv(perspectiveMatrixLocation, 1, GL_FALSE, &matrixFloat[0]);
+    glUniformMatrix4fv(perspectiveMatrixLocation, 1, GL_FALSE, &matrixFloat[0]);*/
 
     glm::mat3x3 rotationMatrixX = Renderer::calculateXRotationMatrix(world->getPlayer()->getXRotation());
     glm::mat3x3 rotationMatrixY = Renderer::calculateYRotationMatrix(world->getPlayer()->getYRotation());
@@ -320,9 +317,24 @@ void Renderer::setUniforms(World* world, int programIndex, Frustrum* frustrum) {
     rotationMatrixFloat[4 * 3 + 2] = 0;
     rotationMatrixFloat[4 * 3 + 3] = 1;
 
-    int rotationMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "rotationMatrix");
+    glm::mat4x4 rotationMatrix4x4 = glm::mat4x4(rotationMatrix);
+    /*int rotationMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "rotationMatrix");
 
-    glUniformMatrix4fv(rotationMatrixLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);
+    glUniformMatrix4fv(rotationMatrixLocation, 1, GL_FALSE, &rotationMatrixFloat[0]);*/
+
+    glm::mat4x4 viewMatrix = glm::mat4x4(1.0f);
+    viewMatrix[3] = glm::vec4(glm::vec3(-camera.x, -camera.y, -camera.z), 1);
+    viewMatrix = rotationMatrix4x4 * viewMatrix;
+
+    glm::mat4x4 combinedMatrix = perspectiveMatrix * viewMatrix;
+
+    for(int i = 0; i < 16; ++i) {
+        matrixFloat[i] = combinedMatrix[i/4][i % 4];
+    }
+
+    int combinedMatrixLocation = glGetUniformLocation(shaderProgram[programIndex], "combinedMatrix");
+
+    glUniformMatrix4fv(combinedMatrixLocation, 1, GL_FALSE, &matrixFloat[0]);
 
     /*if(frustrum != nullptr) {
         // Left clipping plane
@@ -583,46 +595,37 @@ void Renderer::updateChunkData(std::vector<float>* buffer, std::vector<BlockData
 
             for(RenderedTriangle triangle : face.triangles) {
                 //point 1 red
-                buffer->push_back(triangle.a.x);
-                buffer->push_back(triangle.a.y);
-                buffer->push_back(triangle.a.z);
+                buffer->push_back(triangle.a.x + pos.x);
+                buffer->push_back(triangle.a.y + pos.y);
+                buffer->push_back(triangle.a.z + pos.z);
                 buffer->push_back(1);
                 buffer->push_back(0);
                 buffer->push_back(0);
                 buffer->push_back(triangle.a.u);
                 buffer->push_back(triangle.a.v);
                 buffer->push_back(texID);
-                buffer->push_back(pos.x);
-                buffer->push_back(pos.y);
-                buffer->push_back(pos.z);
 
                 //point 2 green
-                buffer->push_back(triangle.b.x);
-                buffer->push_back(triangle.b.y);
-                buffer->push_back(triangle.b.z);
+                buffer->push_back(triangle.b.x + pos.x);
+                buffer->push_back(triangle.b.y + pos.y);
+                buffer->push_back(triangle.b.z + pos.z);
                 buffer->push_back(0);
                 buffer->push_back(1);
                 buffer->push_back(0);
                 buffer->push_back(triangle.b.u);
                 buffer->push_back(triangle.b.v);
                 buffer->push_back(texID);
-                buffer->push_back(pos.x);
-                buffer->push_back(pos.y);
-                buffer->push_back(pos.z);
 
                 //point 3 blue
-                buffer->push_back(triangle.c.x);
-                buffer->push_back(triangle.c.y);
-                buffer->push_back(triangle.c.z);
+                buffer->push_back(triangle.c.x + pos.x);
+                buffer->push_back(triangle.c.y + pos.y);
+                buffer->push_back(triangle.c.z + pos.z);
                 buffer->push_back(0);
                 buffer->push_back(0);
                 buffer->push_back(1);
                 buffer->push_back(triangle.c.u);
                 buffer->push_back(triangle.c.v);
                 buffer->push_back(texID);
-                buffer->push_back(pos.x);
-                buffer->push_back(pos.y);
-                buffer->push_back(pos.z);
             }
         }
     }
