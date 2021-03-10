@@ -2,7 +2,7 @@
 #include <iostream>
 #include "Blocks.h"
 #include <thread>
-#include <filesystem>
+#include "PlatformFilesystem.h"
 
 /**
  * @brief 
@@ -94,8 +94,8 @@ void World::mainLoop() {
     worldEventQueue->removeEventListener(thePlayer);
 
     std::vector<Chunk> chunks = internalBlockData.getRawChunkArray();
-    if(!std::filesystem::exists("./worlds/"+name+"/data/")) {
-        std::filesystem::create_directories("./worlds/"+name+"/data/");
+    if(!fs::exists("./worlds/"+name+"/data/")) {
+        fs::create_directories("./worlds/"+name+"/data/");
     }
     for(Chunk& c : chunks) {
         auto tree = c.getBlockTree();

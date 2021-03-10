@@ -4,7 +4,7 @@
 #include "World.h"
 #include <algorithm>
 #include <Blocks.h>
-#include <filesystem>
+#include "PlatformFilesystem.h"
 
 BlockArrayData::BlockArrayData(int xSize, int ySize, int zSize, std::string _worldFolder, int seed) : chunkList(std::vector<Chunk>()), SEED(seed), worldFolder(_worldFolder) {
     size[0] = xSize; 
@@ -44,7 +44,7 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
                 int x = floor((float)playerBlock.x / (float)Chunk::getChunkSize()[0]);
                 int z = floor((float)playerBlock.z / (float)Chunk::getChunkSize()[2]);
                 std::string chunkPath = worldFolder+"/data/"+std::to_string(x)+"-"+std::to_string(z)+".cdat";
-                if(std::filesystem::exists(chunkPath)) {
+                if(fs::exists(chunkPath)) {
                     loadChunkFromFile(chunkPath, playerBlock);
                 }else {
                     generateChunk(playerBlock);

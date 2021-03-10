@@ -20,8 +20,8 @@ env = Environment()
 if env['PLATFORM'] == 'darwin': #macos
     CLANG = int(ARGUMENTS.get('CLANG', 1))
     CXX='clang++' if CLANG==1 else "g++"
-    GLFW_DIR='./glfw/include/'
-    GLEW_DIR='./glew/include/'
+    GLFW_DIR='./glfw/'
+    GLEW_DIR='./glew/'
     NOISE_DIR='./libnoise/src/'
 
     LIBS=['pthread']
@@ -30,7 +30,7 @@ if env['PLATFORM'] == 'darwin': #macos
     if int(ARGUMENTS.get('W64', 0))==1:
         CXX='/usr/local/bin/x86_64-w64-mingw32-g++'
         LINK='{} -static-libgcc -static-libstdc++ -static'.format(CXX)
-        LIBS=['glu32', 'gdi32', 'opengl32']
+        LIBS=['glu32', 'gdi32', 'opengl32', 'stdc++fs']
 
 elif env['PLATFORM'] == 'posix': #linux
     CLANG = int(ARGUMENTS.get('CLANG', 1))
@@ -75,15 +75,10 @@ else:
 GLFW_INCLUDE=os.sep.join([GLFW_DIR,'include'])
 GLEW_INCLUDE=os.sep.join([GLEW_DIR,'include'])
 
-
 BLD = 'dbg' if DBG == 1 else 'rel'
 OPT = 0 if DBG == 1 else 3
 
-LIBNOISEINC = '/usr/local/include/'
-if int(ARGUMENTS.get('W64', 0))==1:
-    LIBNOISEINC = '../libnoise-w64/include/'
-
-CCFLAGS='-static -O{} -I {} -I {} -I {} -I {} -I {} -I {} -I {} {} -D _USE_MATH_DEFINES -Wall -Wpedantic -Werror -g -std=c++2a -DGLEW_STATIC'.format(OPT, "./glm/", './', './include/', GLFW_INCLUDE, GLEW_INCLUDE, LIBNOISEINC, NOISE_DIR, '-DDBG' if DBG==1 else '')
+CCFLAGS='-static -O{} -I {} -I {} -I {} -I {} -I {} -I {} {} -D_USE_MATH_DEFINES -DNOISE_STATIC -Wall -Wpedantic {} -g -std=c++2a -DGLEW_STATIC'.format(OPT, "./glm/", './', './include/', GLFW_INCLUDE, GLEW_INCLUDE, NOISE_DIR, '-DDBG' if DBG==1 else '', '-Werror' if int(ARGUMENTS.get('W64', 0))==0 else '')
 
 LIBSSTATIC = Glob(os.sep.join(['lib', '*.a']))
 

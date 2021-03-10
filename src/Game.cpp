@@ -2,6 +2,7 @@
 #include "MainMenuGui.h"
 #include "OptionsGui.h"
 #include "SingleplayerSelectGui.h"
+#include "PlatformFilesystem.h"
 
 Game::Game(GLFWwindow* _window) : window(_window), eventQueue(EventQueue()), map(TimerMap()), input(InputHandler()), renderer(Renderer()), world(nullptr), gameEventHandler(std::make_shared<GameEventHandler>(GameEventHandler(this))), gui(std::make_shared<MainMenuGui>(&renderer)), settings(GameSettings()) {
     settings.initDefaultSettings();
@@ -85,11 +86,11 @@ void Game::start() {
                     gui = std::make_shared<MainMenuGui>(&renderer);
                 }
                 if(seed != -1) {
-                    if(std::filesystem::exists("./worlds/"+worldname+"/data/")) {
+                    if(fs::exists("./worlds/"+worldname+"/data/")) {
                         std::cout << "world already exists. will not overwrite. quitting to main menu" << std::endl;
                         gui = std::make_shared<MainMenuGui>(&renderer);
                     }else {
-                        std::filesystem::create_directories("./worlds/"+worldname+"/data/");
+                        fs::create_directories("./worlds/"+worldname+"/data/");
                         world = std::make_shared<World>(window, &eventQueue, &input, &renderer, &map, &settings, worldname, "./worlds/"+worldname+"/", seed);
                     }
                 }
