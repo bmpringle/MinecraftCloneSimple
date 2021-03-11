@@ -13,5 +13,11 @@ class RenderedPoint {
         float v = 0;
 
         RenderedPoint operator*(double rhs);
+
+        void rotateX90(double x, double y, double z);
+
+        void rotateY90(double x, double y, double z);
+
+        void rotateZ90(double x, double y, double z);
 };
 #endif

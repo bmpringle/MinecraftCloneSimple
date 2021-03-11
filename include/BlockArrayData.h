@@ -21,6 +21,8 @@ class BlockArrayData {
 
         void setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> block);
 
+        void setBlockDataAtPosition(BlockPos pos, BlockData data);
+
         void softSetBlockAtPosition(BlockPos pos, std::shared_ptr<Block> block);
 
         void setColumnAtPosition(BlockPos pos, std::vector<std::shared_ptr<Block>> block, std::vector<int> amount);
@@ -32,6 +34,8 @@ class BlockArrayData {
         std::vector<Chunk> getRawChunkArray();
 
         BlockData getBlockAtPosition(BlockPos pos);
+
+        BlockData& getBlockReferenceAtPosition(BlockPos pos);
 
         void removeBlockAtPosition(BlockPos pos);
 
@@ -78,12 +82,14 @@ class BlockArrayData {
         double width = Chunk::getChunkSize()[0];
         double height = Chunk::getChunkSize()[2];
 
-        int averageTerrainHeight = 37;
+        int averageTerrainHeight = 10;
         double amplifier = 3;
         int waterLevel = 8;
 
         noise::module::Perlin noise = noise::module::Perlin();
 
         std::string worldFolder = "";
+
+        BlockData dummyData = BlockData();
 };
 #endif

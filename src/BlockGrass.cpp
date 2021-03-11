@@ -4,7 +4,7 @@ BlockGrass::BlockGrass() {
 
 }
 
-std::string BlockGrass::getTextureName(SideEnum side){
+std::string BlockGrass::getTextureName(SideEnum side, int data = 0){
     switch(side) {
         case UP:
             return "grass_top.png";

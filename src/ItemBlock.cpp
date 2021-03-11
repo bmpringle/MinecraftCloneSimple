@@ -20,7 +20,7 @@ void ItemBlock::onUse(World* world, ItemStack* stack) {
                 break;
             case UP:
                 location = BlockPos(blockLookingAt->x, blockLookingAt->y + 1, blockLookingAt->z);
-                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(location).getBlockType()->isSolid()) {
+                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(location).isSolid()) {
                     BlockData oldBlock = world->getBlockData()->getBlockAtPosition(location);
                     world->getBlockData()->setBlockAtPosition(location, block);
                     stack->subtract(1);
@@ -28,69 +28,101 @@ void ItemBlock::onUse(World* world, ItemStack* stack) {
                     if(!valid) {
                         world->getBlockData()->removeBlockAtPosition(location);
                         if(oldBlock.getBlockType() != nullptr) {
-                            world->getBlockData()->setBlockAtPosition(location, oldBlock.getBlockType());
+                            world->getBlockData()->setBlockDataAtPosition(location, oldBlock);
                         }
                         stack->add(1);
-                    }                     
+                    }else {
+                        world->getBlockData()->getBlockReferenceAtPosition(location).placedOnSide(UP);
+                    }                   
                 }
                 break;
             case DOWN:
                 location = BlockPos(blockLookingAt->x, blockLookingAt->y - 1, blockLookingAt->z);
-                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(location).getBlockType()->isSolid()) {
+                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(location).isSolid()) {
+                    BlockData oldBlock = world->getBlockData()->getBlockAtPosition(location);
                     world->getBlockData()->setBlockAtPosition(location, block);
                     stack->subtract(1);
                     bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), world->getBlockData());
                     if(!valid) {
                         world->getBlockData()->removeBlockAtPosition(location);
+                        if(oldBlock.getBlockType() != nullptr) {
+                            world->getBlockData()->setBlockDataAtPosition(location, oldBlock);
+                        }
                         stack->add(1);
-                    }                        
+                    }else {
+                        world->getBlockData()->getBlockReferenceAtPosition(location).placedOnSide(DOWN);
+                    }                       
                 }
                 break;
             case NORTH:
                 location = BlockPos(blockLookingAt->x, blockLookingAt->y, blockLookingAt->z + 1);
-                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(location).getBlockType()->isSolid()) {
+                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(location).isSolid()) {
+                    BlockData oldBlock = world->getBlockData()->getBlockAtPosition(location);
                     world->getBlockData()->setBlockAtPosition(location, block);
                     stack->subtract(1);
                     bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), world->getBlockData());
                     if(!valid) {
                         world->getBlockData()->removeBlockAtPosition(location);
+                        if(oldBlock.getBlockType() != nullptr) {
+                            world->getBlockData()->setBlockDataAtPosition(location, oldBlock);
+                        }
                         stack->add(1);
-                    }                        
+                    }else {
+                        world->getBlockData()->getBlockReferenceAtPosition(location).placedOnSide(NORTH);
+                    }                       
                 }
                 break;
             case SOUTH:
                 location = BlockPos(blockLookingAt->x, blockLookingAt->y, blockLookingAt->z - 1);
-                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(location).getBlockType()->isSolid()) {
+                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(location).isSolid()) {
+                    BlockData oldBlock = world->getBlockData()->getBlockAtPosition(location);
                     world->getBlockData()->setBlockAtPosition(location, block);
                     stack->subtract(1);
                     bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), world->getBlockData());
                     if(!valid) {
                         world->getBlockData()->removeBlockAtPosition(location);
+                        if(oldBlock.getBlockType() != nullptr) {
+                            world->getBlockData()->setBlockDataAtPosition(location, oldBlock);
+                        }
                         stack->add(1);
+                    }else {
+                        world->getBlockData()->getBlockReferenceAtPosition(location).placedOnSide(SOUTH);
                     }    
-                }//todo prevent from placing with negative count(maybe just debug)
+                }
                 break;
             case EAST:
                 location = BlockPos(blockLookingAt->x + 1, blockLookingAt->y, blockLookingAt->z);
-                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(location).getBlockType()->isSolid()) {
+                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(location).isSolid()) {
+                    BlockData oldBlock = world->getBlockData()->getBlockAtPosition(location);
                     world->getBlockData()->setBlockAtPosition(location, block);
                     stack->subtract(1);
                     bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), world->getBlockData());
                     if(!valid) {
                         world->getBlockData()->removeBlockAtPosition(location);
+                        if(oldBlock.getBlockType() != nullptr) {
+                            world->getBlockData()->setBlockDataAtPosition(location, oldBlock);
+                        }
                         stack->add(1);
+                    }else {
+                        world->getBlockData()->getBlockReferenceAtPosition(location).placedOnSide(EAST);
                     }                      
                 }
                 break;
             case WEST:
                 location = BlockPos(blockLookingAt->x - 1, blockLookingAt->y, blockLookingAt->z);
-                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(location).getBlockType()->isSolid()) {
+                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(location).isSolid()) {
+                    BlockData oldBlock = world->getBlockData()->getBlockAtPosition(location);
                     world->getBlockData()->setBlockAtPosition(location, block);
                     stack->subtract(1);
                     bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), world->getBlockData());
                     if(!valid) {
                         world->getBlockData()->removeBlockAtPosition(location);
+                        if(oldBlock.getBlockType() != nullptr) {
+                            world->getBlockData()->setBlockDataAtPosition(location, oldBlock);
+                        }
                         stack->add(1);
+                    }else {
+                        world->getBlockData()->getBlockReferenceAtPosition(location).placedOnSide(WEST);
                     }    
                 break;
             }

@@ -1,7 +1,7 @@
 #include "RenderedTriangle.h"
 
 RenderedTriangle::RenderedTriangle(RenderedPoint _a, RenderedPoint _b, RenderedPoint _c, int uvFlag) : a(_a), b(_b), c(_c) {
-            if(uvFlag == 0) {
+    if(uvFlag == 0) {
         a.u = 0;
         a.v = 0;
         
@@ -21,3 +21,21 @@ RenderedTriangle::RenderedTriangle(RenderedPoint _a, RenderedPoint _b, RenderedP
         c.v = 1;                
     }
 };
+
+void RenderedTriangle::rotateX90(double x, double y, double z) {
+    a.rotateX90(x, y, z);
+    b.rotateX90(x, y, z);
+    c.rotateX90(x, y, z);
+}
+
+void RenderedTriangle::rotateY90(double x, double y, double z) {
+    a.rotateY90(x, y, z);
+    b.rotateY90(x, y, z);
+    c.rotateY90(x, y, z);
+}
+
+void RenderedTriangle::rotateZ90(double x, double y, double z) {
+    a.rotateZ90(x, y, z);
+    b.rotateZ90(x, y, z);
+    c.rotateZ90(x, y, z);
+}

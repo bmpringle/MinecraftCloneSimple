@@ -37,6 +37,30 @@ BlockData Chunk::getBlockAtLocation(BlockPos pos) {
     return BlockData();
 }
 
+BlockData& Chunk::getBlockReferenceAtLocation(BlockPos pos) {
+    if(pos.x >= getChunkCoordinates().x && pos.x < getChunkCoordinates().x + X) {
+        if(pos.y >= getChunkCoordinates().y && pos.y < getChunkCoordinates().y + Y) {
+            if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
+                AABB bAABB = AABB(pos.x, pos.y, pos.z, 1, 1, 1);
+                std::function<bool(AABB, bool, std::optional<SBDA>&)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>& block) -> bool { 
+                    if(AABBIntersectedByAABB(bAABB, aabb)){
+                        return true;
+                    }
+                    return false;
+                };
+                std::vector<std::optional<SBDA>*> blocksVector = blockTree.getLeafOfTree(eval);
+                if(blocksVector.size() != 1) {
+                    std::cout << "abort! there are " << blocksVector.size() << " valid blocks" << std::endl;
+                    abort();
+                }
+                std::optional<SBDA>* blocks = blocksVector.at(0);
+                return blocks->value()[pos.y];
+            }
+        }
+    }
+    return dummyData;
+}
+
 void Chunk::setBlockAtLocation(BlockPos pos, std::shared_ptr<Block> block) {
     if(pos.x >= getChunkCoordinates().x && pos.x < getChunkCoordinates().x + X) {
         if(pos.y >= getChunkCoordinates().y && pos.y < getChunkCoordinates().y + Y) {
@@ -57,6 +81,30 @@ void Chunk::setBlockAtLocation(BlockPos pos, std::shared_ptr<Block> block) {
                 }
                 std::optional<SBDA>* blocks = blocksVector.at(0);
                 blocks->value()[pos.y] = blockData;
+            }
+        }
+    }
+}
+
+void Chunk::setBlockDataAtLocation(BlockPos pos, BlockData data) {
+    if(pos.x >= getChunkCoordinates().x && pos.x < getChunkCoordinates().x + X) {
+        if(pos.y >= getChunkCoordinates().y && pos.y < getChunkCoordinates().y + Y) {
+            if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
+                AABB bAABB = data.getAABB();
+                data.setPos(pos);
+                std::function<bool(AABB, bool, std::optional<SBDA>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA> block) -> bool { 
+                    if(AABBIntersectedByAABB(bAABB, aabb)){
+                        return true;
+                    }
+                    return false;
+                };
+                std::vector<std::optional<SBDA>*> blocksVector = blockTree.getLeafOfTree(eval);
+                if(blocksVector.size() != 1) {
+                    std::cout << "abort! there are " << blocksVector.size() << " valid blocks" << std::endl;
+                    abort();
+                }
+                std::optional<SBDA>* blocks = blocksVector.at(0);
+                blocks->value()[pos.y] = data;
             }
         }
     }

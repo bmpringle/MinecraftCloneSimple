@@ -9,6 +9,14 @@ class BlockLog : public Block {
         
         std::string getName() override;
 
-        std::string getTextureName(SideEnum side) override;  
+        std::string getTextureName(SideEnum side, int data) override;  
+
+        int getXRotation(int data) override;
+
+        int getYRotation(int data) override;
+
+        int getZRotation(int data) override;
+
+        void onPlaced(SideEnum side, int* data) override;
 };
 #endif

@@ -87,6 +87,28 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
     setBlockAtPosition(pos, block);
 }
 
+void BlockArrayData::setBlockDataAtPosition(BlockPos pos, BlockData data) {
+    std::array<int, 3> size = Chunk::getChunkSize();
+    
+    for(int i = 0; i < chunkList.size(); ++i) {
+        Chunk c = chunkList.at(i);
+        BlockPos chunkLocation = c.getChunkCoordinates();
+        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
+            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
+                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
+                    chunkList.at(i).setBlockDataAtLocation(pos, data);
+                    if(isChunkLoaded(c)) {
+                        loadedChunkLocations[c.getChunkCoordinates()].update = true;
+                    }
+                    return;
+                }
+            }        
+        }
+    }
+    generateChunk(BlockPos((float)size[0] * floor((float)pos.x / (float)size[0]), 0, (float)size[2] * floor((float)pos.z / (float)size[2])));
+    setBlockDataAtPosition(pos, data);
+}
+
 void BlockArrayData::softSetBlockAtPosition(BlockPos pos, std::shared_ptr<Block> block) {
     std::array<int, 3> size = Chunk::getChunkSize();
 
@@ -185,7 +207,6 @@ void BlockArrayData::removeBlockAtPosition(BlockPos pos) {
 
 //do not modify
 BlockData BlockArrayData::getBlockAtPosition(BlockPos pos) {
-
     for(int i = 0; i < chunkList.size(); ++i) {
         Chunk c = chunkList.at(i);
         std::array<int, 3> size = Chunk::getChunkSize();
@@ -200,6 +221,23 @@ BlockData BlockArrayData::getBlockAtPosition(BlockPos pos) {
         }
     }
     return BlockData();
+}
+
+BlockData& BlockArrayData::getBlockReferenceAtPosition(BlockPos pos) {
+    for(int i = 0; i < chunkList.size(); ++i) {
+        Chunk c = chunkList.at(i);
+        std::array<int, 3> size = Chunk::getChunkSize();
+        BlockPos chunkLocation = c.getChunkCoordinates();
+        
+        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
+            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
+                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
+                    return chunkList.at(i).getBlockReferenceAtLocation(pos);
+                }
+            }
+        }
+    }
+    return dummyData;
 }
 
 /*
@@ -277,7 +315,7 @@ bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
                     for(std::optional<SBDA>* blocksColumn : blocksVector) {
                         for(int i = 0; i < 256; ++i) {
                             BlockData block = (*blocksColumn).value()[i];
-                            if(block.getBlockType() != nullptr && block.getBlockType()->isSolid()) {
+                            if(block.getBlockType() != nullptr && block.isSolid()) {
                                 AABB blockAABB = block.getAABB();
                                 if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
                                     *ypos = blockAABB.startY + blockAABB.ySize;

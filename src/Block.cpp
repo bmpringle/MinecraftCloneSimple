@@ -8,11 +8,11 @@ Block::Block() {
 
 }
 
-AABB Block::getAABB() {
+AABB Block::getAABB(int data) {
     return AABB(0, 0, 0, 1, 1, 1);
 }
 
-BlockRenderedModel Block::getRenderedModel() {
+BlockRenderedModel Block::getRenderedModel(int data) {
     RenderedPoint p1 = RenderedPoint(0, 0, 0, /**uv coords*/ 0, 0);
     RenderedPoint p2 = RenderedPoint(1, 0, 0, /**uv coords*/ 0, 0);
     RenderedPoint p3 = RenderedPoint(1, 0, 1, /**uv coords*/ 0, 0);
@@ -57,14 +57,30 @@ BlockRenderedModel Block::getRenderedModel() {
     return BlockRenderedModel(blockFaceArray);
 }
 
-std::string Block::getTextureName(SideEnum side) {
+std::string Block::getTextureName(SideEnum side, int data) {
     return "notexture.png";
 }
 
-bool Block::isSolid() {
+bool Block::isSolid(int data) {
     return true;
 }
 
-bool Block::isOpaque() {
+bool Block::isOpaque(int data) {
     return true;
+}
+
+int Block::getXRotation(int data) {
+    return 0;
+}
+
+int Block::getYRotation(int data) {
+    return 0;
+}
+
+int Block::getZRotation(int data) {
+    return 0;
+}
+
+void Block::onPlaced(SideEnum side, int* data) {
+    
 }

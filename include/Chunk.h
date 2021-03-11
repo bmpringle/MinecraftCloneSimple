@@ -16,7 +16,11 @@ class Chunk {
 
         BlockData getBlockAtLocation(BlockPos pos);
 
+        BlockData& getBlockReferenceAtLocation(BlockPos pos);
+
         void setBlockAtLocation(BlockPos pos, std::shared_ptr<Block> block);
+
+        void setBlockDataAtLocation(BlockPos pos, BlockData data);
 
         void softSetBlockAtLocation(BlockPos pos, std::shared_ptr<Block> block);
 
@@ -51,5 +55,7 @@ class Chunk {
         std::vector<BlockPos> blocksToUpdate = std::vector<BlockPos>();
         
         bool isFake = false;
+
+        BlockData dummyData = BlockData();
 };
 #endif

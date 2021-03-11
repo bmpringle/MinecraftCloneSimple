@@ -6,6 +6,7 @@ const std::shared_ptr<Block> Blocks::grass = std::make_shared<BlockGrass>();
 const std::shared_ptr<Block> Blocks::log = std::make_shared<BlockLog>();
 const std::shared_ptr<Block> Blocks::leaf = std::make_shared<BlockLeaf>();
 const std::shared_ptr<Block> Blocks::water = std::make_shared<BlockWater>();
+const std::shared_ptr<Block> Blocks::planks = std::make_shared<BlockPlanks>();
 
 std::map<std::string, std::shared_ptr<Block>> Blocks::blockMap = {
             {dirt->getName(), dirt},
@@ -14,6 +15,7 @@ std::map<std::string, std::shared_ptr<Block>> Blocks::blockMap = {
             {log->getName(), log},
             {leaf->getName(), leaf},
             {water->getName(), water},
+            {planks->getName(), planks}
 };
 
 void Blocks::initTextureArrayCreator(TextureArrayCreator* texCreator) {

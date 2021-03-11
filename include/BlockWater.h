@@ -9,12 +9,12 @@ class BlockWater : public Block {
         
         std::string getName() override;
 
-        std::string getTextureName(SideEnum side) override;  
+        std::string getTextureName(SideEnum side, int data) override;  
 
-        bool isSolid() override;  
+        bool isSolid(int data) override;  
 
-        bool isOpaque() override;
+        bool isOpaque(int data) override;
 
-        BlockRenderedModel getRenderedModel() override;
+        BlockRenderedModel getRenderedModel(int data) override;
 };
 #endif

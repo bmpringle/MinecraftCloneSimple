@@ -1,0 +1,6 @@
+This file is for listing what all the different metadata do depending on the block they are associated with:
+
+BlockLog:
+0 - log end is upright
+1 - log end is pointing towards the x axis (EAST-WEST)
+2 - log end is pointing towards the z axis (NORTH-SOUTH)

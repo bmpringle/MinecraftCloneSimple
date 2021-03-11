@@ -1,5 +1,5 @@
 #include "BlockData.h"
-
+ 
 BlockData::BlockData(std::shared_ptr<Block> type, BlockPos pos) : pos(pos), type(type) {
 
 }
@@ -24,4 +24,63 @@ AABB BlockData::getAABB() {
 
 std::shared_ptr<Block> BlockData::getBlockType() {
     return type;
+}
+
+int BlockData::getData() {
+    return data;
+}
+
+void BlockData::setData(int data) {
+    this->data = data;
+}
+
+BlockRenderedModel BlockData::getRenderedModel() {
+    if(type != nullptr) {
+        BlockRenderedModel model = type->getRenderedModel(data);
+        int xRotation = type->getXRotation(data) / 90;
+        int yRotation = type->getYRotation(data) / 90;
+        int zRotation = type->getZRotation(data) / 90;
+        for(int i = 0; i < xRotation; ++i) {
+            model.rotateX90();
+        }
+        for(int i = 0; i < yRotation; ++i) {
+            model.rotateY90();
+        }
+        for(int i = 0; i < zRotation; ++i) {
+            model.rotateZ90();
+        }
+        return model;
+    }else {
+        throw std::invalid_argument("type is null");
+    }
+}
+
+std::string BlockData::getTextureName(SideEnum side) {
+    if(type != nullptr) {
+        return type->getTextureName(side, data);
+    }else {
+        throw std::invalid_argument("type is null");
+    }
+}
+
+bool BlockData::isSolid() {
+    if(type != nullptr) {
+        return type->isSolid(data);
+    }else {
+        throw std::invalid_argument("type is null");
+    }
+}
+
+bool BlockData::isOpaque() {
+    if(type != nullptr) {
+        return type->isOpaque(data);
+    }else {
+        throw std::invalid_argument("type is null");
+    }
+}
+
+void BlockData::placedOnSide(SideEnum side) {
+    if(type != nullptr) {
+        type->onPlaced(side, &data);
+    }
 }

@@ -4,7 +4,7 @@ BlockLeaf::BlockLeaf() {
 
 }
 
-std::string BlockLeaf::getTextureName(SideEnum side) {
+std::string BlockLeaf::getTextureName(SideEnum side, int data = 0) {
     return "leaf.png";
 }
 

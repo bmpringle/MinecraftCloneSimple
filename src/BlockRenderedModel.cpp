@@ -13,3 +13,21 @@ RenderedModel BlockRenderedModel::toRenderedModel() {
     }
     return RenderedModel(tris);
 }
+
+void BlockRenderedModel::rotateX90() {
+    for(BlockFace& face : renderedBlockModel) {
+        face.rotateX90(0.5, 0.5, 0.5);
+    }
+}
+
+void BlockRenderedModel::rotateY90() {
+    for(BlockFace& face : renderedBlockModel) {
+        face.rotateY90(0.5, 0.5, 0.5);
+    }
+}
+
+void BlockRenderedModel::rotateZ90() {
+    for(BlockFace& face : renderedBlockModel) {
+        face.rotateZ90(0.5, 0.5, 0.5);
+    }
+}

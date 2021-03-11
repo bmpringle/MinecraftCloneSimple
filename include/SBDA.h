@@ -16,7 +16,7 @@ class SBDA final : public BinarySerializable {
                 BlockData& blockData = array[i];
                 if(blockData.getBlockType() != nullptr) {
                     BlockPos pos = blockData.getPos();
-                    strData->append("(" + blockData.getBlockType()->getName() + "|" + std::to_string(pos.x) + "|" + std::to_string(pos.y) + "|" + std::to_string(pos.z) + ")");
+                    strData->append("(" + blockData.getBlockType()->getName() + "|" + std::to_string(pos.x) + "|" + std::to_string(pos.y) + "|" + std::to_string(pos.z) + "|" + std::to_string(blockData.getData()) + ")");
                     strData->append(",");
                 }
             }
@@ -42,6 +42,7 @@ class SBDA final : public BinarySerializable {
                 std::string xstr = "";
                 std::string ystr = "";
                 std::string zstr = "";
+                std::string datStr = "";
 
                 while(std::getline(s3, datatoken, '|')) {
                     switch(tokennum) {
@@ -57,6 +58,8 @@ class SBDA final : public BinarySerializable {
                         case 3:
                             zstr = datatoken;
                             break;
+                        case 4:
+                            datStr = datatoken;
                     }
                     ++tokennum;
                 }
@@ -65,7 +68,9 @@ class SBDA final : public BinarySerializable {
                 int x = std::stoi(xstr);
                 int y = std::stoi(ystr);
                 int z = std::stoi(zstr);
+                int data = std::stoi(datStr);
                 array[y] = BlockData(type, BlockPos(x, y, z));
+                array[y].setData(data);
             }
         }
 

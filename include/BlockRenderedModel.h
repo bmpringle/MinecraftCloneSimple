@@ -12,6 +12,12 @@ class BlockRenderedModel {
 
         RenderedModel toRenderedModel();
 
+        void rotateX90();
+
+        void rotateY90();
+        
+        void rotateZ90();
+
         std::array<BlockFace, 6> renderedBlockModel;
 };
 #endif

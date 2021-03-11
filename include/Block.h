@@ -15,15 +15,23 @@ class Block {
 
         virtual std::string getName();
 
-        AABB getAABB();
+        AABB getAABB(int data = 0);
 
-        virtual BlockRenderedModel getRenderedModel();
+        virtual BlockRenderedModel getRenderedModel(int data = 0);
 
-        virtual std::string getTextureName(SideEnum side);
+        virtual std::string getTextureName(SideEnum side, int data = 0);
 
-        virtual bool isSolid();
+        virtual bool isSolid(int data = 0);
 
-        virtual bool isOpaque();
+        virtual bool isOpaque(int data = 0);
+
+        virtual int getXRotation(int data);
+
+        virtual int getYRotation(int data);
+
+        virtual int getZRotation(int data);
+
+        virtual void onPlaced(SideEnum side, int* data);
 
         virtual ~Block() = default;
 };

@@ -1,11 +1,11 @@
-#ifndef BLOCKDIRT_H
-#define BLOCKDIRT_H
+#ifndef BLOCKPLANKS_H
+#define BLOCKPLANKS_H
 
 #include "Block.h"
 
-class BlockDirt : public Block {
+class BlockPlanks : public Block {
     public:
-        BlockDirt();
+        BlockPlanks();
 
         std::string getName() override;
 

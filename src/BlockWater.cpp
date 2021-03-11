@@ -4,7 +4,7 @@ BlockWater::BlockWater() {
 
 }
 
-std::string BlockWater::getTextureName(SideEnum side) {
+std::string BlockWater::getTextureName(SideEnum side, int data = 0) {
     return "water.png";
 }
 
@@ -12,15 +12,15 @@ std::string BlockWater::getName() {
     return "water";
 }
 
-bool BlockWater::isSolid() {
+bool BlockWater::isSolid(int data = 0) {
     return false;
 }
 
-bool BlockWater::isOpaque() {
+bool BlockWater::isOpaque(int data = 0) {
     return false;
 }
 
-BlockRenderedModel BlockWater::getRenderedModel() {
+BlockRenderedModel BlockWater::getRenderedModel(int data = 0) {
     RenderedPoint p1 = RenderedPoint(0, 0, 0, /**uv coords*/ 0, 0);
     RenderedPoint p2 = RenderedPoint(1, 0, 0, /**uv coords*/ 0, 0);
     RenderedPoint p3 = RenderedPoint(1, 0, 1, /**uv coords*/ 0, 0);

@@ -1,13 +1,13 @@
-#include "BlockDirt.h"
+#include "BlockPlanks.h"
 
-BlockDirt::BlockDirt() {
+BlockPlanks::BlockPlanks() {
 
 }
 
-std::string BlockDirt::getTextureName(SideEnum side) {
-    return "dirt.png";
+std::string BlockPlanks::getTextureName(SideEnum side, int data = 0) {
+    return "planks.png";
 }
 
-std::string BlockDirt::getName() {
-    return "dirt";
+std::string BlockPlanks::getName() {
+    return "planks";
 }

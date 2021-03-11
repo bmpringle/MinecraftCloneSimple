@@ -371,7 +371,7 @@ void Renderer::updateAspectRatio(GLFWwindow* window) {
 
 void Renderer::renderBlockInWireframe(World* world, BlockPos pos) {
     BlockData block = world->getBlockData()->getBlockAtPosition(pos);
-    RenderedModel model = block.getBlockType()->getRenderedModel().toRenderedModel();
+    RenderedModel model = block.getRenderedModel().toRenderedModel();
 
     for(int j = 0; j < model.renderedModel.size(); ++j) {
         RenderedTriangle triangle = model.renderedModel[j];
@@ -573,11 +573,11 @@ void Renderer::updateChunkData(std::vector<float>* buffer, std::vector<BlockData
     for(int i = 0; i < blocksInChunk->size(); ++i) {
         BlockData blockData = blocksInChunk->at(i);
 
-        BlockRenderedModel model = blockData.getBlockType()->getRenderedModel();
+        BlockRenderedModel model = blockData.getRenderedModel();
         BlockPos pos = blockData.getPos();
     
         for(BlockFace face : model.renderedBlockModel) {
-            int texID = texCreator->getTextureLayer(blockData.getBlockType()->getTextureName(face.side));
+            int texID = texCreator->getTextureLayer(blockData.getTextureName(face.side));
 
             for(RenderedTriangle triangle : face.triangles) {
                 //point 1 red
