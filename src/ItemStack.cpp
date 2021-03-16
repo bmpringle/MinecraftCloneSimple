@@ -42,7 +42,7 @@ void ItemStack::onUse(World* world) {
         if(world->getPlayer()->getBlockLookingAt() != nullptr) {
             BlockPos chunkLocation = world->getBlockData()->getChunkWithBlock(*world->getPlayer()->getBlockLookingAt())->getChunkCoordinates();
             world->getBlockData()->setChunkToUpdate(chunkLocation);
-            if(!world->getPlayer()->isPlayerSneaking()) {
+            if(!world->getPlayer()->isEntitySneaking()) {
                 if(world->getBlockData()->getBlockReferenceAtPosition(*world->getPlayer()->getBlockLookingAt()).activateBlock(world, this)) {
                     return;
                 }

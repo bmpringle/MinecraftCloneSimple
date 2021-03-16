@@ -34,9 +34,7 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler,
 void World::updateGame() {
     input->callRegularEvents(worldEventQueue, timerMap);
     
-    thePlayer->updateClient(this);
-
-    thePlayer->updateServer(this);
+    thePlayer->updateEntity(this);
 }
 
 void World::generateWorld() {
@@ -164,7 +162,10 @@ void World::renderGame() {
             renderer->renderBlockInWireframe(this, *thePlayer->getBlockLookingAt());
         }
     }
+
+    glClear(GL_DEPTH_BUFFER_BIT);
     renderOverlays();
+    glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void World::renderOverlays() {

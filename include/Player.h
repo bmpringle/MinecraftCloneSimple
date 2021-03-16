@@ -1,62 +1,34 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <memory>
-#include "EventQueue/Listener.h"
-#include "Block.h"
-#include "Model.h"
-#include <chrono>
-#include "BlockArrayData.h"
-#include "ItemBlock.h"
-#include "glmh.h"
-#include "Pos.h"
-#include "Inventory.h"
-#include "InventoryGui.h"
-#include "GameSettings.h"
+#include "Entity.h"
 
 class World;
 
-class Player final : public Listener, public Model {
+class Player final : public Listener, public Entity {
     public:
         Player(World* _world);
-        void updateClient(World* world);
-        void listenTo(std::shared_ptr<Event> e);
-        AABB getAABB();
-        Pos getPos();
-        RenderedModel getRenderedModel();
+        void updateEntity(World* world) override;
+        void listenTo(std::shared_ptr<Event> e) override;
         double getXRotation();
         double getYRotation();
         Pos getCameraPosition();
         Pos getCameraNormal();
         BlockPos* getBlockLookingAt();
         SideEnum getSideOfBlockLookingAt();
-        void setItemInHandIndex(int index);
-        bool validatePosition(Pos newPosition, BlockArrayData* data);
         void setBufferedChunkLocation(BlockPos pos);
-        void updateServer(World* _world);
-        bool isInWater(BlockArrayData* data);
-        bool canJumpInWater(BlockArrayData* data);
-        Inventory* getInventory();
-        int getItemInHandIndex();
+       
         void displayGui(Renderer* renderer);
         SideEnum horizontalSidePlacedOn();
         SideEnum sideLookingAt();
 
-        bool isPlayerSneaking();
-        bool isPlayerSprinting();
-        bool isPlayerInWater();
-
     private:
-        bool validatePosition(Pos newPosition, BlockArrayData* data, float* yToSnapTo);
         void updatePlayerLookingAt(World* world);
         float raycast(AABB box, SideEnum* side);
         void updateHorizontalMotion();
-        void move(glm::vec3* moveVec);
-        bool isBlockUnderPlayer();
 
         void processInput(std::string event, std::string key, std::shared_ptr<Event> e);
 
-        World* world;
         GameSettings* settings;
 
         Pos pos;
@@ -75,30 +47,10 @@ class Player final : public Listener, public Model {
 
         SideEnum sideOfBlockLookingAt = NORTH;
 
-        int itemInHandIndex = 0;
-
         BlockPos bufferedChunkLocation = BlockPos(0, 0, 0);
-
-        bool isGrounded = false;
-        bool isJumping = false;
-
-        bool isSneaking = false;
-        bool isSprinting = false;
-        
- 
-        bool waterPhysics = false;
-
-        const float standingHeight = 1.8;
-        const float sneakingHeight = 1.65;
-
-        glm::vec3 motion = glm::vec3(0, 0, 0);
 
         int xInputDirection = 0;
         int zInputDirection = 0;
-
-        Pos sneakPos = pos;
-
-        Inventory inventory = Inventory(36);
 
         std::unique_ptr<Gui> gui = nullptr; 
 
