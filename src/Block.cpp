@@ -1,4 +1,8 @@
 #include "Block.h"
+#include "BlockArrayData.h"
+#include "BlockData.h"
+#include "World.h"
+#include "ItemStack.h"
 
 std::string Block::getName() {
     return "block";
@@ -81,6 +85,29 @@ int Block::getZRotation(int data) {
     return 0;
 }
 
-void Block::onPlaced(SideEnum side, int* data) {
+void Block::onPlaced(SideEnum hPlacementAngle, SideEnum sideLookingAt, int* data) {
     
+}
+
+void Block::updateBlock(BlockArrayData* data, BlockData* blockToUpdate) {
+
+}
+
+void Block::rotateModel(BlockRenderedModel& model, int data) {
+    int xRotation = getXRotation(data) / 90;
+    int yRotation = getYRotation(data) / 90;
+    int zRotation = getZRotation(data) / 90;
+    for(int i = 0; i < xRotation; ++i) {
+        model.rotateX90();
+    }
+    for(int i = 0; i < yRotation; ++i) {
+        model.rotateY90();
+    }
+    for(int i = 0; i < zRotation; ++i) {
+        model.rotateZ90();
+    }
+}
+
+bool Block::onBlockActivated(World* world, BlockPos pos, ItemStack* stack, int* data) {
+    return false;
 }

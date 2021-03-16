@@ -3,7 +3,6 @@
 
 #include "RenderedTriangle.h"
 #include <vector>
-#include "BlockRenderedModel.h"
 
 class RenderedModel {
     public:

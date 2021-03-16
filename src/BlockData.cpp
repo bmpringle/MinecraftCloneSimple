@@ -1,5 +1,8 @@
 #include "BlockData.h"
- 
+#include "BlockArrayData.h"
+#include "World.h"
+#include "ItemStack.h"
+
 BlockData::BlockData(std::shared_ptr<Block> type, BlockPos pos) : pos(pos), type(type) {
 
 }
@@ -17,7 +20,7 @@ void BlockData::setPos(BlockPos pos_) {
 }
 
 AABB BlockData::getAABB() {
-    AABB aabb = type->getAABB();
+    AABB aabb = type->getAABB(data);
     aabb.add(pos);
     return aabb;
 }
@@ -37,18 +40,7 @@ void BlockData::setData(int data) {
 BlockRenderedModel BlockData::getRenderedModel() {
     if(type != nullptr) {
         BlockRenderedModel model = type->getRenderedModel(data);
-        int xRotation = type->getXRotation(data) / 90;
-        int yRotation = type->getYRotation(data) / 90;
-        int zRotation = type->getZRotation(data) / 90;
-        for(int i = 0; i < xRotation; ++i) {
-            model.rotateX90();
-        }
-        for(int i = 0; i < yRotation; ++i) {
-            model.rotateY90();
-        }
-        for(int i = 0; i < zRotation; ++i) {
-            model.rotateZ90();
-        }
+        type->rotateModel(model, data);
         return model;
     }else {
         throw std::invalid_argument("type is null");
@@ -79,8 +71,22 @@ bool BlockData::isOpaque() {
     }
 }
 
-void BlockData::placedOnSide(SideEnum side) {
+void BlockData::placedOnSide(SideEnum hPlacementAngle, SideEnum sideLookingAt) {
     if(type != nullptr) {
-        type->onPlaced(side, &data);
+        type->onPlaced(hPlacementAngle, sideLookingAt, &data);
+    }
+}
+
+void BlockData::updateBlock(BlockArrayData* data) {
+    if(type != nullptr) {
+        type->updateBlock(data, this);
+    }
+}
+
+bool BlockData::activateBlock(World* world, ItemStack* stack) {
+    if(type != nullptr) {
+        return type->onBlockActivated(world, pos, stack, &data);
+    }else {
+        return false;
     }
 }

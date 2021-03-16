@@ -1,6 +1,8 @@
 #ifndef SIDEENUM_H
 #define SIDEENUM_H
 
+#include <string>
+
 enum SideEnum {
     DOWN,
     UP,
@@ -8,6 +10,11 @@ enum SideEnum {
     SOUTH,
     EAST,
     WEST,
+    NEUTRAL
 };
+
+namespace SideEnumHelper {
+    std::string toString(SideEnum side);
+}
 
 #endif

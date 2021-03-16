@@ -1,6 +1,7 @@
 #include "ItemStack.h"
 #include <iostream>
 #include "RenderInclude.h"
+#include "World.h"
 
 ItemStack::ItemStack(std::shared_ptr<Item> item, int count) : item(item), count(count) {
 
@@ -36,7 +37,17 @@ bool ItemStack::isEmpty() {
 
 void ItemStack::onUse(World* world) {
     if(item != nullptr) {
-        item->onUse(world, this);
+        item->onRightClick(world, this);
+    }else {
+        if(world->getPlayer()->getBlockLookingAt() != nullptr) {
+            BlockPos chunkLocation = world->getBlockData()->getChunkWithBlock(*world->getPlayer()->getBlockLookingAt())->getChunkCoordinates();
+            world->getBlockData()->setChunkToUpdate(chunkLocation);
+            if(!world->getPlayer()->isPlayerSneaking()) {
+                if(world->getBlockData()->getBlockReferenceAtPosition(*world->getPlayer()->getBlockLookingAt()).activateBlock(world, this)) {
+                    return;
+                }
+            }
+        }
     }
 }
 

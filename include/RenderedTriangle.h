@@ -5,7 +5,7 @@
 
 class RenderedTriangle {
     public:
-        RenderedTriangle(RenderedPoint _a, RenderedPoint _b, RenderedPoint _c, int uvFlag);
+        RenderedTriangle(RenderedPoint _a, RenderedPoint _b, RenderedPoint _c, int uvFlag, double scaleX = 1, double scaleY = 1);
 
         void rotateX90(double x, double y, double z);
 

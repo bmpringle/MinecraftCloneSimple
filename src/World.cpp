@@ -3,6 +3,7 @@
 #include "Blocks.h"
 #include <thread>
 #include "PlatformFilesystem.h"
+#include "ItemBlockDoor.h"
 
 /**
  * @brief 
@@ -15,8 +16,6 @@
 #define WORLDSIZE_CONST 100
 
 World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler, Renderer* renderer, TimerMap* map, GameSettings* settings, std::string _name, std::string worldFolder, int seed) : name(_name), timerMap(map), worldEventQueue(queue), input(inputHandler), renderer(renderer), window(window_), settings(settings), internalBlockData(BlockArrayData(WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST, worldFolder, seed)), thePlayer(std::make_shared<Player>(this)) {
-    generateWorld();
-
     thePlayer->setBufferedChunkLocation(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates());
     internalBlockData.updateLoadedChunks(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates(), this);
 
@@ -28,19 +27,11 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler,
     thePlayer->getInventory()->setItemStackInSlot(3, ItemStack(std::make_shared<ItemBlock>(Blocks::leaf), 64));
     thePlayer->getInventory()->setItemStackInSlot(4, ItemStack(std::make_shared<ItemBlock>(Blocks::log), 64));
     thePlayer->getInventory()->setItemStackInSlot(5, ItemStack(std::make_shared<ItemBlock>(Blocks::water), 64));
-    thePlayer->getInventory()->setItemStackInSlot(5, ItemStack(std::make_shared<ItemBlock>(Blocks::planks), 64));
+    thePlayer->getInventory()->setItemStackInSlot(6, ItemStack(std::make_shared<ItemBlock>(Blocks::planks), 64));
+    thePlayer->getInventory()->setItemStackInSlot(7, ItemStack(std::make_shared<ItemBlockDoor>(), 64));
 }
 
 void World::updateGame() {
-    //too slow need to impl better system for this and collision
-    /*for(int x = -WORLDSIZE_CONST; x < WORLDSIZE_CONST; ++x) {
-        for(int y = -WORLDSIZE_CONST; y < WORLDSIZE_CONST; ++y) {
-            for(int z = -WORLDSIZE_CONST; z < WORLDSIZE_CONST; ++z) {
-                internalBlockData.updateBlockAtPosition(BlockPos(x, y, z));
-            }
-        }
-    }*/
-    
     input->callRegularEvents(worldEventQueue, timerMap);
     
     thePlayer->updateClient(this);
@@ -163,6 +154,7 @@ bool AABBIntersectedByAABBVocal(AABB box1, AABB box2) {
 void World::renderGame() {
     if(internalBlockData.shouldUpdateRenderer()) {
         renderer->updateWorldVBO(this);
+        internalBlockData.sendChunkUpdates();
         internalBlockData.hasUpdatedRenderer();
     }
     renderer->updateAspectRatio(window);
@@ -176,6 +168,7 @@ void World::renderGame() {
 }
 
 void World::renderOverlays() {
+
     float overlay[48] = {
         -11, -11, 0, 0, 0, 1, 0, 0,
         11, -11, 0, 0, 0, 1, 1, 0,
@@ -301,3 +294,4 @@ void World::quit() {
 GameSettings* World::getSettings() {
     return settings;
 }
+

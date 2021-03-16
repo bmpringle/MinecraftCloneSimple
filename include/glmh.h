@@ -40,3 +40,5 @@
 #include "glm/matrix.hpp"
 #include "glm/vector_relational.hpp"
 #include "glm/integer.hpp"
+
+#include <glm/gtx/string_cast.hpp>

@@ -17,6 +17,6 @@ class BlockLog : public Block {
 
         int getZRotation(int data) override;
 
-        void onPlaced(SideEnum side, int* data) override;
+        void onPlaced(SideEnum hPlacementAngle, SideEnum sideLookingAt, int* data) override;
 };
 #endif

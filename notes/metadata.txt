@@ -1,6 +1,13 @@
-This file is for listing what all the different metadata do depending on the block they are associated with:
+This file is for listing what all the different metadata 
+do depending on the block they are associated with:
 
 BlockLog:
-0 - log end is upright
-1 - log end is pointing towards the x axis (EAST-WEST)
-2 - log end is pointing towards the z axis (NORTH-SOUTH)
+    0 - log end is upright
+    1 - log end is pointing towards the x axis (EAST-WEST)
+    2 - log end is pointing towards the z axis (NORTH-SOUTH)
+
+BlockDoor:
+    0, 1, 2, 3 - NORTH/SOUTH/EAST/WEST Closed Bottom
+    4, 5, 6, 7 - NORTH/SOUTH/EAST/WEST Open Bottom
+    8, 9, 10, 11 - NORTH/SOUTH/EAST/WEST Closed Top
+    12, 13, 14, 15 - NORTH/SOUTH/EAST/WEST Open Top

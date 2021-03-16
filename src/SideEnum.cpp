@@ -1,7 +1,7 @@
 #include "SideEnum.h"
 #include <string>
 
-std::string toString(SideEnum side) {
+std::string SideEnumHelper::toString(SideEnum side) {
     switch(side) {
         case UP:
             return "UP";
@@ -15,5 +15,7 @@ std::string toString(SideEnum side) {
             return "EAST";
         case WEST:
             return "WEST";
+        case NEUTRAL:
+            return "NEUTRAL";
     }
 }

@@ -6,9 +6,9 @@
 class LoadedChunkInfo {
     public:
         LoadedChunkInfo();
-        LoadedChunkInfo(BlockPos loc, bool _update);
+        LoadedChunkInfo(BlockPos loc, int _update);
         BlockPos chunkLocation = BlockPos(0, 0, 0);
-        bool update = true;
+        int update = 1;
         RenderChunkBuffer* chunkBuffer = nullptr;
 };
 #endif

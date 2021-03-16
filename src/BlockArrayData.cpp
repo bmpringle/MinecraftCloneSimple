@@ -13,8 +13,12 @@ BlockArrayData::BlockArrayData(int xSize, int ySize, int zSize, std::string _wor
     noise.SetSeed(SEED);
 }
 
-void BlockArrayData::updateBlockAtPosition(BlockPos pos) {
-
+void BlockArrayData::sendChunkUpdates() {
+    for(Chunk& chunk : chunkList) {
+        if(loadedChunkLocations.count(chunk.getChunkCoordinates()) > 0) {
+            chunk.updateChunk(this);
+        }
+    }
 }
 
 void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {   
@@ -34,10 +38,10 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
             if(!getChunkWithBlock(playerBlock)->isFakeChunk()) {
                 BlockPos chunkLocation = getChunkWithBlock(playerBlock)->getChunkCoordinates();
                 LoadedChunkInfo info = LoadedChunkInfo(BlockPos(0, 0, 0), false);
-                try {
+                if(oldChunks.count(chunkLocation) > 0) {
                     info = oldChunks.at(chunkLocation);
                     loadedChunkLocations[chunkLocation] = LoadedChunkInfo(chunkLocation, info.update);
-                }catch(std::out_of_range e) {
+                }else {
                     loadedChunkLocations[chunkLocation] = LoadedChunkInfo(chunkLocation, true);
                 }
             }else {
@@ -52,10 +56,10 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
 
                 LoadedChunkInfo info = LoadedChunkInfo(BlockPos(0, 0, 0), false);
                 BlockPos chunkLocation = getChunkWithBlock(playerBlock)->getChunkCoordinates();
-                try {
+                if(oldChunks.count(chunkLocation) > 0) {
                     info = oldChunks.at(chunkLocation);       
                     loadedChunkLocations[chunkLocation] = LoadedChunkInfo(chunkLocation, info.update);
-                }catch(std::out_of_range e) {
+                }else {
                     loadedChunkLocations[chunkLocation] = LoadedChunkInfo(chunkLocation, true);
                 }
             }
@@ -76,7 +80,7 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
                     chunkList.at(i).setBlockAtLocation(pos, block);
                     if(isChunkLoaded(c)) {
-                        loadedChunkLocations[c.getChunkCoordinates()].update = true;
+                        ++loadedChunkLocations[c.getChunkCoordinates()].update;
                     }
                     return;
                 }
@@ -98,7 +102,7 @@ void BlockArrayData::setBlockDataAtPosition(BlockPos pos, BlockData data) {
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
                     chunkList.at(i).setBlockDataAtLocation(pos, data);
                     if(isChunkLoaded(c)) {
-                        loadedChunkLocations[c.getChunkCoordinates()].update = true;
+                        ++loadedChunkLocations[c.getChunkCoordinates()].update;
                     }
                     return;
                 }
@@ -121,7 +125,7 @@ void BlockArrayData::softSetBlockAtPosition(BlockPos pos, std::shared_ptr<Block>
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
                     chunkList.at(i).softSetBlockAtLocation(pos, block);
                     if(isChunkLoaded(c)) {
-                        loadedChunkLocations[c.getChunkCoordinates()].update = true;
+                        ++loadedChunkLocations[c.getChunkCoordinates()].update;
                     }
                     return;
                 }
@@ -143,7 +147,7 @@ void BlockArrayData::setColumnAtPosition(BlockPos pos, std::vector<std::shared_p
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
                     chunkList.at(i).setColumnOfBlocks(pos, block, amount);
                     if(isChunkLoaded(c)) {
-                        loadedChunkLocations[c.getChunkCoordinates()].update = true;
+                        ++loadedChunkLocations[c.getChunkCoordinates()].update;
                     }
                     return;
                 }
@@ -165,7 +169,7 @@ void BlockArrayData::softSetColumnAtPosition(BlockPos pos, std::vector<std::shar
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
                     chunkList.at(i).softSetColumnOfBlocks(pos, block, amount);
                     if(isChunkLoaded(c)) {
-                        loadedChunkLocations[c.getChunkCoordinates()].update = true;
+                        ++loadedChunkLocations[c.getChunkCoordinates()].update;
                     }
                     return;
                 }
@@ -177,12 +181,10 @@ void BlockArrayData::softSetColumnAtPosition(BlockPos pos, std::vector<std::shar
 }
 
 bool BlockArrayData::isChunkLoaded(Chunk c) {
-    try {
-        loadedChunkLocations.at(c.getChunkCoordinates());
+    if(loadedChunkLocations.count(c.getChunkCoordinates()) > 0) {
         return true;
-    }catch(std::out_of_range e) {
-        return false;
     }
+    return false;
 }
 
 void BlockArrayData::removeBlockAtPosition(BlockPos pos) {
@@ -197,7 +199,7 @@ void BlockArrayData::removeBlockAtPosition(BlockPos pos) {
                 if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
                     chunkList.at(i).removeBlockAtLocation(pos);
                     if(isChunkLoaded(c)) {
-                        loadedChunkLocations[c.getChunkCoordinates()].update = true;
+                        ++loadedChunkLocations[c.getChunkCoordinates()].update;
                     }
                 }
             }
@@ -273,7 +275,7 @@ Chunk* BlockArrayData::getChunkWithBlock(BlockPos pos) {
 
 bool BlockArrayData::shouldUpdateRenderer() {
     for(std::pair<const BlockPos, LoadedChunkInfo>& pair : loadedChunkLocations) {
-        if(pair.second.update) {
+        if(pair.second.update > 0) {
             return true;
         }
     }
@@ -282,7 +284,9 @@ bool BlockArrayData::shouldUpdateRenderer() {
 
 void BlockArrayData::hasUpdatedRenderer() {
     for(std::pair<const BlockPos, LoadedChunkInfo>& pair : loadedChunkLocations) {
-        pair.second.update = false;
+        if(pair.second.update > 0) {
+            --pair.second.update;
+        }
     }
 }
 
@@ -293,7 +297,7 @@ const std::map<BlockPos, LoadedChunkInfo> BlockArrayData::getLoadedChunkLocation
 //used when world is loaded to force a rendering update
 void BlockArrayData::setAllLoadedChunksToBeUpdated() {
     for(std::pair<const BlockPos, LoadedChunkInfo>& pair : loadedChunkLocations) {
-        pair.second.update = true;
+        ++pair.second.update;
     }
 }
 
@@ -442,4 +446,10 @@ void BlockArrayData::loadChunkFromFile(std::string chunkPath, BlockPos chunkLoca
 
 int BlockArrayData::getSeed() {
     return SEED;
+}
+
+void BlockArrayData::setChunkToUpdate(BlockPos chunkLocation) {
+    if(loadedChunkLocations.count(chunkLocation) > 0) {
+        ++loadedChunkLocations.at(chunkLocation).update;
+    }
 }

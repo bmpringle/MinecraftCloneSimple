@@ -120,6 +120,7 @@ unsigned char* FontLoader::getTextBitmap(std::string text) {
         x += roundf(kern * scale);
     }
     
+    free(word);
     return bitmap;
 }
 

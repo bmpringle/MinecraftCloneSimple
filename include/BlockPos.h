@@ -17,7 +17,7 @@ class BlockPos {
 
         friend bool operator<(BlockPos lhs, BlockPos rhs);
 
-        void print();
+        void print() const;
 };
 
 #endif

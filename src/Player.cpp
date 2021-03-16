@@ -182,18 +182,18 @@ void Player::updatePlayerLookingAt(World* world) {
             SideEnum sideIntersect = NORTH;
 
             float t = raycast(aabb, &sideIntersect);
-
+            
             if(isLeaf) {
                 if(t != -1) {
                     for(int i = 0; i < 256; ++i) {
-                        AABB aabbPresice = AABB(aabb.startX, i, aabb.startZ, 1, 1, 1);
                         if(block.value().array.at(i).getBlockType() != nullptr && (block.value().array.at(i).isSolid())) {
+                            AABB aabbPresice = block.value().array.at(i).getAABB();
                             float tPresice = raycast(aabbPresice, &sideIntersect);
                             float max = (tValues.size() > 1) ? tValues.at(tValues.size() - 1) : tPresice + 1;
                             if(tPresice != -1 && tPresice < max && tPresice <= 5) {
                                 tValues.push_back(tPresice);
                                 sideValues.push_back(sideIntersect);
-                                blockValues.push_back(BlockPos(aabbPresice.startX, aabbPresice.startY, aabbPresice.startZ));
+                                blockValues.push_back(block.value().array.at(i).getPos());
                             }
                         }
                     }
@@ -608,7 +608,7 @@ void Player::processInput(std::string event, std::string key, std::shared_ptr<Ev
             if(key == settings->getSetting(JUMP) || event == settings->getSetting(JUMP)) {
                 if(isGrounded || canJumpInWater(world->getBlockData())) {
                     isJumping = true;
-                    motion[1] = 0.21 * ((waterPhysics) ? 0.4 : 1);
+                    motion[1] = 0.21 * ((waterPhysics) ? 0.47 : 1);
                 }
             }
 
@@ -654,4 +654,35 @@ void Player::processInput(std::string event, std::string key, std::shared_ptr<Ev
         mouseX = mouseEvent.x;
         mouseY = mouseEvent.y;
     }
+}
+
+SideEnum Player::horizontalSidePlacedOn() {
+    switch((int)floor((double)(yaw * 4.0 / 360.0) + 0.5) & 3) {
+        case 0:
+            return SOUTH;
+        case 1:
+            return WEST;
+        case 2:
+            return NORTH;
+        case 3:
+            return EAST;
+        default:
+            return NEUTRAL;
+    }
+}
+
+SideEnum Player::sideLookingAt() {
+    return sideOfBlockLookingAt;
+}
+
+bool Player::isPlayerSneaking() {
+    return isSneaking;
+}
+
+bool Player::isPlayerSprinting() {
+    return isSprinting;
+}
+
+bool Player::isPlayerInWater() {
+    return waterPhysics;
 }

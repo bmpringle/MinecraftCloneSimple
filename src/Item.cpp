@@ -12,6 +12,19 @@ void Item::onLeftClick(World* world, BlockPos* blockLookingAt, ItemStack* stack)
 
 }
 
+void Item::onRightClick(World* world, ItemStack* stack) {
+    if(world->getPlayer()->getBlockLookingAt() != nullptr) {
+        BlockPos chunkLocation = world->getBlockData()->getChunkWithBlock(*world->getPlayer()->getBlockLookingAt())->getChunkCoordinates();
+        world->getBlockData()->setChunkToUpdate(chunkLocation);
+        if(!world->getPlayer()->isPlayerSneaking()) {
+            if(world->getBlockData()->getBlockReferenceAtPosition(*world->getPlayer()->getBlockLookingAt()).activateBlock(world, stack)) {
+                return;
+            }
+        }
+    }
+    onUse(world, stack);
+}
+
 std::string Item::getItemName() {
     return "item";
 }

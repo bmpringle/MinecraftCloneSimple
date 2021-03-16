@@ -165,9 +165,9 @@ void Renderer::updateWorldVBO(World* world) {
     for(std::pair<const BlockPos, RenderChunkBuffer>& buff : renderChunkBuffers) {
         BlockPos loc = buff.first;
 
-        try {
+        if(lChunksLocations.count(loc) > 0) {
             lChunksLocations.at(loc);
-        }catch(std::out_of_range e) {
+        }else {
             posToRemove.push_back(buff.first);
         }
     }
@@ -177,17 +177,17 @@ void Renderer::updateWorldVBO(World* world) {
     }
     
     for(std::pair<const BlockPos, LoadedChunkInfo>& lchunk : lChunksLocations) {
-        if(lchunk.second.update) {
+        if(lchunk.second.update > 0) {
             Chunk* c = data->getChunkWithBlock(lchunk.first);
 
             BlockPos pos = lchunk.first;
-            try {
+            if(renderChunkBuffers.count(pos) > 0) {
                 renderChunkBuffers.at(pos);
                 std::vector<BlockData> blockData = c->getBlocksInChunk();
                 std::vector<float> vectorWithColors = std::vector<float>();
                 updateChunkData(&vectorWithColors, &blockData, &textureArrayCreator);
                 renderChunkBuffers.at(pos).setRenderData(vectorWithColors); 
-            }catch(std::out_of_range e) {
+            }else {
                 std::vector<float> vectorWithColors = std::vector<float>();
                 std::vector<BlockData> blockData = c->getBlocksInChunk();
                 updateChunkData(&vectorWithColors, &blockData, &textureArrayCreator);

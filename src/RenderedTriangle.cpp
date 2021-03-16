@@ -1,24 +1,24 @@
 #include "RenderedTriangle.h"
 
-RenderedTriangle::RenderedTriangle(RenderedPoint _a, RenderedPoint _b, RenderedPoint _c, int uvFlag) : a(_a), b(_b), c(_c) {
+RenderedTriangle::RenderedTriangle(RenderedPoint _a, RenderedPoint _b, RenderedPoint _c, int uvFlag, double scaleX, double scaleY) : a(_a), b(_b), c(_c) {
     if(uvFlag == 0) {
         a.u = 0;
         a.v = 0;
         
-        b.u = 1;
+        b.u = 1 * scaleX;
         b.v = 0;
 
         c.u = 0;
-        c.v = 1;
+        c.v = 1 * scaleY;
     }else if(uvFlag == 1){
         a.u = 0;
-        a.v = 1;
+        a.v = 1 * scaleY;
         
-        b.u = 1;
+        b.u = 1 * scaleX;
         b.v = 0;
 
-        c.u = 1;
-        c.v = 1;                
+        c.u = 1 * scaleX;
+        c.v = 1 * scaleY;                
     }
 };
 

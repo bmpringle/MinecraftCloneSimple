@@ -4,6 +4,10 @@
 #include "Block.h"
 #include "BlockPos.h"
 
+class ItemStack;
+class World;
+class BlockArrayData;
+
 class BlockData {
     public:
         BlockData(std::shared_ptr<Block> type, BlockPos pos);
@@ -30,7 +34,11 @@ class BlockData {
 
         bool isOpaque();
 
-        void placedOnSide(SideEnum side);
+        void placedOnSide(SideEnum hPlacementAngle, SideEnum sideLookingAt);
+
+        void updateBlock(BlockArrayData* data);
+
+        bool activateBlock(World* world, ItemStack* stack);
 
     private:
         BlockPos pos;

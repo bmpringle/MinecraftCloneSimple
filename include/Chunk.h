@@ -30,6 +30,8 @@ class Chunk {
 
         void removeBlockAtLocation(BlockPos pos);
 
+        void updateChunk(BlockArrayData* data);
+
         BlockPos getChunkCoordinates() const;
 
         AABB getChunkAABB();

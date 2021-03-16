@@ -22,6 +22,8 @@ class Item {
 
         virtual int maxStack();
 
+        virtual void onRightClick(World* world, ItemStack* stack);
+
         virtual ~Item() = default;
     private:
 };

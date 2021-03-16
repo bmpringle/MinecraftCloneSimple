@@ -39,6 +39,12 @@ class Player final : public Listener, public Model {
         Inventory* getInventory();
         int getItemInHandIndex();
         void displayGui(Renderer* renderer);
+        SideEnum horizontalSidePlacedOn();
+        SideEnum sideLookingAt();
+
+        bool isPlayerSneaking();
+        bool isPlayerSprinting();
+        bool isPlayerInWater();
 
     private:
         bool validatePosition(Pos newPosition, BlockArrayData* data, float* yToSnapTo);

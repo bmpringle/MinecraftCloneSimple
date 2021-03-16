@@ -64,3 +64,7 @@ BlockRenderedModel BlockWater::getRenderedModel(int data = 0) {
     std::array<BlockFace, 6> blockFaceArray = {upFace, downFace, northFace, southFace, eastFace, westFace};
     return BlockRenderedModel(blockFaceArray);
 }
+
+AABB BlockWater::getAABB(int data) {
+    return AABB(0, 0, 0, 1, 0.9, 1);
+}

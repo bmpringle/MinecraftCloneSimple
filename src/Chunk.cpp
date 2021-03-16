@@ -13,7 +13,7 @@ Chunk::Chunk(int xLoc, int zLoc, bool _isFakeChunk) : chunkCoordinates(BlockPos(
     initTree();
 }
 
-BlockData Chunk::getBlockAtLocation(BlockPos pos) {
+BlockData Chunk::getBlockAtLocation(const BlockPos pos) {
     if(pos.x >= getChunkCoordinates().x && pos.x < getChunkCoordinates().x + X) {
         if(pos.y >= getChunkCoordinates().y && pos.y < getChunkCoordinates().y + Y) {
             if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
@@ -24,7 +24,9 @@ BlockData Chunk::getBlockAtLocation(BlockPos pos) {
                     }
                     return false;
                 };
+                
                 std::vector<std::optional<SBDA>*> blocksVector = blockTree.getLeafOfTree(eval);
+                
                 if(blocksVector.size() != 1) {
                     std::cout << "abort! there are " << blocksVector.size() << " valid blocks" << std::endl;
                     abort();
@@ -327,4 +329,19 @@ void Chunk::initTree() {
 
 BinaryTree<SBDA, AABB, SBDA>* Chunk::getBlockTree() {
     return &blockTree;
+}
+
+void Chunk::updateChunk(BlockArrayData* data) {
+    std::function<bool(AABB, bool, std::optional<SBDA>&)> eval = [](AABB aabb, bool isLeaf, std::optional<SBDA>& block) -> bool { 
+        return true;
+    };
+    std::vector<std::optional<SBDA>*> blocksVector = blockTree.getLeafOfTree(eval);
+
+    for(std::optional<SBDA>* blocks : blocksVector) {
+        for(int i = 0; i < 256; ++i) {
+            if(blocks->value()[i].getBlockType() != nullptr) {
+                blocks->value()[i].updateBlock(data);
+            }
+        }
+    }
 }

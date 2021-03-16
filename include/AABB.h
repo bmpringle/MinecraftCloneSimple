@@ -1,6 +1,8 @@
 #ifndef AABB_H
 #define AABB_H
 
+#include "glmh.h"
+
 class BlockPos;
 class Pos;
 
@@ -21,6 +23,12 @@ class AABB {
         void add(Pos p);
 
         void add(BlockPos p);
+
+        void rotateX90();
+
+        void rotateY90();
+
+        void rotateZ90();
 };
 
 #endif

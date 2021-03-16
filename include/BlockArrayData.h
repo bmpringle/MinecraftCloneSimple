@@ -17,7 +17,7 @@ class BlockArrayData {
     public:
         BlockArrayData(int xSize, int ySize, int zSize, std::string worldFolder_, int seed);
 
-        void updateBlockAtPosition(BlockPos pos);
+        void sendChunkUpdates();
 
         void setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> block);
 
@@ -66,6 +66,8 @@ class BlockArrayData {
         void loadChunkFromFile(std::string chunkPath, BlockPos chunkLocation);
 
         int getSeed();
+
+        void setChunkToUpdate(BlockPos chunkLocation);
 
     private:
         std::vector<Chunk> chunkList;

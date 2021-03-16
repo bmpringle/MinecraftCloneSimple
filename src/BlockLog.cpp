@@ -53,14 +53,18 @@ int BlockLog::getZRotation(int data) {
     return 0;
 }
 
-void BlockLog::onPlaced(SideEnum side, int* data) {
-    switch(side) {
+void BlockLog::onPlaced(SideEnum hPlacementAngle, SideEnum sideLookingAt, int* data) {
+    switch(sideLookingAt) {
         case UP:
             *data = 0;
             return;
         case DOWN:
             *data = 0;
             return;
+        default:
+            break;
+    }
+    switch(hPlacementAngle) {
         case NORTH:
             *data = 2;
             return;
@@ -73,6 +77,8 @@ void BlockLog::onPlaced(SideEnum side, int* data) {
         case WEST:
             *data = 1;
             return;
+        default:
+            break;
     }
     return;
 }

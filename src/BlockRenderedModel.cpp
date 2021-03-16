@@ -31,3 +31,21 @@ void BlockRenderedModel::rotateZ90() {
         face.rotateZ90(0.5, 0.5, 0.5);
     }
 }
+
+void BlockRenderedModel::rotateX90(double x, double y, double z) {
+    for(BlockFace& face : renderedBlockModel) {
+        face.rotateX90(x, y, z);
+    }
+}
+
+void BlockRenderedModel::rotateY90(double x, double y, double z) {
+    for(BlockFace& face : renderedBlockModel) {
+        face.rotateY90(x, y, z);
+    }
+}
+
+void BlockRenderedModel::rotateZ90(double x, double y, double z) {
+    for(BlockFace& face : renderedBlockModel) {
+        face.rotateZ90(x, y, z);
+    }
+}

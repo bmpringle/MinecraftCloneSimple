@@ -9,15 +9,22 @@
 #include "SideEnum.h"
 #include "BlockRenderedModel.h"
 
+class World;
+class BlockArrayData;
+class BlockData;
+class ItemStack;
+
 class Block {
     public:
         Block();
 
         virtual std::string getName();
 
-        AABB getAABB(int data = 0);
+        virtual AABB getAABB(int data = 0);
 
         virtual BlockRenderedModel getRenderedModel(int data = 0);
+
+        virtual void rotateModel(BlockRenderedModel& model, int data);
 
         virtual std::string getTextureName(SideEnum side, int data = 0);
 
@@ -31,8 +38,14 @@ class Block {
 
         virtual int getZRotation(int data);
 
-        virtual void onPlaced(SideEnum side, int* data);
+        virtual void onPlaced(SideEnum hPlacementAngle, SideEnum sideLookingAt, int* data);
+
+        virtual void updateBlock(BlockArrayData* data, BlockData* blockToUpdate);
+
+        virtual bool onBlockActivated(World* world, BlockPos pos, ItemStack* stack, int* data);
 
         virtual ~Block() = default;
+    private:
+
 };
 #endif
