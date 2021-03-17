@@ -16,11 +16,12 @@
 
 class Entity : public Model {
     public:
-        Entity(World* _world);
+        Entity();
         virtual void updateEntity(World* world);
 
         virtual AABB getAABB();
         virtual Pos getPos();
+        virtual void setPos(Pos p);
         virtual RenderedModel getRenderedModel();
 
         virtual void setItemInHandIndex(int index);
@@ -34,12 +35,16 @@ class Entity : public Model {
         virtual bool isEntitySprinting();
         virtual bool isEntityInWater();
 
+        void setID(int id);
+        int getID();
+        void setBufferedChunkLocation(BlockPos pos);
+
+        virtual ~Entity() = default;
+
     protected:
         virtual bool validatePosition(Pos newPosition, BlockArrayData* data, float* yToSnapTo);
-        virtual void move(glm::vec3* moveVec);
-        virtual bool isBlockUnderEntity();
-
-        World* world;
+        virtual void move(glm::vec3* moveVec, World* world);
+        virtual bool isBlockUnderEntity(World* world);
 
         Pos pos;
 
@@ -59,8 +64,12 @@ class Entity : public Model {
 
         glm::vec3 motion = glm::vec3(0, 0, 0);
 
+        BlockPos bufferedChunkLocation = BlockPos(0, 0, 0);
+
         Pos sneakPos = pos;
 
         Inventory inventory = Inventory(36);
+
+        int id = 0;
 };
 #endif

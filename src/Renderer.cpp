@@ -130,7 +130,7 @@ void Renderer::renderSetup() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    //highlight VAO
+    //highlight + entity VAO
     glBindVertexArray(VAO[2]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);  
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -209,6 +209,13 @@ void Renderer::renderFrame(World* world) {
 
     for(std::pair<const BlockPos, RenderChunkBuffer>& cBuffer : renderChunkBuffers) {
         cBuffer.second.renderChunk();
+    }
+    std::map<BlockPos, LoadedChunkInfo> loadedChunkMap = world->getBlockData()->getLoadedChunkLocations();
+    for(std::pair<BlockPos, LoadedChunkInfo> lChunk : loadedChunkMap) {
+        std::map<int, std::shared_ptr<Entity>>& entityList = world->getBlockData()->getChunkWithBlock(lChunk.first)->getEntitiesInChunk();
+        for(std::pair<int, std::shared_ptr<Entity>> entity : entityList) {
+            renderEntity(entity.second, world);
+        }
     }
 }
 
@@ -704,4 +711,63 @@ void Renderer::renderRectangle(float rectangle[36]) {
     
     glDisable(GL_BLEND);
     glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+}
+
+void Renderer::renderEntity(std::shared_ptr<Entity> entity, World* world) {
+    RenderedModel model = entity->getRenderedModel();
+
+    std::vector<float> vectorWithColors = std::vector<float>();
+
+    setUniforms(world, 0);
+    setUniforms(world, 1);
+
+    Pos pos = entity->getPos();
+
+    for(RenderedTriangle triangle : model.renderedModel) {
+        //point 1 black
+        vectorWithColors.push_back(triangle.a.x + pos.x);
+        vectorWithColors.push_back(triangle.a.y + pos.y);
+        vectorWithColors.push_back(triangle.a.z + pos.z);
+        vectorWithColors.push_back(0);
+        vectorWithColors.push_back(0);
+        vectorWithColors.push_back(0);
+        vectorWithColors.push_back(triangle.a.u);
+        vectorWithColors.push_back(triangle.a.v);
+
+        //point 2 black
+        vectorWithColors.push_back(triangle.b.x + pos.x);
+        vectorWithColors.push_back(triangle.b.y + pos.y);
+        vectorWithColors.push_back(triangle.b.z + pos.z);
+        vectorWithColors.push_back(0);
+        vectorWithColors.push_back(0);
+        vectorWithColors.push_back(0);
+        vectorWithColors.push_back(triangle.b.u);
+        vectorWithColors.push_back(triangle.b.v);
+
+        //point 3 black
+        vectorWithColors.push_back(triangle.c.x + pos.x);
+        vectorWithColors.push_back(triangle.c.y + pos.y);
+        vectorWithColors.push_back(triangle.c.z + pos.z);
+        vectorWithColors.push_back(0);
+        vectorWithColors.push_back(0);
+        vectorWithColors.push_back(0);
+        vectorWithColors.push_back(triangle.c.u);
+        vectorWithColors.push_back(triangle.c.v);
+    }
+
+    glBindVertexArray(VAO[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+
+    glUseProgram(shaderProgram[0]);
+
+    unsigned int TBO = textureFetcher.getOrLoadTexture("testblock.png", GL_REPEAT, GL_LINEAR);
+
+    if((int)TBO != -1) {
+        glBindTexture(GL_TEXTURE_2D, TBO);
+        glUseProgram(shaderProgram[1]);
+    }
+
+    glBufferData(GL_ARRAY_BUFFER, vectorWithColors.size() * sizeof(float), vectorWithColors.data(), GL_DYNAMIC_DRAW);
+
+    glDrawArrays(GL_TRIANGLES, 0, vectorWithColors.size() / 8);
 }

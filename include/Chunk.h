@@ -6,7 +6,10 @@
 #include <array>
 #include "BinaryTree/BinaryTree.h"
 #include "BlockData.h"
-#include <SBDA.h>
+#include "SBDA.h"
+#include <memory>
+
+class Entity;
 
 class Chunk {
     public:
@@ -44,6 +47,10 @@ class Chunk {
 
         BinaryTree<SBDA, AABB, SBDA>* getBlockTree();
 
+        void addEntityAtPositionOfType(std::shared_ptr<Entity> entity, Pos pos);
+
+        std::map<int, std::shared_ptr<Entity>>& getEntitiesInChunk();
+
     private:
         void initTree();
 
@@ -59,5 +66,10 @@ class Chunk {
         bool isFake = false;
 
         BlockData dummyData = BlockData();
+
+        std::map<int, std::shared_ptr<Entity>> entityMap;
+
+        //for communication purposes with the entities for movement
+        int idCounter = 0;
 };
 #endif

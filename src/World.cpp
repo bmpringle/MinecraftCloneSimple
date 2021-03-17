@@ -18,7 +18,6 @@
 World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler, Renderer* renderer, TimerMap* map, GameSettings* settings, std::string _name, std::string worldFolder, int seed) : name(_name), timerMap(map), worldEventQueue(queue), input(inputHandler), renderer(renderer), window(window_), settings(settings), internalBlockData(BlockArrayData(WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST, worldFolder, seed)), thePlayer(std::make_shared<Player>(this)) {
     thePlayer->setBufferedChunkLocation(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates());
     internalBlockData.updateLoadedChunks(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates(), this);
-
     renderer->updateWorldVBO(this);
 
     thePlayer->getInventory()->setItemStackInSlot(0, ItemStack(std::make_shared<ItemBlock>(Blocks::dirt), 64));
@@ -29,12 +28,22 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler,
     thePlayer->getInventory()->setItemStackInSlot(5, ItemStack(std::make_shared<ItemBlock>(Blocks::water), 64));
     thePlayer->getInventory()->setItemStackInSlot(6, ItemStack(std::make_shared<ItemBlock>(Blocks::planks), 64));
     thePlayer->getInventory()->setItemStackInSlot(7, ItemStack(std::make_shared<ItemBlockDoor>(), 64));
+
+    internalBlockData.getChunkWithBlock(BlockPos(0, 0, 0))->addEntityAtPositionOfType(std::make_shared<Entity>(), Pos(0, 46, 0));
 }
 
 void World::updateGame() {
     input->callRegularEvents(worldEventQueue, timerMap);
     
     thePlayer->updateEntity(this);
+
+    for(Chunk& chunk : internalBlockData.getChunkArrayReference()) {
+        std::map<int, std::shared_ptr<Entity>> entityMap = chunk.getEntitiesInChunk();
+
+        for(std::pair<const int, std::shared_ptr<Entity>>& entity : entityMap) {
+            entity.second->updateEntity(this);
+        }
+    }
 }
 
 void World::generateWorld() {
@@ -75,7 +84,7 @@ void World::mainLoop() {
     
     worldEventQueue->removeEventListener(thePlayer);
 
-    std::vector<Chunk> chunks = internalBlockData.getRawChunkArray();
+    std::vector<Chunk>& chunks = internalBlockData.getChunkArrayReference();
     if(!fs::exists("./worlds/"+name+"/data/")) {
         fs::create_directories("./worlds/"+name+"/data/");
     }

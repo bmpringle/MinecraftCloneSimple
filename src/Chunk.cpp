@@ -3,12 +3,13 @@
 #include <algorithm>
 #include <functional>
 #include "World.h"
+#include "Entity.h"
 
-Chunk::Chunk(int xLoc, int zLoc) : chunkCoordinates(BlockPos(xLoc, 0, zLoc)), chunkAABB(getChunkCoordinates().x, getChunkCoordinates().y, getChunkCoordinates().z, X, Y, Z) {
+Chunk::Chunk(int xLoc, int zLoc) : chunkCoordinates(BlockPos(xLoc, 0, zLoc)), chunkAABB(getChunkCoordinates().x, getChunkCoordinates().y, getChunkCoordinates().z, X, Y, Z), entityMap(std::map<int, std::shared_ptr<Entity>>()) {
     initTree();
 }
 
-Chunk::Chunk(int xLoc, int zLoc, bool _isFakeChunk) : chunkCoordinates(BlockPos(xLoc, 0, zLoc)), chunkAABB(getChunkCoordinates().x, getChunkCoordinates().y, getChunkCoordinates().z, X, Y, Z), blockTree(BinaryTree<SBDA, AABB, SBDA>()) {
+Chunk::Chunk(int xLoc, int zLoc, bool _isFakeChunk) : chunkCoordinates(BlockPos(xLoc, 0, zLoc)), chunkAABB(getChunkCoordinates().x, getChunkCoordinates().y, getChunkCoordinates().z, X, Y, Z), blockTree(BinaryTree<SBDA, AABB, SBDA>()), entityMap(std::map<int, std::shared_ptr<Entity>>()) {
     isFake = _isFakeChunk;
     initTree();
 }
@@ -344,4 +345,15 @@ void Chunk::updateChunk(BlockArrayData* data) {
             }
         }
     }
+}
+
+void Chunk::addEntityAtPositionOfType(std::shared_ptr<Entity> entity, Pos pos) {
+    entity->setPos(pos);
+    entity->setID(idCounter);
+    ++idCounter;
+    entityMap[entity->getID()] = entity;
+}
+
+std::map<int, std::shared_ptr<Entity>>& Chunk::getEntitiesInChunk() {
+    return entityMap;
 }

@@ -6,7 +6,7 @@
 #include "Blocks.h"
 #include <thread> 
 
-Player::Player(World* _world) : Entity(_world), settings(_world->getSettings()), pos(Pos(0, 40, 0)), bufferedChunkLocation(BlockPos(0, 0, 0)), gui(nullptr) {
+Player::Player(World* _world) : Entity(), world(_world), settings(_world->getSettings()), pos(Pos(0, 40, 0)), gui(nullptr) {
     world->getTimerMap()->addTimerToMap("itemUseTimer");
 }
 
@@ -14,7 +14,7 @@ void Player::updateEntity(World* world) {
 
     updateHorizontalMotion();
 
-    move(&motion);
+    move(&motion, world);
 
     updatePlayerLookingAt(world);
 
@@ -24,7 +24,7 @@ void Player::updateEntity(World* world) {
         waterPhysics = false;
     }
 
-    if(!isBlockUnderEntity()) {
+    if(!isBlockUnderEntity(world)) {
         motion[1] -= (0.086 / 6) * ((waterPhysics) ? 0.5 : 1);
         motion[1] *= 0.98;
     }
@@ -233,10 +233,6 @@ SideEnum Player::getSideOfBlockLookingAt() {
     return sideOfBlockLookingAt;
 }
 
-void Player::setBufferedChunkLocation(BlockPos pos) {
-    this->bufferedChunkLocation = pos;
-}
-
 void Player::updateHorizontalMotion() {
     float unitX = 0;
     float unitZ = 0;
@@ -440,7 +436,6 @@ void Player::processInput(std::string event, std::string key, std::shared_ptr<Ev
                 if(std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("itemUseTimer")).count() > 200) {
                     inventory[itemInHandIndex].onUse(world);
                     world->getTimerMap()->resetTimer("itemUseTimer");
-
                 }
             }
 

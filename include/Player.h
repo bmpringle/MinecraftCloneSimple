@@ -16,7 +16,6 @@ class Player final : public Listener, public Entity {
         Pos getCameraNormal();
         BlockPos* getBlockLookingAt();
         SideEnum getSideOfBlockLookingAt();
-        void setBufferedChunkLocation(BlockPos pos);
        
         void displayGui(Renderer* renderer);
         SideEnum horizontalSidePlacedOn();
@@ -29,6 +28,7 @@ class Player final : public Listener, public Entity {
 
         void processInput(std::string event, std::string key, std::shared_ptr<Event> e);
 
+        World* world;
         GameSettings* settings;
 
         Pos pos;
@@ -46,8 +46,6 @@ class Player final : public Listener, public Entity {
         BlockPos internalBlockLookingAt = BlockPos(0, 0, 0);
 
         SideEnum sideOfBlockLookingAt = NORTH;
-
-        BlockPos bufferedChunkLocation = BlockPos(0, 0, 0);
 
         int xInputDirection = 0;
         int zInputDirection = 0;

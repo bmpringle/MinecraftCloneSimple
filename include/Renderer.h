@@ -50,6 +50,7 @@ class Renderer {
 
     private:
         void renderSetup();
+        void renderEntity(std::shared_ptr<Entity> entity, World* world);
 
         void updateChunkData(std::vector<float>* buffer, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator);
 

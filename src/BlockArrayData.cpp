@@ -248,7 +248,7 @@ BlockData& BlockArrayData::getBlockReferenceAtPosition(BlockPos pos) {
  * purpose you need, copying all this data is 
  * just not a fun time. ever.
  */
-std::vector<Chunk> BlockArrayData::getRawChunkArray() {
+std::vector<Chunk>& BlockArrayData::getChunkArrayReference() {
     return chunkList;
 }
 

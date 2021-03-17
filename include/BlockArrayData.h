@@ -31,7 +31,7 @@ class BlockArrayData {
 
         void setWorldFolder(std::string path);
 
-        std::vector<Chunk> getRawChunkArray();
+        std::vector<Chunk>& getChunkArrayReference();
 
         BlockData getBlockAtPosition(BlockPos pos);
 
