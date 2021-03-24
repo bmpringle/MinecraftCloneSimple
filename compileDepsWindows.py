@@ -14,7 +14,8 @@ output, error = execCmd('make library-cross', cwdOverride = './EventQueue/')
 output, error = execCmd('mv ./eventLib.lib ../../lib/eventLib.lib', cwdOverride = './EventQueue/lib/')
 output, error = execCmd('make library-cross', cwdOverride = './TimerMap/')
 output, error = execCmd('mv ./timerMapLib.lib ../../lib/timerMapLib.lib', cwdOverride = './TimerMap/lib/')
-
+output, error = execCmd('make library-cross', cwdOverride = './ObjLoader/')
+output, error = execCmd('mv ./objLoaderLib.lib ../../lib/objLoaderLib.lib', cwdOverride = './ObjLoader/lib/')
 
 try:
     output, error = execCmd('cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_TOOLCHAIN_FILE=CMake/x86_64-w64-mingw32.cmake .', cwdOverride = './glfw/')

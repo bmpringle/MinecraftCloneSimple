@@ -48,6 +48,8 @@ class Renderer {
 
         int getBitmapWidth();
 
+        void setupEntityRenderer();
+
     private:
         void renderSetup();
         void renderEntity(std::shared_ptr<Entity> entity, World* world);
@@ -71,7 +73,7 @@ class Renderer {
         unsigned int VAO[4];
         unsigned int VBO[4];
 
-        unsigned int shaderProgram[5];
+        unsigned int shaderProgram[6];
 
         TextureFetcher textureFetcher;
 
@@ -85,5 +87,8 @@ class Renderer {
 
         int width = 0;
         int height = 0;
+        
+        unsigned int entityVBO = INT_MAX;
+        unsigned int entityVAO = INT_MAX;
 };
 #endif

@@ -4,6 +4,7 @@
 #include <thread>
 #include "Blocks.h"
 #include <math.h>
+#include "EntityVertex.h"
 
 #define WORLDSIZE_CONST 100
 
@@ -89,7 +90,7 @@ void Renderer::renderSetup() {
     //glEnable(GL_BLEND);
     
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
-    glEnable(GL_CULL_FACE); 
+    //glEnable(GL_CULL_FACE); 
     glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
     shaderProgram[0] = compileShaderProgramFromFiles("./shaders/basic_shader.vert", "./shaders/basic_shader.frag");
@@ -97,6 +98,8 @@ void Renderer::renderSetup() {
     shaderProgram[2] = compileShaderProgramFromFiles("./shaders/2d_shader.vert", "./shaders/2d_shader.frag");
     shaderProgram[3] = compileShaderProgramFromFiles("./shaders/world_shader.vert", "./shaders/world_shader.frag");
     shaderProgram[4] = compileShaderProgramFromFiles("./shaders/2d_shader_untextured.vert", "./shaders/2d_shader_untextured.frag");
+
+    shaderProgram[5] = compileShaderProgramFromFiles("./shaders/entity_shader.vert", "./shaders/entity_shader.frag");
 
     glGenVertexArrays(4, &VAO[0]);  
     glGenBuffers(4, &VBO[0]); 
@@ -154,6 +157,8 @@ void Renderer::renderSetup() {
 
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);  
+
+    setupEntityRenderer();
 }
 
 void Renderer::updateWorldVBO(World* world) {
@@ -200,12 +205,10 @@ void Renderer::updateWorldVBO(World* world) {
 
 void Renderer::renderFrame(World* world) {
 
-    setUniforms(world, 0);
-    setUniforms(world, 1);
     setUniforms(world, 3);
 
-    glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayCreator.getGeneratedTextureArray());
     glUseProgram(shaderProgram[3]);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayCreator.getGeneratedTextureArray());
 
     for(std::pair<const BlockPos, RenderChunkBuffer>& cBuffer : renderChunkBuffers) {
         cBuffer.second.renderChunk();
@@ -714,60 +717,47 @@ void Renderer::renderRectangle(float rectangle[36]) {
 }
 
 void Renderer::renderEntity(std::shared_ptr<Entity> entity, World* world) {
-    RenderedModel model = entity->getRenderedModel();
+    std::vector<EntityVertex> model = entity->getRenderedModel();
 
-    std::vector<float> vectorWithColors = std::vector<float>();
+    setUniforms(world, 5);
 
-    setUniforms(world, 0);
-    setUniforms(world, 1);
+    glBindVertexArray(entityVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, entityVBO);
+
+    glUseProgram(shaderProgram[5]);
 
     Pos pos = entity->getPos();
-
-    for(RenderedTriangle triangle : model.renderedModel) {
-        //point 1 black
-        vectorWithColors.push_back(triangle.a.x + pos.x);
-        vectorWithColors.push_back(triangle.a.y + pos.y);
-        vectorWithColors.push_back(triangle.a.z + pos.z);
-        vectorWithColors.push_back(0);
-        vectorWithColors.push_back(0);
-        vectorWithColors.push_back(0);
-        vectorWithColors.push_back(triangle.a.u);
-        vectorWithColors.push_back(triangle.a.v);
-
-        //point 2 black
-        vectorWithColors.push_back(triangle.b.x + pos.x);
-        vectorWithColors.push_back(triangle.b.y + pos.y);
-        vectorWithColors.push_back(triangle.b.z + pos.z);
-        vectorWithColors.push_back(0);
-        vectorWithColors.push_back(0);
-        vectorWithColors.push_back(0);
-        vectorWithColors.push_back(triangle.b.u);
-        vectorWithColors.push_back(triangle.b.v);
-
-        //point 3 black
-        vectorWithColors.push_back(triangle.c.x + pos.x);
-        vectorWithColors.push_back(triangle.c.y + pos.y);
-        vectorWithColors.push_back(triangle.c.z + pos.z);
-        vectorWithColors.push_back(0);
-        vectorWithColors.push_back(0);
-        vectorWithColors.push_back(0);
-        vectorWithColors.push_back(triangle.c.u);
-        vectorWithColors.push_back(triangle.c.v);
-    }
-
-    glBindVertexArray(VAO[2]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
-
-    glUseProgram(shaderProgram[0]);
+    //setup model->world matrix
+    glm::mat4x4 modelToWorld = glm::translate(glm::mat4x4(1.0f), glm::vec3(pos.x, pos.y, pos.z));
+    //submit model->world matrix
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram[5], "modelToWorldMatrix"), 1, GL_FALSE, &modelToWorld[0][0]);
 
     unsigned int TBO = textureFetcher.getOrLoadTexture("testblock.png", GL_REPEAT, GL_LINEAR);
 
-    if((int)TBO != -1) {
-        glBindTexture(GL_TEXTURE_2D, TBO);
-        glUseProgram(shaderProgram[1]);
-    }
+    glBindTexture(GL_TEXTURE_2D, TBO);
 
-    glBufferData(GL_ARRAY_BUFFER, vectorWithColors.size() * sizeof(float), vectorWithColors.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, model.size() * sizeof(EntityVertex), model.data(), GL_DYNAMIC_DRAW);
 
-    glDrawArrays(GL_TRIANGLES, 0, vectorWithColors.size() / 8);
+    glDrawArrays(GL_TRIANGLES, 0, model.size());
+}
+
+void Renderer::setupEntityRenderer() {
+    glGenVertexArrays(1, &entityVAO);
+    glGenBuffers(1, &entityVBO);
+
+    glBindVertexArray(entityVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, entityVBO);  
+
+    glVertexAttribPointer(
+        0, 4, GL_FLOAT, GL_FALSE, sizeof(EntityVertex), (void*)0
+    ); //glm::vec4 pos
+
+    glVertexAttribPointer(
+        1, 2, GL_FLOAT, GL_FALSE, sizeof(EntityVertex),
+        reinterpret_cast<void *>(offsetof(EntityVertex, uv))
+    ); //glm::vec2 uv
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 }

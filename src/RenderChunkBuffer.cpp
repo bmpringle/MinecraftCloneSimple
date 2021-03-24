@@ -46,6 +46,7 @@ void RenderChunkBuffer::renderChunk() {
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, getRenderDataBuffer());
     glDrawArrays(GL_TRIANGLES, 0, getRenderDataSize() / 9);
+    glBindVertexArray(0);
 }
 
 RenderChunkBuffer::RenderChunkBuffer() {

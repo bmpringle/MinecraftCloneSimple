@@ -81,7 +81,7 @@ OPT = 0 if DBG == 1 else 3
 
 env.Append(CPPPATH = ['include']) 
 
-CCFLAGS='-static -O{} -I {} -I {} -I {} -I {} -I {} -I {} {} -D_USE_MATH_DEFINES -DNOISE_STATIC -Wall -Wpedantic {} -g -std=c++2a -DGLEW_STATIC'.format(OPT, "./glm/", './', './include/', GLFW_INCLUDE, GLEW_INCLUDE, NOISE_DIR, '-DDBG' if DBG==1 else '', '-Werror' if int(ARGUMENTS.get('W64', 0))==0 and WARN == 0 else '')
+CCFLAGS='-static -O{} -I {} -I {} -I {} -I {} -I {} -I {} {} -D_USE_MATH_DEFINES -DNOISE_STATIC -Wall -Wpedantic {} -g -std=c++2a -DGLEW_STATIC'.format(OPT, "./ObjLoader/glm/", './', './include/', GLFW_INCLUDE, GLEW_INCLUDE, NOISE_DIR, '-DDBG' if DBG==1 else '', '-Werror' if int(ARGUMENTS.get('W64', 0))==0 and WARN == 0 else '')
 
 LIBSSTATIC = Glob(os.sep.join(['lib', '*.a']))
 

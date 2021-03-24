@@ -1,6 +1,3 @@
-[submodule "glm"]
-	path = glm
-	url = https://github.com/g-truc/glm
 [submodule "EventQueue"]
 	path = EventQueue
 	url = https://github.com/bmpringle/EventQueue/
@@ -22,3 +19,6 @@
 [submodule "libnoise"]
 	path = libnoise
 	url = https://github.com/qknight/libnoise
+[submodule "ObjLoader"]
+	path = ObjLoader
+	url = https://github.com/bmpringle/ObjLoader

@@ -13,8 +13,10 @@
 #include "Inventory.h"
 #include "InventoryGui.h"
 #include "GameSettings.h"
+#include "ObjLoader/ObjLoader.h"
+#include "EntityVertex.h"
 
-class Entity : public Model {
+class Entity {
     public:
         Entity();
         virtual void updateEntity(World* world);
@@ -22,7 +24,7 @@ class Entity : public Model {
         virtual AABB getAABB();
         virtual Pos getPos();
         virtual void setPos(Pos p);
-        virtual RenderedModel getRenderedModel();
+        virtual std::vector<EntityVertex> getRenderedModel();
 
         virtual void setItemInHandIndex(int index);
         virtual bool validatePosition(Pos newPosition, BlockArrayData* data);
@@ -71,5 +73,9 @@ class Entity : public Model {
         Inventory inventory = Inventory(36);
 
         int id = 0;
+
+        std::unique_ptr<ObjMesh> mesh;
+
+        std::vector<EntityVertex> model;        
 };
 #endif
