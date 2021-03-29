@@ -13,5 +13,3 @@ MinecraftCloneSimple/
 .vscode/**
 .vscode/
 *.sconsign.dblite
-include/BlockDoor.h
-src/BlockDoor.cpp
