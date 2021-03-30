@@ -722,7 +722,10 @@ void Renderer::renderEntity(std::shared_ptr<Entity> entity, World* world) {
     setUniforms(world, 5);
 
     glBindVertexArray(entityVAO);
+
     glBindBuffer(GL_ARRAY_BUFFER, entityVBO);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, entityEBO);
 
     glUseProgram(shaderProgram[5]);
 
@@ -737,8 +740,9 @@ void Renderer::renderEntity(std::shared_ptr<Entity> entity, World* world) {
     glBindTexture(GL_TEXTURE_2D, TBO);
 
     glBufferData(GL_ARRAY_BUFFER, model.size() * sizeof(EntityVertex), model.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, entity->getElementBuffer().size() * sizeof(int), entity->getElementBuffer().data(), GL_DYNAMIC_DRAW);
 
-    glDrawArrays(GL_TRIANGLES, 0, model.size());
+    glDrawElements(GL_TRIANGLES, entity->getElementBuffer().size(), GL_UNSIGNED_INT, 0);
 }
 
 void Renderer::setupEntityRenderer() {
@@ -760,4 +764,8 @@ void Renderer::setupEntityRenderer() {
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+
+    glGenBuffers(1, &entityEBO);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, entityEBO);
 }

@@ -90,5 +90,6 @@ class Renderer {
         
         unsigned int entityVBO = INT_MAX;
         unsigned int entityVAO = INT_MAX;
+        unsigned int entityEBO = INT_MAX;
 };
 #endif

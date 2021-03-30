@@ -7,28 +7,46 @@
 #include <thread> 
 #include "EntityVertex.h"
 
-Entity::Entity() : pos(Pos(0, 40, 0)), mesh(nullptr) {
-    ObjMeshPrimitive prim = ObjLoader::loadMeshFromFile("src/assets/models/entity/high_quality_teapot.obj");
-    ObjLoader::triangulatePrimitiveMesh(prim);
-    std::vector<ObjMeshPrimitive> prims = std::vector<ObjMeshPrimitive>();
-    prims.push_back(prim);
-    mesh = ObjLoader::combinePrimitives(prims);
-    for(ObjMeshPrimitive& pmesh : mesh->submeshes) {
+Entity::Entity() : pos(Pos(0, 40, 0)), mesh(ObjMesh()) {
+    mesh = ObjLoader::loadMeshFromFile("src/assets/models/entity/high_quality_teapot.obj");
+    ObjLoader::triangulateMesh(mesh);
+
+    for(std::pair<const std::string, ObjMeshPrimitive>& pmesh : mesh.primitiveMeshes) {
+        std::map<std::tuple<int, int, int>, int> indexMap = std::map<std::tuple<int, int, int>, int>();
+
         //we assume that obj files are already triangulated.
-        for(ObjFace& face : pmesh.faces) {
+        for(ObjFace& face : pmesh.second.faces) {
             for(int i = 0; i < face.indicesVG.size(); ++i) {
-                GeometricVertex vg = pmesh.geometricVertices.at(face.indicesVG[i]);
-                vg.geometricVertex.x = vg.geometricVertex.x * 0.01;
-                vg.geometricVertex.y = vg.geometricVertex.y * 0.01;
-                vg.geometricVertex.z = vg.geometricVertex.z * 0.01;
+                int gvi = ((face.indicesVG.size()) > i) ? face.indicesVG.at(i) : -1;
+                int tvi = ((face.indicesVT.size()) > i) ? face.indicesVT.at(i) : -1;
+                int nvi = ((face.indicesVN.size()) > i) ? face.indicesVN.at(i) : -1;
+
+                GeometricVertex vg = pmesh.second.geometricVertices.at(face.indicesVG[i]);
+                vg.geometricVertex.x = vg.geometricVertex.x;
+                vg.geometricVertex.y = vg.geometricVertex.y;
+                vg.geometricVertex.z = vg.geometricVertex.z;
 
                 TextureVertex vt;
                 if(face.indicesVT.size() > 0) {
-                    vt = pmesh.textureVertices.at(face.indicesVT[i]);
+                    vt = pmesh.second.textureVertices.at(face.indicesVT[i]);
                 }else {
                     vt = TextureVertex();
                 }
-                model.push_back(EntityVertex(vg.geometricVertex, glm::vec2(vt.textureVertex[0], vt.textureVertex[1])));
+
+                NormalVertex nt;
+                if(face.indicesVN.size() > 0) {
+                    nt = pmesh.second.normalVertices.at(face.indicesVN[i]);
+                }else {
+                    nt = NormalVertex();
+                }
+
+                if(indexMap.count(std::make_tuple(gvi, tvi, nvi)) > 0) {
+                    modelElementBuffer.push_back(indexMap.at(std::make_tuple(gvi, tvi, nvi)));
+                }else {
+                    indexMap[std::make_tuple(gvi, tvi, nvi)] = modelVertexBuffer.size();
+                    modelVertexBuffer.push_back(EntityVertex(vg.geometricVertex, glm::vec2(vt.textureVertex[0], vt.textureVertex[1])));
+                    modelElementBuffer.push_back(indexMap.at(std::make_tuple(gvi, tvi, nvi)));
+                }                
             }
         }
     }
@@ -76,8 +94,12 @@ AABB Entity::getAABB() {
     return AABB(pos.x, pos.y, pos.z, 0.6, (isSneaking) ? sneakingHeight : standingHeight, 0.6);
 }
 
-std::vector<EntityVertex> Entity::getRenderedModel() {
-    return model;
+std::vector<EntityVertex>& Entity::getRenderedModel() {
+    return modelVertexBuffer;
+}
+
+std::vector<unsigned int>& Entity::getElementBuffer() {
+    return modelElementBuffer;
 }
 
 Pos Entity::getPos() {

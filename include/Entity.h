@@ -24,7 +24,8 @@ class Entity {
         virtual AABB getAABB();
         virtual Pos getPos();
         virtual void setPos(Pos p);
-        virtual std::vector<EntityVertex> getRenderedModel();
+        virtual std::vector<EntityVertex>& getRenderedModel();
+        virtual std::vector<unsigned int>& getElementBuffer();
 
         virtual void setItemInHandIndex(int index);
         virtual bool validatePosition(Pos newPosition, BlockArrayData* data);
@@ -74,8 +75,9 @@ class Entity {
 
         int id = 0;
 
-        std::unique_ptr<ObjMesh> mesh;
+        ObjMesh mesh;
 
-        std::vector<EntityVertex> model;        
+        std::vector<EntityVertex> modelVertexBuffer = std::vector<EntityVertex>(); 
+        std::vector<unsigned int> modelElementBuffer = std::vector<unsigned int>();       
 };
 #endif
