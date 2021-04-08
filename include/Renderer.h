@@ -73,7 +73,7 @@ class Renderer {
         unsigned int VAO[4];
         unsigned int VBO[4];
 
-        unsigned int shaderProgram[6];
+        unsigned int shaderProgram[7];
 
         TextureFetcher textureFetcher;
 

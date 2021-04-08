@@ -16,6 +16,8 @@ Renderer::Renderer() : textureFetcher(TextureFetcher()), textureArrayCreator(Tex
 }
 
 unsigned int Renderer::compileShaderProgramFromFiles(std::string vertexShaderPath, std::string fragmentShaderPath) {
+    std::cout << "compiling: " << "vs: " << vertexShaderPath << ", fs: " << fragmentShaderPath << std::endl;
+
     unsigned int _shaderProgram;
 
     std::ifstream filestream = std::ifstream(vertexShaderPath);
@@ -100,6 +102,8 @@ void Renderer::renderSetup() {
     shaderProgram[4] = compileShaderProgramFromFiles("./shaders/2d_shader_untextured.vert", "./shaders/2d_shader_untextured.frag");
 
     shaderProgram[5] = compileShaderProgramFromFiles("./shaders/entity_shader.vert", "./shaders/entity_shader.frag");
+
+    shaderProgram[6] = compileShaderProgramFromFiles("./shaders/entity_shader_lighting.vert", "./shaders/entity_shader_lighting.frag");
 
     glGenVertexArrays(4, &VAO[0]);  
     glGenBuffers(4, &VBO[0]); 
@@ -720,16 +724,22 @@ void Renderer::renderEntity(std::shared_ptr<Entity> entity, World* world) {
     std::vector<EntityVertex> model = entity->getRenderedModel();
 
     setUniforms(world, 5);
+    setUniforms(world, 6);
 
     glBindVertexArray(entityVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, entityVBO);
 
+    glBufferData(GL_ARRAY_BUFFER, model.size() * sizeof(EntityVertex), model.data(), GL_DYNAMIC_DRAW);
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, entityEBO);
+
+    int currentProgram = 5;
 
     glUseProgram(shaderProgram[5]);
 
     Pos pos = entity->getPos();
+
     //setup model->world matrix
     glm::mat4x4 modelToWorld = glm::translate(glm::mat4x4(1.0f), glm::vec3(pos.x, pos.y, pos.z));
     //submit model->world matrix
@@ -739,10 +749,77 @@ void Renderer::renderEntity(std::shared_ptr<Entity> entity, World* world) {
 
     glBindTexture(GL_TEXTURE_2D, TBO);
 
-    glBufferData(GL_ARRAY_BUFFER, model.size() * sizeof(EntityVertex), model.data(), GL_DYNAMIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, entity->getElementBuffer().size() * sizeof(int), entity->getElementBuffer().data(), GL_DYNAMIC_DRAW);
+    std::vector<Material>& materials = entity->getMaterials();
+    for(std::pair<const int, std::vector<unsigned int>>& materialIndiciesPair : entity->getElementBuffer()) {
+        if(materialIndiciesPair.first == -1) {
+            if(currentProgram != 5) {
+                glUseProgram(shaderProgram[5]);
+                glBindTexture(GL_TEXTURE_2D, TBO);
+            }
+        }else {
+            currentProgram = 6;
+            glUseProgram(shaderProgram[6]);
 
-    glDrawElements(GL_TRIANGLES, entity->getElementBuffer().size(), GL_UNSIGNED_INT, 0);
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram[6], "modelToWorldMatrix"), 1, GL_FALSE, &modelToWorld[0][0]);
+
+            Material& material = materials.at(materialIndiciesPair.first);
+            
+            glUniform3f(glGetUniformLocation(shaderProgram[6], "material.ambient"), material.getAmbient()[0], material.getAmbient()[1], material.getAmbient()[2]);
+            glUniform3f(glGetUniformLocation(shaderProgram[6], "material.diffuse"), material.getDiffuse()[0], material.getDiffuse()[1], material.getDiffuse()[2]);
+            glUniform3f(glGetUniformLocation(shaderProgram[6], "material.specular"), material.getSpecular()[0], material.getSpecular()[1], material.getSpecular()[2]);
+            glUniform1f(glGetUniformLocation(shaderProgram[6], "material.opacity"), material.getOpacity());
+            glUniform1f(glGetUniformLocation(shaderProgram[6], "material.shininess"), material.getShininess());
+
+            glUniform3f(glGetUniformLocation(shaderProgram[6], "viewPos"), world->getPlayer()->getCameraPosition().x, world->getPlayer()->getCameraPosition().y, world->getPlayer()->getCameraPosition().z);
+            glBindTexture(GL_TEXTURE_2D, textureFetcher.getOrLoadAbsolutePathTexture(material.getTextureMapPath(), GL_REPEAT, GL_LINEAR));
+        }
+        
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, materialIndiciesPair.second.size() * sizeof(int), materialIndiciesPair.second.data(), GL_DYNAMIC_DRAW);
+
+        glDrawElements(GL_TRIANGLES, materialIndiciesPair.second.size(), GL_UNSIGNED_INT, 0);
+    }
+
+    //attempt at including materials
+
+    /*
+        int index = 0;
+        int newIndex = 0;
+
+        for(int i = index; i < entity->getElementBuffer().size(); ++i) {
+            if(currentMaterialIndex != entity->getMaterialIndices().at(i)) {
+                currentMaterialIndex = entity->getMaterialIndices().at(i);
+                newIndex = i;
+
+                if(currentMaterialIndex == -1) {
+                    glUseProgram(shaderProgram[5]);
+
+                    //setup model->world matrix
+                    glm::mat4x4 modelToWorld = glm::translate(glm::mat4x4(1.0f), glm::vec3(pos.x, pos.y, pos.z));
+                    //submit model->world matrix
+                    glUniformMatrix4fv(glGetUniformLocation(shaderProgram[5], "modelToWorldMatrix"), 1, GL_FALSE, &modelToWorld[0][0]);
+
+                    glDrawRangeElements(GL_TRIANGLES, index, newIndex, newIndex - index + 1, GL_UNSIGNED_INT, 0);
+                }else {
+                    Material& material = entity->getMaterials().at(i);
+
+                    glUseProgram(shaderProgram[6]);
+
+                    glUniform3f(glGetUniformLocation(shaderProgram[6], "material.ambient"), material.getAmbient()[0], material.getAmbient()[1], material.getAmbient()[2]);
+                    glUniform3f(glGetUniformLocation(shaderProgram[6], "material.diffuse"), material.getDiffuse()[0], material.getDiffuse()[1], material.getDiffuse()[2]);
+                    glUniform3f(glGetUniformLocation(shaderProgram[6], "material.specular"), material.getSpecular()[0], material.getSpecular()[1], material.getSpecular()[2]);
+                    glUniform1f(glGetUniformLocation(shaderProgram[6], "material.opacity"), material.getOpacity());
+                    glUniform1f(glGetUniformLocation(shaderProgram[6], "material.shininess"), material.getShininess());
+
+                    //setup model->world matrix
+                    glm::mat4x4 modelToWorld = glm::translate(glm::mat4x4(1.0f), glm::vec3(pos.x, pos.y, pos.z));
+                    //submit model->world matrix
+                    glUniformMatrix4fv(glGetUniformLocation(shaderProgram[6], "modelToWorldMatrix"), 1, GL_FALSE, &modelToWorld[0][0]);
+
+                    glDrawRangeElements(GL_TRIANGLES, index, newIndex, newIndex - index + 1, GL_UNSIGNED_INT, 0);
+                }
+                break;
+            }
+        }*/
 }
 
 void Renderer::setupEntityRenderer() {
@@ -762,8 +839,14 @@ void Renderer::setupEntityRenderer() {
         reinterpret_cast<void *>(offsetof(EntityVertex, uv))
     ); //glm::vec2 uv
 
+    glVertexAttribPointer(
+        2, 3, GL_FLOAT, GL_FALSE, sizeof(EntityVertex),
+        reinterpret_cast<void *>(offsetof(EntityVertex, normal))
+    ); //glm::vec2 uv
+
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
     glGenBuffers(1, &entityEBO);
 

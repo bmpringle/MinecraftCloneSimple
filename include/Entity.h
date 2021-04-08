@@ -24,8 +24,10 @@ class Entity {
         virtual AABB getAABB();
         virtual Pos getPos();
         virtual void setPos(Pos p);
+
         virtual std::vector<EntityVertex>& getRenderedModel();
-        virtual std::vector<unsigned int>& getElementBuffer();
+        virtual std::map<int, std::vector<unsigned int>>& getElementBuffer();
+        virtual std::vector<Material>& getMaterials();
 
         virtual void setItemInHandIndex(int index);
         virtual bool validatePosition(Pos newPosition, BlockArrayData* data);
@@ -78,6 +80,8 @@ class Entity {
         ObjMesh mesh;
 
         std::vector<EntityVertex> modelVertexBuffer = std::vector<EntityVertex>(); 
-        std::vector<unsigned int> modelElementBuffer = std::vector<unsigned int>();       
+        std::map<int, std::vector<unsigned int>> modelElementBuffer = std::map<int, std::vector<unsigned int>>();   
+
+        std::vector<Material> materials = std::vector<Material>();
 };
 #endif

@@ -8,10 +8,20 @@
 #include "EntityVertex.h"
 
 Entity::Entity() : pos(Pos(0, 40, 0)), mesh(ObjMesh()) {
-    mesh = ObjLoader::loadMeshFromFile("src/assets/models/entity/high_quality_teapot.obj");
+    mesh = ObjLoader::loadMeshFromFile("src/assets/models/entity/rubberball.obj");
+    
     ObjLoader::triangulateMesh(mesh);
 
+    int materialOffset = 0;
+
+
     for(std::pair<const std::string, ObjMeshPrimitive>& pmesh : mesh.primitiveMeshes) {
+        materialOffset = materials.size();
+
+        for(Material& mat : pmesh.second.materials) {
+            materials.push_back(mat);
+        }
+        
         std::map<std::tuple<int, int, int>, int> indexMap = std::map<std::tuple<int, int, int>, int>();
 
         //we assume that obj files are already triangulated.
@@ -39,21 +49,47 @@ Entity::Entity() : pos(Pos(0, 40, 0)), mesh(ObjMesh()) {
                 }else {
                     nt = NormalVertex();
                 }
-
+                
                 if(indexMap.count(std::make_tuple(gvi, tvi, nvi)) > 0) {
-                    modelElementBuffer.push_back(indexMap.at(std::make_tuple(gvi, tvi, nvi)));
+                    modelElementBuffer[materialOffset + face.materialIndex].push_back(indexMap.at(std::make_tuple(gvi, tvi, nvi)));
                 }else {
                     indexMap[std::make_tuple(gvi, tvi, nvi)] = modelVertexBuffer.size();
-                    modelVertexBuffer.push_back(EntityVertex(vg.geometricVertex, glm::vec2(vt.textureVertex[0], vt.textureVertex[1])));
-                    modelElementBuffer.push_back(indexMap.at(std::make_tuple(gvi, tvi, nvi)));
-                }                
+                    modelVertexBuffer.push_back(EntityVertex(vg.geometricVertex, glm::vec2(vt.textureVertex[0], vt.textureVertex[1]), nt.normalVertex));
+                    modelElementBuffer[materialOffset + face.materialIndex].push_back(indexMap.at(std::make_tuple(gvi, tvi, nvi)));
+                }    
             }
         }
     }
 }
 
 void Entity::updateEntity(World* world) {  
-    //motion[2] = 0.05;
+    bool movX = abs(world->getPlayer()->getPos().x - pos.x) > 3;
+    bool movY = abs(world->getPlayer()->getPos().y - pos.y) > 0.5;
+    bool movZ = abs(world->getPlayer()->getPos().z - pos.z) > 3;
+
+    if(movX) {
+        if(world->getPlayer()->getPos().x > pos.x) {
+            motion[0] = 0.2;
+        }else {
+            motion[0] = -0.2;
+        }
+    }
+    if(movY) {
+        if(world->getPlayer()->getPos().y > pos.y) {
+            if(isGrounded || canJumpInWater(world->getBlockData())) {
+                isJumping = true;
+                motion[1] = 0.21 * ((waterPhysics) ? 0.47 : 1);
+            }
+        }
+    }
+    if(movZ) {
+        if(world->getPlayer()->getPos().z > pos.z) {
+            motion[2] = 0.2;
+        }else {
+            motion[2] = -0.2;
+        }
+    }
+
     move(&motion, world);
 
     if(isInWater(world->getBlockData())) {
@@ -98,8 +134,12 @@ std::vector<EntityVertex>& Entity::getRenderedModel() {
     return modelVertexBuffer;
 }
 
-std::vector<unsigned int>& Entity::getElementBuffer() {
+std::map<int, std::vector<unsigned int>>& Entity::getElementBuffer() {
     return modelElementBuffer;
+}
+
+std::vector<Material>& Entity::getMaterials() {
+    return materials;
 }
 
 Pos Entity::getPos() {

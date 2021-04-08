@@ -5,11 +5,12 @@
 #pragma pack(push, 0)
 
 struct EntityVertex  {
-    EntityVertex(glm::vec4 _pos, glm::vec2 _uv) : pos(_pos), uv(_uv) {
+    EntityVertex(glm::vec4 _pos, glm::vec2 _uv, glm::vec3 _normal) : pos(_pos), uv(_uv), normal(_normal) {
 
     }
     glm::vec4 pos;
     glm::vec2 uv;
+    glm::vec3 normal;
 };
 
 #pragma pack(pop)
