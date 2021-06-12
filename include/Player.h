@@ -21,6 +21,8 @@ class Player final : public Listener, public Entity {
         SideEnum horizontalSidePlacedOn();
         SideEnum sideLookingAt();
 
+        bool isThirdPerson();
+
     private:
         void updatePlayerLookingAt(World* world);
         float raycast(AABB box, SideEnum* side);
@@ -54,5 +56,7 @@ class Player final : public Listener, public Entity {
 
         int mouseX = 0;
         int mouseY = 0;
+
+        bool thirdPerson = false;
 };
 #endif

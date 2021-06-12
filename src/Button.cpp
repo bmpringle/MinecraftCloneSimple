@@ -93,6 +93,8 @@ void Button::setLayer(double layer) {
 
 void Button::setText(Renderer* renderer, std::string text) {
     this->text = text;
+    glDeleteTextures(1, &TBO);
+    
     if(text == "") {
         TBOinit = true;
         TBO = renderer->textTextureBuffer(" ");

@@ -49,6 +49,7 @@ void RenderChunkBuffer::renderChunk() {
     glBindVertexArray(0);
 }
 
-RenderChunkBuffer::RenderChunkBuffer() {
-    
+RenderChunkBuffer::~RenderChunkBuffer() {
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
 }

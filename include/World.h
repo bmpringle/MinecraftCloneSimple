@@ -38,6 +38,8 @@ class World {
         Renderer* getRenderer();
 
         GameSettings* getSettings();
+
+        std::string getName();
         
     private:
         void generateWorld();

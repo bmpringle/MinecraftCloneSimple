@@ -77,11 +77,15 @@ double Player::getYRotation() {
     return pitch;
 }
 
+bool Player::isThirdPerson() {
+    return thirdPerson;
+}
+
 Pos Player::getCameraPosition() {
     glm::vec3 nonRotatedPos = glm::vec3(getPos().x + getAABB().xSize / 2, getPos().y + getAABB().ySize * 3.0 / 4.0, getPos().z + getAABB().zSize / 2);
     glm::vec3 rotatedPos = (Renderer::calculateXRotationMatrix(-getXRotation()) * glm::vec3(0, 0, 0));
     
-    return Pos(rotatedPos.x + nonRotatedPos.x, rotatedPos.y + nonRotatedPos.y, rotatedPos.z + nonRotatedPos.z);
+    return Pos(rotatedPos.x + nonRotatedPos.x, rotatedPos.y + nonRotatedPos.y + ((isThirdPerson()) ? 2 : 0), rotatedPos.z + nonRotatedPos.z + ((isThirdPerson()) ? -2 : 0));
 }
 
 void Player::updatePlayerLookingAt(World* world) {

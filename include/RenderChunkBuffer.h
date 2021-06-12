@@ -8,7 +8,7 @@ class RenderChunkBuffer {
     public:
         RenderChunkBuffer(std::vector<float> _renderData, BlockPos _pos);
 
-        RenderChunkBuffer();
+        ~RenderChunkBuffer();
 
         void setRenderData(std::vector<float> newData);
 
@@ -25,7 +25,6 @@ class RenderChunkBuffer {
 
         int chunkBufferSize = 0;
 
-        //hey, this might leak memory because destructor doesn't call delete or something, ngl i have no clue
         unsigned int VBO = -1;
 
         unsigned int VAO = -1;

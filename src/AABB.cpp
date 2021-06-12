@@ -16,6 +16,18 @@ void AABB::add(BlockPos p) {
     startZ += p.z;
 }
 
+float AABB::getWidth() {
+    return xSize;
+}
+
+float AABB::getHeight() {
+    return ySize;
+}
+
+float AABB::getDepth() {
+    return zSize;
+}
+
 glm::vec3 min(glm::vec3 a, glm::vec3 b) {
     if(a.x < b.x) {
         return a;

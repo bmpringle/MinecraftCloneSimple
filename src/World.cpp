@@ -305,3 +305,6 @@ GameSettings* World::getSettings() {
     return settings;
 }
 
+std::string World::getName() {
+    return name;
+}

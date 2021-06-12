@@ -8,7 +8,7 @@
 #include "EntityVertex.h"
 
 Entity::Entity() : pos(Pos(0, 40, 0)), mesh(ObjMesh()) {
-    mesh = ObjLoader::loadMeshFromFile("src/assets/models/entity/rubberball.obj");
+    mesh = ObjLoader::loadMeshFromFile("src/assets/models/entity/player.obj");
     
     ObjLoader::triangulateMesh(mesh);
 

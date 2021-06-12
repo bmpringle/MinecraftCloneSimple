@@ -65,6 +65,12 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
             }
         }
     }
+
+    for(std::pair<BlockPos, LoadedChunkInfo> chunkPos : oldChunks) {
+        if(loadedChunkLocations.count(chunkPos.first) == 0) {
+            unloadChunkToFile(chunkPos.first, world->getName());
+        }
+    }
 }
 
 void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> block) {
@@ -451,5 +457,26 @@ int BlockArrayData::getSeed() {
 void BlockArrayData::setChunkToUpdate(BlockPos chunkLocation) {
     if(loadedChunkLocations.count(chunkLocation) > 0) {
         ++loadedChunkLocations.at(chunkLocation).update;
+    }
+}
+
+void BlockArrayData::unloadChunkToFile(BlockPos chunkLocation, std::string worldname) {
+    if(!fs::exists("./worlds/"+worldname+"/data/")) {
+        fs::create_directories("./worlds/"+worldname+"/data/");
+    }
+
+    int i = 0;
+    for(Chunk& c : chunkList) {
+        if(c.getChunkCoordinates() == chunkLocation) {
+            auto tree = c.getBlockTree();
+            std::string data = tree->serialize();
+            std::string dataname = std::to_string(c.getChunkCoordinates().x / Chunk::getChunkSize()[0]) + "-" + std::to_string(c.getChunkCoordinates().z / Chunk::getChunkSize()[2]);
+            std::ofstream chunkFile("./worlds/"+worldname+"/data/"+dataname+".cdat");
+            chunkFile.write(data.c_str(), data.length());
+
+            chunkList.erase(chunkList.begin() + i);
+            break;   
+        }
+        ++i;
     }
 }

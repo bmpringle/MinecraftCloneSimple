@@ -23,7 +23,7 @@ uniform Material material;
 void main()
 {
     vec2 modUV = vec2(uv.x, 1-uv.y); 
-    vec3 lightPos = FragPos + viewPos + vec3(0, 100, 0);
+    /*vec3 lightPos = vec3(0, 100, 0);
     vec3 lightColor = vec3(1, 1, 1);
 
     // ambient
@@ -42,5 +42,6 @@ void main()
     vec3 specular = lightColor * (spec * material.specular);  
         
     vec3 result = ambient + diffuse + specular;
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, 1.0);*/
+    FragColor = texture(textureSampler, modUV);
 } 

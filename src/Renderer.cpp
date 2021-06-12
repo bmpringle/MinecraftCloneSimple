@@ -192,7 +192,6 @@ void Renderer::updateWorldVBO(World* world) {
 
             BlockPos pos = lchunk.first;
             if(renderChunkBuffers.count(pos) > 0) {
-                renderChunkBuffers.at(pos);
                 std::vector<BlockData> blockData = c->getBlocksInChunk();
                 std::vector<float> vectorWithColors = std::vector<float>();
                 updateChunkData(&vectorWithColors, &blockData, &textureArrayCreator);
@@ -201,7 +200,7 @@ void Renderer::updateWorldVBO(World* world) {
                 std::vector<float> vectorWithColors = std::vector<float>();
                 std::vector<BlockData> blockData = c->getBlocksInChunk();
                 updateChunkData(&vectorWithColors, &blockData, &textureArrayCreator);
-                renderChunkBuffers[pos] = RenderChunkBuffer(vectorWithColors, pos);
+                renderChunkBuffers.try_emplace(pos, vectorWithColors, pos);
             }      
         }
     }
@@ -223,6 +222,10 @@ void Renderer::renderFrame(World* world) {
         for(std::pair<int, std::shared_ptr<Entity>> entity : entityList) {
             renderEntity(entity.second, world);
         }
+    }
+
+    if(world->getPlayer()->isThirdPerson()) {
+        renderEntity(world->getPlayer(), world);
     }
 }
 
@@ -741,11 +744,11 @@ void Renderer::renderEntity(std::shared_ptr<Entity> entity, World* world) {
     Pos pos = entity->getPos();
 
     //setup model->world matrix
-    glm::mat4x4 modelToWorld = glm::translate(glm::mat4x4(1.0f), glm::vec3(pos.x, pos.y, pos.z));
+    glm::mat4x4 modelToWorld = glm::translate(glm::mat4x4(1.0f), glm::vec3(pos.x + entity->getAABB().getWidth() / 2, pos.y  + entity->getAABB().getHeight() / 2, pos.z + entity->getAABB().getDepth() / 2));
     //submit model->world matrix
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram[5], "modelToWorldMatrix"), 1, GL_FALSE, &modelToWorld[0][0]);
 
-    unsigned int TBO = textureFetcher.getOrLoadTexture("testblock.png", GL_REPEAT, GL_LINEAR);
+    unsigned int TBO = textureFetcher.getOrLoadTexture("testblock.png", GL_REPEAT, GL_NEAREST); //no option in material for gl_nearest vs gl_linear afaik so default to nearest
 
     glBindTexture(GL_TEXTURE_2D, TBO);
 
@@ -771,55 +774,13 @@ void Renderer::renderEntity(std::shared_ptr<Entity> entity, World* world) {
             glUniform1f(glGetUniformLocation(shaderProgram[6], "material.shininess"), material.getShininess());
 
             glUniform3f(glGetUniformLocation(shaderProgram[6], "viewPos"), world->getPlayer()->getCameraPosition().x, world->getPlayer()->getCameraPosition().y, world->getPlayer()->getCameraPosition().z);
-            glBindTexture(GL_TEXTURE_2D, textureFetcher.getOrLoadAbsolutePathTexture(material.getTextureMapPath(), GL_REPEAT, GL_LINEAR));
+            glBindTexture(GL_TEXTURE_2D, textureFetcher.getOrLoadAbsolutePathTexture(material.getTextureMapPath(), GL_REPEAT, GL_NEAREST)); //no option in material for gl_nearest vs gl_linear afaik so default to nearest
         }
         
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, materialIndiciesPair.second.size() * sizeof(int), materialIndiciesPair.second.data(), GL_DYNAMIC_DRAW);
 
         glDrawElements(GL_TRIANGLES, materialIndiciesPair.second.size(), GL_UNSIGNED_INT, 0);
     }
-
-    //attempt at including materials
-
-    /*
-        int index = 0;
-        int newIndex = 0;
-
-        for(int i = index; i < entity->getElementBuffer().size(); ++i) {
-            if(currentMaterialIndex != entity->getMaterialIndices().at(i)) {
-                currentMaterialIndex = entity->getMaterialIndices().at(i);
-                newIndex = i;
-
-                if(currentMaterialIndex == -1) {
-                    glUseProgram(shaderProgram[5]);
-
-                    //setup model->world matrix
-                    glm::mat4x4 modelToWorld = glm::translate(glm::mat4x4(1.0f), glm::vec3(pos.x, pos.y, pos.z));
-                    //submit model->world matrix
-                    glUniformMatrix4fv(glGetUniformLocation(shaderProgram[5], "modelToWorldMatrix"), 1, GL_FALSE, &modelToWorld[0][0]);
-
-                    glDrawRangeElements(GL_TRIANGLES, index, newIndex, newIndex - index + 1, GL_UNSIGNED_INT, 0);
-                }else {
-                    Material& material = entity->getMaterials().at(i);
-
-                    glUseProgram(shaderProgram[6]);
-
-                    glUniform3f(glGetUniformLocation(shaderProgram[6], "material.ambient"), material.getAmbient()[0], material.getAmbient()[1], material.getAmbient()[2]);
-                    glUniform3f(glGetUniformLocation(shaderProgram[6], "material.diffuse"), material.getDiffuse()[0], material.getDiffuse()[1], material.getDiffuse()[2]);
-                    glUniform3f(glGetUniformLocation(shaderProgram[6], "material.specular"), material.getSpecular()[0], material.getSpecular()[1], material.getSpecular()[2]);
-                    glUniform1f(glGetUniformLocation(shaderProgram[6], "material.opacity"), material.getOpacity());
-                    glUniform1f(glGetUniformLocation(shaderProgram[6], "material.shininess"), material.getShininess());
-
-                    //setup model->world matrix
-                    glm::mat4x4 modelToWorld = glm::translate(glm::mat4x4(1.0f), glm::vec3(pos.x, pos.y, pos.z));
-                    //submit model->world matrix
-                    glUniformMatrix4fv(glGetUniformLocation(shaderProgram[6], "modelToWorldMatrix"), 1, GL_FALSE, &modelToWorld[0][0]);
-
-                    glDrawRangeElements(GL_TRIANGLES, index, newIndex, newIndex - index + 1, GL_UNSIGNED_INT, 0);
-                }
-                break;
-            }
-        }*/
 }
 
 void Renderer::setupEntityRenderer() {

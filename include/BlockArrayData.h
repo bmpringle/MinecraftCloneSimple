@@ -65,6 +65,8 @@ class BlockArrayData {
 
         void loadChunkFromFile(std::string chunkPath, BlockPos chunkLocation);
 
+        void unloadChunkToFile(BlockPos chunkLocation, std::string worldname);
+
         int getSeed();
 
         void setChunkToUpdate(BlockPos chunkLocation);

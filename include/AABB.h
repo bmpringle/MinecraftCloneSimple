@@ -29,6 +29,12 @@ class AABB {
         void rotateY90();
 
         void rotateZ90();
+
+        float getWidth();
+
+        float getHeight();
+
+        float getDepth();
 };
 
 #endif
