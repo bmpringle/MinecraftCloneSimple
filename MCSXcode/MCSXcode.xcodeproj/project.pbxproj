@@ -1,0 +1,553 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BCD0260C2673EAB40072157B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD0260B2673EAB40072157B /* OpenGL.framework */; };
+		BCD0260E2673EAB80072157B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD0260D2673EAB80072157B /* Cocoa.framework */; };
+		BCD026102673EAC00072157B /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD0260F2673EAC00072157B /* IOKit.framework */; };
+		BCD02656267547420072157B /* Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02629267547420072157B /* Button.cpp */; };
+		BCD02657267547420072157B /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0262A267547420072157B /* Player.cpp */; };
+		BCD02658267547420072157B /* SideEnum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0262B267547420072157B /* SideEnum.cpp */; };
+		BCD02659267547420072157B /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0262C267547420072157B /* Game.cpp */; };
+		BCD0265A267547420072157B /* RenderChunkBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0262D267547420072157B /* RenderChunkBuffer.cpp */; };
+		BCD0265B267547420072157B /* TextureFetcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0262E267547420072157B /* TextureFetcher.cpp */; };
+		BCD0265C267547420072157B /* BlockFace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0262F267547420072157B /* BlockFace.cpp */; };
+		BCD0265D267547420072157B /* BlockCobblestone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02630267547420072157B /* BlockCobblestone.cpp */; };
+		BCD0265E267547420072157B /* BlockArrayData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02631267547420072157B /* BlockArrayData.cpp */; };
+		BCD0265F267547420072157B /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02632267547420072157B /* Entity.cpp */; };
+		BCD02660267547420072157B /* BlockDoor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02633267547420072157B /* BlockDoor.cpp */; };
+		BCD02661267547420072157B /* InputHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02634267547420072157B /* InputHandler.cpp */; };
+		BCD02662267547420072157B /* BlockDirt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02635267547420072157B /* BlockDirt.cpp */; };
+		BCD02663267547420072157B /* AABB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02636267547420072157B /* AABB.cpp */; };
+		BCD02664267547420072157B /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02637267547420072157B /* Block.cpp */; };
+		BCD02665267547420072157B /* Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02638267547420072157B /* Item.cpp */; };
+		BCD02666267547420072157B /* FontLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02639267547420072157B /* FontLoader.cpp */; };
+		BCD02667267547420072157B /* OptionsGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0263A267547420072157B /* OptionsGui.cpp */; };
+		BCD02668267547420072157B /* ItemBlockDoor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0263B267547420072157B /* ItemBlockDoor.cpp */; };
+		BCD02669267547420072157B /* Pos.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0263C267547420072157B /* Pos.cpp */; };
+		BCD0266A267547420072157B /* Blocks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0263D267547420072157B /* Blocks.cpp */; };
+		BCD0266B267547420072157B /* Chunk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0263E267547420072157B /* Chunk.cpp */; };
+		BCD0266C267547420072157B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0263F267547420072157B /* main.cpp */; };
+		BCD0266D267547420072157B /* RenderedModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02640267547420072157B /* RenderedModel.cpp */; };
+		BCD0266E267547420072157B /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02641267547420072157B /* Renderer.cpp */; };
+		BCD0266F267547420072157B /* BlockLeaf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02642267547420072157B /* BlockLeaf.cpp */; };
+		BCD02670267547420072157B /* BlockWater.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02643267547420072157B /* BlockWater.cpp */; };
+		BCD02671267547420072157B /* BlockData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02644267547420072157B /* BlockData.cpp */; };
+		BCD02672267547420072157B /* BlockRenderedModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02645267547420072157B /* BlockRenderedModel.cpp */; };
+		BCD02673267547420072157B /* RenderedPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02646267547420072157B /* RenderedPoint.cpp */; };
+		BCD02674267547420072157B /* MainMenuGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02647267547420072157B /* MainMenuGui.cpp */; };
+		BCD02675267547420072157B /* BlockPos.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02648267547420072157B /* BlockPos.cpp */; };
+		BCD02676267547420072157B /* BlockGrass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02649267547420072157B /* BlockGrass.cpp */; };
+		BCD02677267547420072157B /* GameEventHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0264A267547420072157B /* GameEventHandler.cpp */; };
+		BCD02678267547420072157B /* BlockPlanks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0264B267547420072157B /* BlockPlanks.cpp */; };
+		BCD02679267547420072157B /* InventoryGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0264C267547420072157B /* InventoryGui.cpp */; };
+		BCD0267A267547420072157B /* LoadedChunkInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0264D267547420072157B /* LoadedChunkInfo.cpp */; };
+		BCD0267B267547420072157B /* SingleplayerSelectGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0264E267547420072157B /* SingleplayerSelectGui.cpp */; };
+		BCD0267C267547420072157B /* TextureArrayCreator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD0264F267547420072157B /* TextureArrayCreator.cpp */; };
+		BCD0267D267547420072157B /* World.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02650267547420072157B /* World.cpp */; };
+		BCD0267E267547420072157B /* RenderedTriangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02651267547420072157B /* RenderedTriangle.cpp */; };
+		BCD0267F267547420072157B /* Inventory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02652267547420072157B /* Inventory.cpp */; };
+		BCD02680267547420072157B /* ItemBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02653267547420072157B /* ItemBlock.cpp */; };
+		BCD02681267547420072157B /* BlockLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02654267547420072157B /* BlockLog.cpp */; };
+		BCD02682267547420072157B /* ItemStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02655267547420072157B /* ItemStack.cpp */; };
+		BCD02689267547A30072157B /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD02683267547A30072157B /* libGLEW.a */; };
+		BCD0268A267547A30072157B /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD02684267547A30072157B /* libglfw3.a */; };
+		BCD0268B267547A30072157B /* objLoaderLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD02685267547A30072157B /* objLoaderLib.a */; };
+		BCD0268C267547A30072157B /* eventLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD02686267547A30072157B /* eventLib.a */; };
+		BCD0268D267547A30072157B /* libnoise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD02687267547A30072157B /* libnoise.a */; };
+		BCD0268E267547A30072157B /* timerMapLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD02688267547A30072157B /* timerMapLib.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BCD0256D2673E6BE0072157B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		BCD0256F2673E6BE0072157B /* MCSXcode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MCSXcode; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCD0260B2673EAB40072157B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		BCD0260D2673EAB80072157B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		BCD0260F2673EAC00072157B /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		BCD026112673EC070072157B /* objLoaderLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = objLoaderLib.a; path = ../MinecraftCloneSimple/lib/objLoaderLib.a; sourceTree = "<group>"; };
+		BCD026122673EC070072157B /* timerMapLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = timerMapLib.a; path = ../MinecraftCloneSimple/lib/timerMapLib.a; sourceTree = "<group>"; };
+		BCD026132673EC070072157B /* eventLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = eventLib.a; path = ../MinecraftCloneSimple/lib/eventLib.a; sourceTree = "<group>"; };
+		BCD026142673EC070072157B /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = ../MinecraftCloneSimple/lib/libglfw3.a; sourceTree = "<group>"; };
+		BCD026152673EC070072157B /* libnoise.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnoise.a; path = ../MinecraftCloneSimple/lib/libnoise.a; sourceTree = "<group>"; };
+		BCD026162673EC070072157B /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = ../MinecraftCloneSimple/lib/libGLEW.a; sourceTree = "<group>"; };
+		BCD02629267547420072157B /* Button.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Button.cpp; path = ../src/Button.cpp; sourceTree = "<group>"; };
+		BCD0262A267547420072157B /* Player.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Player.cpp; path = ../src/Player.cpp; sourceTree = "<group>"; };
+		BCD0262B267547420072157B /* SideEnum.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SideEnum.cpp; path = ../src/SideEnum.cpp; sourceTree = "<group>"; };
+		BCD0262C267547420072157B /* Game.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Game.cpp; path = ../src/Game.cpp; sourceTree = "<group>"; };
+		BCD0262D267547420072157B /* RenderChunkBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RenderChunkBuffer.cpp; path = ../src/RenderChunkBuffer.cpp; sourceTree = "<group>"; };
+		BCD0262E267547420072157B /* TextureFetcher.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TextureFetcher.cpp; path = ../src/TextureFetcher.cpp; sourceTree = "<group>"; };
+		BCD0262F267547420072157B /* BlockFace.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockFace.cpp; path = ../src/BlockFace.cpp; sourceTree = "<group>"; };
+		BCD02630267547420072157B /* BlockCobblestone.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockCobblestone.cpp; path = ../src/BlockCobblestone.cpp; sourceTree = "<group>"; };
+		BCD02631267547420072157B /* BlockArrayData.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockArrayData.cpp; path = ../src/BlockArrayData.cpp; sourceTree = "<group>"; };
+		BCD02632267547420072157B /* Entity.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Entity.cpp; path = ../src/Entity.cpp; sourceTree = "<group>"; };
+		BCD02633267547420072157B /* BlockDoor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockDoor.cpp; path = ../src/BlockDoor.cpp; sourceTree = "<group>"; };
+		BCD02634267547420072157B /* InputHandler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = InputHandler.cpp; path = ../src/InputHandler.cpp; sourceTree = "<group>"; };
+		BCD02635267547420072157B /* BlockDirt.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockDirt.cpp; path = ../src/BlockDirt.cpp; sourceTree = "<group>"; };
+		BCD02636267547420072157B /* AABB.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AABB.cpp; path = ../src/AABB.cpp; sourceTree = "<group>"; };
+		BCD02637267547420072157B /* Block.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Block.cpp; path = ../src/Block.cpp; sourceTree = "<group>"; };
+		BCD02638267547420072157B /* Item.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Item.cpp; path = ../src/Item.cpp; sourceTree = "<group>"; };
+		BCD02639267547420072157B /* FontLoader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = FontLoader.cpp; path = ../src/FontLoader.cpp; sourceTree = "<group>"; };
+		BCD0263A267547420072157B /* OptionsGui.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OptionsGui.cpp; path = ../src/OptionsGui.cpp; sourceTree = "<group>"; };
+		BCD0263B267547420072157B /* ItemBlockDoor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ItemBlockDoor.cpp; path = ../src/ItemBlockDoor.cpp; sourceTree = "<group>"; };
+		BCD0263C267547420072157B /* Pos.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Pos.cpp; path = ../src/Pos.cpp; sourceTree = "<group>"; };
+		BCD0263D267547420072157B /* Blocks.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Blocks.cpp; path = ../src/Blocks.cpp; sourceTree = "<group>"; };
+		BCD0263E267547420072157B /* Chunk.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Chunk.cpp; path = ../src/Chunk.cpp; sourceTree = "<group>"; };
+		BCD0263F267547420072157B /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../src/main.cpp; sourceTree = "<group>"; };
+		BCD02640267547420072157B /* RenderedModel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RenderedModel.cpp; path = ../src/RenderedModel.cpp; sourceTree = "<group>"; };
+		BCD02641267547420072157B /* Renderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Renderer.cpp; path = ../src/Renderer.cpp; sourceTree = "<group>"; };
+		BCD02642267547420072157B /* BlockLeaf.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockLeaf.cpp; path = ../src/BlockLeaf.cpp; sourceTree = "<group>"; };
+		BCD02643267547420072157B /* BlockWater.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockWater.cpp; path = ../src/BlockWater.cpp; sourceTree = "<group>"; };
+		BCD02644267547420072157B /* BlockData.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockData.cpp; path = ../src/BlockData.cpp; sourceTree = "<group>"; };
+		BCD02645267547420072157B /* BlockRenderedModel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockRenderedModel.cpp; path = ../src/BlockRenderedModel.cpp; sourceTree = "<group>"; };
+		BCD02646267547420072157B /* RenderedPoint.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RenderedPoint.cpp; path = ../src/RenderedPoint.cpp; sourceTree = "<group>"; };
+		BCD02647267547420072157B /* MainMenuGui.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MainMenuGui.cpp; path = ../src/MainMenuGui.cpp; sourceTree = "<group>"; };
+		BCD02648267547420072157B /* BlockPos.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockPos.cpp; path = ../src/BlockPos.cpp; sourceTree = "<group>"; };
+		BCD02649267547420072157B /* BlockGrass.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockGrass.cpp; path = ../src/BlockGrass.cpp; sourceTree = "<group>"; };
+		BCD0264A267547420072157B /* GameEventHandler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = GameEventHandler.cpp; path = ../src/GameEventHandler.cpp; sourceTree = "<group>"; };
+		BCD0264B267547420072157B /* BlockPlanks.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockPlanks.cpp; path = ../src/BlockPlanks.cpp; sourceTree = "<group>"; };
+		BCD0264C267547420072157B /* InventoryGui.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = InventoryGui.cpp; path = ../src/InventoryGui.cpp; sourceTree = "<group>"; };
+		BCD0264D267547420072157B /* LoadedChunkInfo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = LoadedChunkInfo.cpp; path = ../src/LoadedChunkInfo.cpp; sourceTree = "<group>"; };
+		BCD0264E267547420072157B /* SingleplayerSelectGui.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SingleplayerSelectGui.cpp; path = ../src/SingleplayerSelectGui.cpp; sourceTree = "<group>"; };
+		BCD0264F267547420072157B /* TextureArrayCreator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TextureArrayCreator.cpp; path = ../src/TextureArrayCreator.cpp; sourceTree = "<group>"; };
+		BCD02650267547420072157B /* World.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = World.cpp; path = ../src/World.cpp; sourceTree = "<group>"; };
+		BCD02651267547420072157B /* RenderedTriangle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RenderedTriangle.cpp; path = ../src/RenderedTriangle.cpp; sourceTree = "<group>"; };
+		BCD02652267547420072157B /* Inventory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Inventory.cpp; path = ../src/Inventory.cpp; sourceTree = "<group>"; };
+		BCD02653267547420072157B /* ItemBlock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ItemBlock.cpp; path = ../src/ItemBlock.cpp; sourceTree = "<group>"; };
+		BCD02654267547420072157B /* BlockLog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockLog.cpp; path = ../src/BlockLog.cpp; sourceTree = "<group>"; };
+		BCD02655267547420072157B /* ItemStack.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ItemStack.cpp; path = ../src/ItemStack.cpp; sourceTree = "<group>"; };
+		BCD02683267547A30072157B /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = ../lib/libGLEW.a; sourceTree = "<group>"; };
+		BCD02684267547A30072157B /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = ../lib/libglfw3.a; sourceTree = "<group>"; };
+		BCD02685267547A30072157B /* objLoaderLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = objLoaderLib.a; path = ../lib/objLoaderLib.a; sourceTree = "<group>"; };
+		BCD02686267547A30072157B /* eventLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = eventLib.a; path = ../lib/eventLib.a; sourceTree = "<group>"; };
+		BCD02687267547A30072157B /* libnoise.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnoise.a; path = ../lib/libnoise.a; sourceTree = "<group>"; };
+		BCD02688267547A30072157B /* timerMapLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = timerMapLib.a; path = ../lib/timerMapLib.a; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BCD0256C2673E6BE0072157B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BCD02689267547A30072157B /* libGLEW.a in Frameworks */,
+				BCD0268A267547A30072157B /* libglfw3.a in Frameworks */,
+				BCD0268B267547A30072157B /* objLoaderLib.a in Frameworks */,
+				BCD0268C267547A30072157B /* eventLib.a in Frameworks */,
+				BCD0268D267547A30072157B /* libnoise.a in Frameworks */,
+				BCD0268E267547A30072157B /* timerMapLib.a in Frameworks */,
+				BCD026102673EAC00072157B /* IOKit.framework in Frameworks */,
+				BCD0260E2673EAB80072157B /* Cocoa.framework in Frameworks */,
+				BCD0260C2673EAB40072157B /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BCD025662673E6BE0072157B = {
+			isa = PBXGroup;
+			children = (
+				BCD02636267547420072157B /* AABB.cpp */,
+				BCD02637267547420072157B /* Block.cpp */,
+				BCD02631267547420072157B /* BlockArrayData.cpp */,
+				BCD02644267547420072157B /* BlockData.cpp */,
+				BCD02635267547420072157B /* BlockDirt.cpp */,
+				BCD02630267547420072157B /* BlockCobblestone.cpp */,
+				BCD02633267547420072157B /* BlockDoor.cpp */,
+				BCD02649267547420072157B /* BlockGrass.cpp */,
+				BCD02654267547420072157B /* BlockLog.cpp */,
+				BCD0264B267547420072157B /* BlockPlanks.cpp */,
+				BCD02648267547420072157B /* BlockPos.cpp */,
+				BCD02642267547420072157B /* BlockLeaf.cpp */,
+				BCD02645267547420072157B /* BlockRenderedModel.cpp */,
+				BCD0262F267547420072157B /* BlockFace.cpp */,
+				BCD0263D267547420072157B /* Blocks.cpp */,
+				BCD02643267547420072157B /* BlockWater.cpp */,
+				BCD0263E267547420072157B /* Chunk.cpp */,
+				BCD02632267547420072157B /* Entity.cpp */,
+				BCD02639267547420072157B /* FontLoader.cpp */,
+				BCD0264A267547420072157B /* GameEventHandler.cpp */,
+				BCD02652267547420072157B /* Inventory.cpp */,
+				BCD0264C267547420072157B /* InventoryGui.cpp */,
+				BCD02653267547420072157B /* ItemBlock.cpp */,
+				BCD02655267547420072157B /* ItemStack.cpp */,
+				BCD0264D267547420072157B /* LoadedChunkInfo.cpp */,
+				BCD0263B267547420072157B /* ItemBlockDoor.cpp */,
+				BCD0263F267547420072157B /* main.cpp */,
+				BCD02647267547420072157B /* MainMenuGui.cpp */,
+				BCD0262C267547420072157B /* Game.cpp */,
+				BCD02634267547420072157B /* InputHandler.cpp */,
+				BCD02638267547420072157B /* Item.cpp */,
+				BCD0263A267547420072157B /* OptionsGui.cpp */,
+				BCD0263C267547420072157B /* Pos.cpp */,
+				BCD02646267547420072157B /* RenderedPoint.cpp */,
+				BCD02651267547420072157B /* RenderedTriangle.cpp */,
+				BCD0262D267547420072157B /* RenderChunkBuffer.cpp */,
+				BCD02640267547420072157B /* RenderedModel.cpp */,
+				BCD02641267547420072157B /* Renderer.cpp */,
+				BCD0264E267547420072157B /* SingleplayerSelectGui.cpp */,
+				BCD0264F267547420072157B /* TextureArrayCreator.cpp */,
+				BCD02629267547420072157B /* Button.cpp */,
+				BCD0262A267547420072157B /* Player.cpp */,
+				BCD0262B267547420072157B /* SideEnum.cpp */,
+				BCD0262E267547420072157B /* TextureFetcher.cpp */,
+				BCD02650267547420072157B /* World.cpp */,
+				BCD025702673E6BE0072157B /* Products */,
+				BCD0260A2673EAB30072157B /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		BCD025702673E6BE0072157B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BCD0256F2673E6BE0072157B /* MCSXcode */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BCD0260A2673EAB30072157B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BCD026132673EC070072157B /* eventLib.a */,
+				BCD02686267547A30072157B /* eventLib.a */,
+				BCD026162673EC070072157B /* libGLEW.a */,
+				BCD026142673EC070072157B /* libglfw3.a */,
+				BCD026152673EC070072157B /* libnoise.a */,
+				BCD02687267547A30072157B /* libnoise.a */,
+				BCD026112673EC070072157B /* objLoaderLib.a */,
+				BCD026122673EC070072157B /* timerMapLib.a */,
+				BCD02683267547A30072157B /* libGLEW.a */,
+				BCD02684267547A30072157B /* libglfw3.a */,
+				BCD02685267547A30072157B /* objLoaderLib.a */,
+				BCD02688267547A30072157B /* timerMapLib.a */,
+				BCD0260F2673EAC00072157B /* IOKit.framework */,
+				BCD0260D2673EAB80072157B /* Cocoa.framework */,
+				BCD0260B2673EAB40072157B /* OpenGL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BCD0256E2673E6BE0072157B /* MCSXcode */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCD025762673E6BE0072157B /* Build configuration list for PBXNativeTarget "MCSXcode" */;
+			buildPhases = (
+				BCD0256B2673E6BE0072157B /* Sources */,
+				BCD0256C2673E6BE0072157B /* Frameworks */,
+				BCD0256D2673E6BE0072157B /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MCSXcode;
+			productName = MCSXcode;
+			productReference = BCD0256F2673E6BE0072157B /* MCSXcode */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BCD025672673E6BE0072157B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1250;
+				TargetAttributes = {
+					BCD0256E2673E6BE0072157B = {
+						CreatedOnToolsVersion = 12.5;
+					};
+				};
+			};
+			buildConfigurationList = BCD0256A2673E6BE0072157B /* Build configuration list for PBXProject "MCSXcode" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BCD025662673E6BE0072157B;
+			productRefGroup = BCD025702673E6BE0072157B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BCD0256E2673E6BE0072157B /* MCSXcode */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BCD0256B2673E6BE0072157B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BCD02656267547420072157B /* Button.cpp in Sources */,
+				BCD02657267547420072157B /* Player.cpp in Sources */,
+				BCD02658267547420072157B /* SideEnum.cpp in Sources */,
+				BCD02659267547420072157B /* Game.cpp in Sources */,
+				BCD0265A267547420072157B /* RenderChunkBuffer.cpp in Sources */,
+				BCD0265B267547420072157B /* TextureFetcher.cpp in Sources */,
+				BCD0265C267547420072157B /* BlockFace.cpp in Sources */,
+				BCD0265D267547420072157B /* BlockCobblestone.cpp in Sources */,
+				BCD0265E267547420072157B /* BlockArrayData.cpp in Sources */,
+				BCD0265F267547420072157B /* Entity.cpp in Sources */,
+				BCD02660267547420072157B /* BlockDoor.cpp in Sources */,
+				BCD02661267547420072157B /* InputHandler.cpp in Sources */,
+				BCD02662267547420072157B /* BlockDirt.cpp in Sources */,
+				BCD02663267547420072157B /* AABB.cpp in Sources */,
+				BCD02664267547420072157B /* Block.cpp in Sources */,
+				BCD02665267547420072157B /* Item.cpp in Sources */,
+				BCD02666267547420072157B /* FontLoader.cpp in Sources */,
+				BCD02667267547420072157B /* OptionsGui.cpp in Sources */,
+				BCD02668267547420072157B /* ItemBlockDoor.cpp in Sources */,
+				BCD02669267547420072157B /* Pos.cpp in Sources */,
+				BCD0266A267547420072157B /* Blocks.cpp in Sources */,
+				BCD0266B267547420072157B /* Chunk.cpp in Sources */,
+				BCD0266C267547420072157B /* main.cpp in Sources */,
+				BCD0266D267547420072157B /* RenderedModel.cpp in Sources */,
+				BCD0266E267547420072157B /* Renderer.cpp in Sources */,
+				BCD0266F267547420072157B /* BlockLeaf.cpp in Sources */,
+				BCD02670267547420072157B /* BlockWater.cpp in Sources */,
+				BCD02671267547420072157B /* BlockData.cpp in Sources */,
+				BCD02672267547420072157B /* BlockRenderedModel.cpp in Sources */,
+				BCD02673267547420072157B /* RenderedPoint.cpp in Sources */,
+				BCD02674267547420072157B /* MainMenuGui.cpp in Sources */,
+				BCD02675267547420072157B /* BlockPos.cpp in Sources */,
+				BCD02676267547420072157B /* BlockGrass.cpp in Sources */,
+				BCD02677267547420072157B /* GameEventHandler.cpp in Sources */,
+				BCD02678267547420072157B /* BlockPlanks.cpp in Sources */,
+				BCD02679267547420072157B /* InventoryGui.cpp in Sources */,
+				BCD0267A267547420072157B /* LoadedChunkInfo.cpp in Sources */,
+				BCD0267B267547420072157B /* SingleplayerSelectGui.cpp in Sources */,
+				BCD0267C267547420072157B /* TextureArrayCreator.cpp in Sources */,
+				BCD0267D267547420072157B /* World.cpp in Sources */,
+				BCD0267E267547420072157B /* RenderedTriangle.cpp in Sources */,
+				BCD0267F267547420072157B /* Inventory.cpp in Sources */,
+				BCD02680267547420072157B /* ItemBlock.cpp in Sources */,
+				BCD02681267547420072157B /* BlockLog.cpp in Sources */,
+				BCD02682267547420072157B /* ItemStack.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		BCD025742673E6BE0072157B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				"HEADER_SEARCH_PATHS[arch=*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		BCD025752673E6BE0072157B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				"HEADER_SEARCH_PATHS[arch=*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		BCD025772673E6BE0072157B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2V2TE93732;
+				ENABLE_HARDENED_RUNTIME = YES;
+				"EXCLUDED_ARCHS[sdk=*]" = x86_64;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/ObjLoader/glm/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/glew/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/glfw/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/libnoise/src/",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = "/Users/bmp/Development/C++/MinecraftCloneSimple/lib/";
+				"OTHER_CPLUSPLUSFLAGS[arch=*]" = (
+					"-static",
+					"-O3",
+					"-D_USE_MATH_DEFINES",
+					"-DNOISE_STATIC",
+					"-Wall",
+					"-Wpedantic",
+					"-g",
+					"-std=c++2a",
+					"-DGLEW_STATIC",
+					"$(OTHER_CFLAGS)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		BCD025782673E6BE0072157B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2V2TE93732;
+				ENABLE_HARDENED_RUNTIME = YES;
+				"EXCLUDED_ARCHS[sdk=*]" = x86_64;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/libnoise/src/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/glew/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/glfw/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/ObjLoader/glm/",
+				);
+				LIBRARY_SEARCH_PATHS = "/Users/bmp/Development/C++/MinecraftCloneSimple/lib/";
+				"OTHER_CPLUSPLUSFLAGS[arch=*]" = (
+					"-static",
+					"-O3",
+					"-D_USE_MATH_DEFINES",
+					"-DNOISE_STATIC",
+					"-Wall",
+					"-Wpedantic",
+					"-g",
+					"-std=c++2a",
+					"-DGLEW_STATIC",
+					"$(OTHER_CFLAGS)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BCD0256A2673E6BE0072157B /* Build configuration list for PBXProject "MCSXcode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCD025742673E6BE0072157B /* Debug */,
+				BCD025752673E6BE0072157B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCD025762673E6BE0072157B /* Build configuration list for PBXNativeTarget "MCSXcode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCD025772673E6BE0072157B /* Debug */,
+				BCD025782673E6BE0072157B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BCD025672673E6BE0072157B /* Project object */;
+}
