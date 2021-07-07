@@ -86,7 +86,7 @@ class BlockArrayData {
         double width = Chunk::getChunkSize()[0];
         double height = Chunk::getChunkSize()[2];
 
-        int averageTerrainHeight = 10;
+        int averageTerrainHeight = 30;
         double amplifier = 3;
         int waterLevel = 8;
 

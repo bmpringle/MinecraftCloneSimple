@@ -76,6 +76,61 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BC6175AD26960E8100FADEFA /* TextureArrayCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureArrayCreator.h; path = ../include/TextureArrayCreator.h; sourceTree = "<group>"; };
+		BC6175AE26960E8100FADEFA /* Gui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gui.h; path = ../include/Gui.h; sourceTree = "<group>"; };
+		BC6175AF26960E8100FADEFA /* SBDA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBDA.h; path = ../include/SBDA.h; sourceTree = "<group>"; };
+		BC6175B026960E8100FADEFA /* EntityVertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntityVertex.h; path = ../include/EntityVertex.h; sourceTree = "<group>"; };
+		BC6175B126960E8100FADEFA /* Blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Blocks.h; path = ../include/Blocks.h; sourceTree = "<group>"; };
+		BC6175B226960E8100FADEFA /* BlockDirt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockDirt.h; path = ../include/BlockDirt.h; sourceTree = "<group>"; };
+		BC6175B326960E8100FADEFA /* TextureFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureFetcher.h; path = ../include/TextureFetcher.h; sourceTree = "<group>"; };
+		BC6175B426960E8100FADEFA /* BlockFace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockFace.h; path = ../include/BlockFace.h; sourceTree = "<group>"; };
+		BC6175B526960E8100FADEFA /* RenderedPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderedPoint.h; path = ../include/RenderedPoint.h; sourceTree = "<group>"; };
+		BC6175B626960E8100FADEFA /* Button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Button.h; path = ../include/Button.h; sourceTree = "<group>"; };
+		BC6175B726960E8100FADEFA /* Block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Block.h; path = ../include/Block.h; sourceTree = "<group>"; };
+		BC6175B826960E8100FADEFA /* SideEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SideEnum.h; path = ../include/SideEnum.h; sourceTree = "<group>"; };
+		BC6175B926960E8100FADEFA /* Game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Game.h; path = ../include/Game.h; sourceTree = "<group>"; };
+		BC6175BA26960E8100FADEFA /* Pos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pos.h; path = ../include/Pos.h; sourceTree = "<group>"; };
+		BC6175BB26960E8100FADEFA /* BlockWater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockWater.h; path = ../include/BlockWater.h; sourceTree = "<group>"; };
+		BC6175BC26960E8100FADEFA /* GameSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameSettings.h; path = ../include/GameSettings.h; sourceTree = "<group>"; };
+		BC6175BD26960E8100FADEFA /* BlockArrayData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockArrayData.h; path = ../include/BlockArrayData.h; sourceTree = "<group>"; };
+		BC6175BE26960E8100FADEFA /* BlockRenderedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockRenderedModel.h; path = ../include/BlockRenderedModel.h; sourceTree = "<group>"; };
+		BC6175BF26960E8100FADEFA /* BlockData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockData.h; path = ../include/BlockData.h; sourceTree = "<group>"; };
+		BC6175C026960E8100FADEFA /* World.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = World.h; path = ../include/World.h; sourceTree = "<group>"; };
+		BC6175C126960E8100FADEFA /* glmh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = glmh.h; path = ../include/glmh.h; sourceTree = "<group>"; };
+		BC6175C226960E8100FADEFA /* RenderedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderedModel.h; path = ../include/RenderedModel.h; sourceTree = "<group>"; };
+		BC6175C326960E8100FADEFA /* SingleplayerSelectGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SingleplayerSelectGui.h; path = ../include/SingleplayerSelectGui.h; sourceTree = "<group>"; };
+		BC6175C426960E8100FADEFA /* Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Renderer.h; path = ../include/Renderer.h; sourceTree = "<group>"; };
+		BC6175C526960E8100FADEFA /* Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Item.h; path = ../include/Item.h; sourceTree = "<group>"; };
+		BC6175C626960E8100FADEFA /* RenderChunkBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderChunkBuffer.h; path = ../include/RenderChunkBuffer.h; sourceTree = "<group>"; };
+		BC6175C726960E8100FADEFA /* GLFWKeyCodeConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLFWKeyCodeConverter.h; path = ../include/GLFWKeyCodeConverter.h; sourceTree = "<group>"; };
+		BC6175C826960E8100FADEFA /* BlockLeaf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockLeaf.h; path = ../include/BlockLeaf.h; sourceTree = "<group>"; };
+		BC6175C926960E8100FADEFA /* BlockGrass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockGrass.h; path = ../include/BlockGrass.h; sourceTree = "<group>"; };
+		BC6175CA26960E8100FADEFA /* PlatformFilesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlatformFilesystem.h; path = ../include/PlatformFilesystem.h; sourceTree = "<group>"; };
+		BC6175CB26960E8100FADEFA /* RenderInclude.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderInclude.h; path = ../include/RenderInclude.h; sourceTree = "<group>"; };
+		BC6175CC26960E8100FADEFA /* AABB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AABB.h; path = ../include/AABB.h; sourceTree = "<group>"; };
+		BC6175CD26960E8100FADEFA /* Frustrum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Frustrum.h; path = ../include/Frustrum.h; sourceTree = "<group>"; };
+		BC6175CE26960E8100FADEFA /* MainMenuGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainMenuGui.h; path = ../include/MainMenuGui.h; sourceTree = "<group>"; };
+		BC6175CF26960E8100FADEFA /* LoadedChunkInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoadedChunkInfo.h; path = ../include/LoadedChunkInfo.h; sourceTree = "<group>"; };
+		BC6175D026960E8100FADEFA /* Chunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Chunk.h; path = ../include/Chunk.h; sourceTree = "<group>"; };
+		BC6175D126960E8100FADEFA /* ItemStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ItemStack.h; path = ../include/ItemStack.h; sourceTree = "<group>"; };
+		BC6175D226960E8100FADEFA /* BlockPos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockPos.h; path = ../include/BlockPos.h; sourceTree = "<group>"; };
+		BC6175D326960E8200FADEFA /* BlockLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockLog.h; path = ../include/BlockLog.h; sourceTree = "<group>"; };
+		BC6175D426960E8200FADEFA /* Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Model.h; path = ../include/Model.h; sourceTree = "<group>"; };
+		BC6175D526960E8200FADEFA /* Inventory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Inventory.h; path = ../include/Inventory.h; sourceTree = "<group>"; };
+		BC6175D626960E8200FADEFA /* BlockDoor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockDoor.h; path = ../include/BlockDoor.h; sourceTree = "<group>"; };
+		BC6175D726960E8200FADEFA /* BlockCobblestone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockCobblestone.h; path = ../include/BlockCobblestone.h; sourceTree = "<group>"; };
+		BC6175D826960E8200FADEFA /* GameEventHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameEventHandler.h; path = ../include/GameEventHandler.h; sourceTree = "<group>"; };
+		BC6175D926960E8200FADEFA /* OptionsGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OptionsGui.h; path = ../include/OptionsGui.h; sourceTree = "<group>"; };
+		BC6175DA26960E8200FADEFA /* InventoryGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InventoryGui.h; path = ../include/InventoryGui.h; sourceTree = "<group>"; };
+		BC6175DB26960E8200FADEFA /* Entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Entity.h; path = ../include/Entity.h; sourceTree = "<group>"; };
+		BC6175DC26960E8200FADEFA /* ItemBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ItemBlock.h; path = ../include/ItemBlock.h; sourceTree = "<group>"; };
+		BC6175DD26960E8200FADEFA /* RenderedTriangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderedTriangle.h; path = ../include/RenderedTriangle.h; sourceTree = "<group>"; };
+		BC6175DE26960E8200FADEFA /* FontLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontLoader.h; path = ../include/FontLoader.h; sourceTree = "<group>"; };
+		BC6175DF26960E8200FADEFA /* ItemBlockDoor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ItemBlockDoor.h; path = ../include/ItemBlockDoor.h; sourceTree = "<group>"; };
+		BC6175E026960E8200FADEFA /* Events.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Events.h; path = ../include/Events.h; sourceTree = "<group>"; };
+		BC6175E126960E8200FADEFA /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Player.h; path = ../include/Player.h; sourceTree = "<group>"; };
+		BC6175E226960E8200FADEFA /* BlockPlanks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockPlanks.h; path = ../include/BlockPlanks.h; sourceTree = "<group>"; };
+		BC6175E326960E8200FADEFA /* InputHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputHandler.h; path = ../include/InputHandler.h; sourceTree = "<group>"; };
 		BCD0256F2673E6BE0072157B /* MCSXcode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MCSXcode; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCD0260B2673EAB40072157B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		BCD0260D2673EAB80072157B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -162,6 +217,61 @@
 		BCD025662673E6BE0072157B = {
 			isa = PBXGroup;
 			children = (
+				BC6175CC26960E8100FADEFA /* AABB.h */,
+				BC6175B726960E8100FADEFA /* Block.h */,
+				BC6175BD26960E8100FADEFA /* BlockArrayData.h */,
+				BC6175D726960E8200FADEFA /* BlockCobblestone.h */,
+				BC6175BF26960E8100FADEFA /* BlockData.h */,
+				BC6175B226960E8100FADEFA /* BlockDirt.h */,
+				BC6175D626960E8200FADEFA /* BlockDoor.h */,
+				BC6175B426960E8100FADEFA /* BlockFace.h */,
+				BC6175C926960E8100FADEFA /* BlockGrass.h */,
+				BC6175C826960E8100FADEFA /* BlockLeaf.h */,
+				BC6175D326960E8200FADEFA /* BlockLog.h */,
+				BC6175E226960E8200FADEFA /* BlockPlanks.h */,
+				BC6175D226960E8100FADEFA /* BlockPos.h */,
+				BC6175BE26960E8100FADEFA /* BlockRenderedModel.h */,
+				BC6175B126960E8100FADEFA /* Blocks.h */,
+				BC6175BB26960E8100FADEFA /* BlockWater.h */,
+				BC6175B626960E8100FADEFA /* Button.h */,
+				BC6175D026960E8100FADEFA /* Chunk.h */,
+				BC6175DB26960E8200FADEFA /* Entity.h */,
+				BC6175B026960E8100FADEFA /* EntityVertex.h */,
+				BC6175E026960E8200FADEFA /* Events.h */,
+				BC6175DE26960E8200FADEFA /* FontLoader.h */,
+				BC6175CD26960E8100FADEFA /* Frustrum.h */,
+				BC6175B926960E8100FADEFA /* Game.h */,
+				BC6175D826960E8200FADEFA /* GameEventHandler.h */,
+				BC6175BC26960E8100FADEFA /* GameSettings.h */,
+				BC6175C726960E8100FADEFA /* GLFWKeyCodeConverter.h */,
+				BC6175C126960E8100FADEFA /* glmh.h */,
+				BC6175AE26960E8100FADEFA /* Gui.h */,
+				BC6175E326960E8200FADEFA /* InputHandler.h */,
+				BC6175D526960E8200FADEFA /* Inventory.h */,
+				BC6175DA26960E8200FADEFA /* InventoryGui.h */,
+				BC6175C526960E8100FADEFA /* Item.h */,
+				BC6175DC26960E8200FADEFA /* ItemBlock.h */,
+				BC6175DF26960E8200FADEFA /* ItemBlockDoor.h */,
+				BC6175D126960E8100FADEFA /* ItemStack.h */,
+				BC6175CF26960E8100FADEFA /* LoadedChunkInfo.h */,
+				BC6175CE26960E8100FADEFA /* MainMenuGui.h */,
+				BC6175D426960E8200FADEFA /* Model.h */,
+				BC6175D926960E8200FADEFA /* OptionsGui.h */,
+				BC6175CA26960E8100FADEFA /* PlatformFilesystem.h */,
+				BC6175E126960E8200FADEFA /* Player.h */,
+				BC6175BA26960E8100FADEFA /* Pos.h */,
+				BC6175C626960E8100FADEFA /* RenderChunkBuffer.h */,
+				BC6175C226960E8100FADEFA /* RenderedModel.h */,
+				BC6175B526960E8100FADEFA /* RenderedPoint.h */,
+				BC6175DD26960E8200FADEFA /* RenderedTriangle.h */,
+				BC6175C426960E8100FADEFA /* Renderer.h */,
+				BC6175CB26960E8100FADEFA /* RenderInclude.h */,
+				BC6175AF26960E8100FADEFA /* SBDA.h */,
+				BC6175B826960E8100FADEFA /* SideEnum.h */,
+				BC6175C326960E8100FADEFA /* SingleplayerSelectGui.h */,
+				BC6175AD26960E8100FADEFA /* TextureArrayCreator.h */,
+				BC6175B326960E8100FADEFA /* TextureFetcher.h */,
+				BC6175C026960E8100FADEFA /* World.h */,
 				BCD02636267547420072157B /* AABB.cpp */,
 				BCD02637267547420072157B /* Block.cpp */,
 				BCD02631267547420072157B /* BlockArrayData.cpp */,
@@ -480,15 +590,14 @@
 				"LIBRARY_SEARCH_PATHS[arch=*]" = "/Users/bmp/Development/C++/MinecraftCloneSimple/lib/";
 				"OTHER_CPLUSPLUSFLAGS[arch=*]" = (
 					"-static",
-					"-O3",
-					"-D_USE_MATH_DEFINES",
-					"-DNOISE_STATIC",
+					"$(OTHER_CFLAGS)",
+					"-DGLEW_STATIC",
+					"-std=c++2a",
+					"-g",
 					"-Wall",
 					"-Wpedantic",
-					"-g",
-					"-std=c++2a",
-					"-DGLEW_STATIC",
-					"$(OTHER_CFLAGS)",
+					"-D_USE_MATH_DEFINES",
+					"-DNOISE_STATIC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

@@ -25,7 +25,7 @@ class Player final : public Listener, public Entity {
 
     private:
         void updatePlayerLookingAt(World* world);
-        float raycast(AABB box, SideEnum* side);
+        float raycast(AABB box, SideEnum* side, Pos cameraPosition, Pos cameraNormal);
         void updateHorizontalMotion();
 
         void processInput(std::string event, std::string key, std::shared_ptr<Event> e);

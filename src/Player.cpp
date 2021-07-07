@@ -89,6 +89,9 @@ Pos Player::getCameraPosition() {
 }
 
 void Player::updatePlayerLookingAt(World* world) {
+    Pos cameraPosition = getCameraPosition();
+    Pos cameraNormal = getCameraNormal();
+
     float previousT = -1;
 
     std::vector<Chunk*> chunksCrossed = std::vector<Chunk*>();
@@ -100,7 +103,7 @@ void Player::updatePlayerLookingAt(World* world) {
 
             SideEnum sideIntersect = NORTH;
 
-            float t = raycast(aabb, &sideIntersect);
+            float t = raycast(aabb, &sideIntersect, cameraPosition, cameraNormal);
 
             if(t != -1 && (t < previousT || previousT == -1)) {
                 chunksCrossed.push_back(chunk);
@@ -115,17 +118,17 @@ void Player::updatePlayerLookingAt(World* world) {
     for(int j = 0; j < chunksCrossed.size(); ++j) {
         auto tree = chunksCrossed.at(j)->getBlockTree();
 
-        std::function<bool(AABB, bool, std::optional<SBDA>)> eval = [this, &tValues, &sideValues, &blockValues](AABB aabb, bool isLeaf, std::optional<SBDA> block) -> bool { 
+        std::function<bool(AABB, bool, std::optional<SBDA>)> eval = [this, &tValues, &sideValues, &blockValues, &cameraPosition, &cameraNormal](AABB aabb, bool isLeaf, std::optional<SBDA> block) -> bool { 
             SideEnum sideIntersect = NORTH;
 
-            float t = raycast(aabb, &sideIntersect);
+            float t = raycast(aabb, &sideIntersect, cameraPosition, cameraNormal);
             
             if(isLeaf) {
                 if(t != -1) {
                     for(int i = 0; i < 256; ++i) {
                         if(block.value().array.at(i).getBlockType() != nullptr && (block.value().array.at(i).isSolid())) {
                             AABB aabbPresice = block.value().array.at(i).getAABB();
-                            float tPresice = raycast(aabbPresice, &sideIntersect);
+                            float tPresice = raycast(aabbPresice, &sideIntersect, cameraPosition, cameraNormal);
                             float max = (tValues.size() > 1) ? tValues.at(tValues.size() - 1) : tPresice + 1;
                             if(tPresice != -1 && tPresice < max && tPresice <= 5) {
                                 tValues.push_back(tPresice);
@@ -172,9 +175,7 @@ Pos Player::getCameraNormal() {
     return Pos(n2[0], n2[1], n2[2]);
 }
 
-float Player::raycast(AABB aabb, SideEnum* side) {
-    Pos cameraPos = getCameraPosition();
-    Pos cameraNormal = getCameraNormal();
+float Player::raycast(AABB aabb, SideEnum* side, Pos cameraPos, Pos cameraNormal) {
     if(cameraNormal.x == 0) {
         if(cameraPos.x < aabb.startX || cameraPos.x > aabb.startX + aabb.xSize) {
             return -1;
