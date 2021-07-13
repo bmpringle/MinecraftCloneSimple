@@ -88,7 +88,7 @@ class BlockArrayData {
 
         int averageTerrainHeight = 30;
         double amplifier = 3;
-        int waterLevel = 8;
+        int waterLevel = 29;
 
         noise::module::Perlin noise = noise::module::Perlin();
 

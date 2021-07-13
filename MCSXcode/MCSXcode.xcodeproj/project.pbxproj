@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BC6175E52697B58F00FADEFA /* BlockRenderedModelIndexBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC6175E42697B58F00FADEFA /* BlockRenderedModelIndexBuffer.cpp */; };
 		BCD0260C2673EAB40072157B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD0260B2673EAB40072157B /* OpenGL.framework */; };
 		BCD0260E2673EAB80072157B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD0260D2673EAB80072157B /* Cocoa.framework */; };
 		BCD026102673EAC00072157B /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD0260F2673EAC00072157B /* IOKit.framework */; };
@@ -131,6 +132,8 @@
 		BC6175E126960E8200FADEFA /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Player.h; path = ../include/Player.h; sourceTree = "<group>"; };
 		BC6175E226960E8200FADEFA /* BlockPlanks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockPlanks.h; path = ../include/BlockPlanks.h; sourceTree = "<group>"; };
 		BC6175E326960E8200FADEFA /* InputHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputHandler.h; path = ../include/InputHandler.h; sourceTree = "<group>"; };
+		BC6175E42697B58F00FADEFA /* BlockRenderedModelIndexBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockRenderedModelIndexBuffer.cpp; path = ../src/BlockRenderedModelIndexBuffer.cpp; sourceTree = "<group>"; };
+		BC6175E62697B59C00FADEFA /* BlockRenderedModelIndexBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockRenderedModelIndexBuffer.h; path = ../include/BlockRenderedModelIndexBuffer.h; sourceTree = "<group>"; };
 		BCD0256F2673E6BE0072157B /* MCSXcode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MCSXcode; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCD0260B2673EAB40072157B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		BCD0260D2673EAB80072157B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -217,6 +220,8 @@
 		BCD025662673E6BE0072157B = {
 			isa = PBXGroup;
 			children = (
+				BC6175E62697B59C00FADEFA /* BlockRenderedModelIndexBuffer.h */,
+				BC6175E42697B58F00FADEFA /* BlockRenderedModelIndexBuffer.cpp */,
 				BC6175CC26960E8100FADEFA /* AABB.h */,
 				BC6175B726960E8100FADEFA /* Block.h */,
 				BC6175BD26960E8100FADEFA /* BlockArrayData.h */,
@@ -408,6 +413,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BC6175E52697B58F00FADEFA /* BlockRenderedModelIndexBuffer.cpp in Sources */,
 				BCD02656267547420072157B /* Button.cpp in Sources */,
 				BCD02657267547420072157B /* Player.cpp in Sources */,
 				BCD02658267547420072157B /* SideEnum.cpp in Sources */,

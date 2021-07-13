@@ -92,7 +92,7 @@ void Renderer::renderSetup() {
     //glEnable(GL_BLEND);
     
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
-    //glEnable(GL_CULL_FACE); 
+    glEnable(GL_CULL_FACE); 
     glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
     shaderProgram[0] = compileShaderProgramFromFiles("./shaders/basic_shader.vert", "./shaders/basic_shader.frag");
@@ -505,7 +505,7 @@ void Renderer::renderBlockInWireframe(World* world, BlockPos pos) {
 }
 
 template<class T>
-void Renderer::appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T> vectorToAppend) {
+void Renderer::appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T>& vectorToAppend) {
     for(T item : vectorToAppend) {
         vectorToAppendTo->push_back(item);
     }
