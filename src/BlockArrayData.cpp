@@ -263,13 +263,14 @@ Chunk* BlockArrayData::getChunkWithBlock(BlockPos pos) {
     
     std::array<int, 3> size = Chunk::getChunkSize();
 
+    BlockPos chunkEnd = BlockPos(size[0], size[1], size[2]);
+    
     for(int i = 0; i < chunkList.size(); ++i) {
         BlockPos location = chunkList[i].getChunkCoordinates();
-        BlockPos locationEnd = chunkList[i].getChunkCoordinates() + BlockPos(size[0], size[1], size[2]);
         
-        if(location.x <= pos.x && locationEnd.x > pos.x) {
-            if(location.y <= pos.y && locationEnd.y > pos.y) {
-                if(location.z <= pos.z && locationEnd.z > pos.z) {
+        if(location.x <= pos.x && location.x + chunkEnd.x > pos.x) {
+            if(location.y <= pos.y && location.y + chunkEnd.y > pos.y) {
+                if(location.z <= pos.z && location.z + chunkEnd.z > pos.z) {
                     return &chunkList[i];
                 }
             }
@@ -314,7 +315,7 @@ bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
             AABB chunkAABB = c->getChunkAABB();
             if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
                 auto tree = c->getBlockTree();
-                std::function<bool(AABB, bool, std::optional<SBDA>&)> eval = [playerAABB](AABB aabb, bool isLeaf, std::optional<SBDA>& block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [playerAABB](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
                     if(AABBIntersectedByAABB(playerAABB, aabb)){
                         return true;
                     }
@@ -405,7 +406,7 @@ bool BlockArrayData::isAABBInWater(AABB playerAABB) {
             AABB chunkAABB = c->getChunkAABB();
             if(AABBIntersectedByAABB(playerAABB, chunkAABB)) {
                 auto tree = c->getBlockTree();
-                std::function<bool(AABB, bool, std::optional<SBDA>)> eval = [playerAABB](AABB aabb, bool isLeaf, std::optional<SBDA> block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [playerAABB](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool { 
                     if(AABBIntersectedByAABB(playerAABB, aabb)){
                         return true;
                     }

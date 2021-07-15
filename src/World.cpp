@@ -59,7 +59,7 @@ void World::mainLoop() {
     auto previous = std::chrono::high_resolution_clock::now();
     double lag = 0.0;
     const double MS_PER_UPDATE = 16.666;
-
+    
     while (!glfwWindowShouldClose(window) && !paused && !quitting) {
         auto current = std::chrono::high_resolution_clock::now();
         double elapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(current - previous)).count();

@@ -598,35 +598,23 @@ void Renderer::updateChunkData(std::vector<float>* buffer, std::vector<BlockData
             int texID = texCreator->getTextureLayer(blockData.getTextureName(face.side));
 
             for(RenderedTriangle triangle : face.triangles) {
-                //point 1 red
                 buffer->push_back(triangle.a.x + pos.x);
                 buffer->push_back(triangle.a.y + pos.y);
                 buffer->push_back(triangle.a.z + pos.z);
-                buffer->push_back(1);
-                buffer->push_back(0);
-                buffer->push_back(0);
                 buffer->push_back(triangle.a.u);
                 buffer->push_back(triangle.a.v);
                 buffer->push_back(texID);
 
-                //point 2 green
                 buffer->push_back(triangle.b.x + pos.x);
                 buffer->push_back(triangle.b.y + pos.y);
                 buffer->push_back(triangle.b.z + pos.z);
-                buffer->push_back(0);
-                buffer->push_back(1);
-                buffer->push_back(0);
                 buffer->push_back(triangle.b.u);
                 buffer->push_back(triangle.b.v);
                 buffer->push_back(texID);
 
-                //point 3 blue
                 buffer->push_back(triangle.c.x + pos.x);
                 buffer->push_back(triangle.c.y + pos.y);
                 buffer->push_back(triangle.c.z + pos.z);
-                buffer->push_back(0);
-                buffer->push_back(0);
-                buffer->push_back(1);
                 buffer->push_back(triangle.c.u);
                 buffer->push_back(triangle.c.v);
                 buffer->push_back(texID);

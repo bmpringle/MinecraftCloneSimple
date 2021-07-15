@@ -59,7 +59,7 @@ bool BlockData::isSolid() {
     if(type != nullptr) {
         return type->isSolid(data);
     }else {
-        throw std::invalid_argument("type is null");
+        return false;
     }
 }
 
@@ -67,7 +67,7 @@ bool BlockData::isOpaque() {
     if(type != nullptr) {
         return type->isOpaque(data);
     }else {
-        throw std::invalid_argument("type is null");
+        return false;
     }
 }
 

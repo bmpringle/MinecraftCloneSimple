@@ -110,41 +110,45 @@ void Player::updatePlayerLookingAt(World* world) {
             }
         }
     }
-
+    
     std::vector<float> tValues = std::vector<float>();
     std::vector<SideEnum> sideValues = std::vector<SideEnum>();
     std::vector<BlockPos> blockValues = std::vector<BlockPos>();
 
-    for(int j = 0; j < chunksCrossed.size(); ++j) {
-        auto tree = chunksCrossed.at(j)->getBlockTree();
+    std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [this, &tValues, &sideValues, &blockValues, &cameraPosition, &cameraNormal](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
+        SideEnum sideIntersect = NORTH;
 
-        std::function<bool(AABB, bool, std::optional<SBDA>)> eval = [this, &tValues, &sideValues, &blockValues, &cameraPosition, &cameraNormal](AABB aabb, bool isLeaf, std::optional<SBDA> block) -> bool { 
-            SideEnum sideIntersect = NORTH;
+        float t = raycast(aabb, &sideIntersect, cameraPosition, cameraNormal);
 
-            float t = raycast(aabb, &sideIntersect, cameraPosition, cameraNormal);
-            
-            if(isLeaf) {
-                if(t != -1) {
-                    for(int i = 0; i < 256; ++i) {
-                        if(block.value().array.at(i).getBlockType() != nullptr && (block.value().array.at(i).isSolid())) {
-                            AABB aabbPresice = block.value().array.at(i).getAABB();
-                            float tPresice = raycast(aabbPresice, &sideIntersect, cameraPosition, cameraNormal);
-                            float max = (tValues.size() > 1) ? tValues.at(tValues.size() - 1) : tPresice + 1;
-                            if(tPresice != -1 && tPresice < max && tPresice <= 5) {
-                                tValues.push_back(tPresice);
-                                sideValues.push_back(sideIntersect);
-                                blockValues.push_back(block.value().array.at(i).getPos());
-                            }
+        if(isLeaf) {
+            std::array<BlockData, 256>& blockArray = block->value().array;
+
+            if(t != -1) {
+                for(int i = 0; i < 256; ++i) {
+                    BlockData& block = blockArray.at(i);
+                    
+                    if((block.isSolid())) {
+                        AABB aabbPresice = block.getAABB();
+                        float tPresice = raycast(aabbPresice, &sideIntersect, cameraPosition, cameraNormal);
+                        float max = (tValues.size() > 1) ? tValues.at(tValues.size() - 1) : tPresice + 1;
+                        if(tPresice != -1 && tPresice < max && tPresice <= 5) {
+                            tValues.push_back(tPresice);
+                            sideValues.push_back(sideIntersect);
+                            blockValues.push_back(block.getPos());
                         }
                     }
                 }
-            }else {
-                if(t != -1) {
-                    return true;
-                }
             }
-            return false;
-        };
+        }else {
+            if(t != -1) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    for(int j = 0; j < chunksCrossed.size(); ++j) {
+        auto tree = chunksCrossed.at(j)->getBlockTree();
         tree->getLeafOfTree(eval);
     }
 
@@ -201,14 +205,14 @@ float Player::raycast(AABB aabb, SideEnum* side, Pos cameraPos, Pos cameraNormal
     float t5 = (aabb.startZ - cameraPos.z) / cameraNormal.z;
     float t6 = (aabb.startZ + aabb.zSize - cameraPos.z) / cameraNormal.z;
 
-    float tmin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
     float tmax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
-
+    float tmin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
+    
     // if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
     if (tmax < 0) {
         return -1;
     }
-
+    
     // if tmin > tmax, ray doesn't intersect AABB
     if (tmin > tmax) {
         return -1;

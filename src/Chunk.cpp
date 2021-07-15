@@ -19,7 +19,7 @@ BlockData Chunk::getBlockAtLocation(const BlockPos pos) {
         if(pos.y >= getChunkCoordinates().y && pos.y < getChunkCoordinates().y + Y) {
             if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
                 AABB bAABB = AABB(pos.x, pos.y, pos.z, 1, 1, 1);
-                std::function<bool(AABB, bool, std::optional<SBDA>&)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>& block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
                     if(AABBIntersectedByAABB(bAABB, aabb)){
                         return true;
                     }
@@ -45,7 +45,7 @@ BlockData& Chunk::getBlockReferenceAtLocation(BlockPos pos) {
         if(pos.y >= getChunkCoordinates().y && pos.y < getChunkCoordinates().y + Y) {
             if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
                 AABB bAABB = AABB(pos.x, pos.y, pos.z, 1, 1, 1);
-                std::function<bool(AABB, bool, std::optional<SBDA>&)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>& block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
                     if(AABBIntersectedByAABB(bAABB, aabb)){
                         return true;
                     }
@@ -71,7 +71,7 @@ void Chunk::setBlockAtLocation(BlockPos pos, std::shared_ptr<Block> block) {
                 BlockData blockData = BlockData(block, pos);
                 AABB bAABB = blockData.getAABB();
 
-                std::function<bool(AABB, bool, std::optional<SBDA>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA> block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
                     if(AABBIntersectedByAABB(bAABB, aabb)){
                         return true;
                     }
@@ -95,7 +95,7 @@ void Chunk::setBlockDataAtLocation(BlockPos pos, BlockData data) {
             if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
                 AABB bAABB = data.getAABB();
                 data.setPos(pos);
-                std::function<bool(AABB, bool, std::optional<SBDA>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA> block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
                     if(AABBIntersectedByAABB(bAABB, aabb)){
                         return true;
                     }
@@ -120,7 +120,7 @@ void Chunk::setColumnOfBlocks(BlockPos pos, std::vector<std::shared_ptr<Block>> 
                 BlockData blockData = BlockData(block[0], pos);
                 AABB bAABB = blockData.getAABB();
 
-                std::function<bool(AABB, bool, std::optional<SBDA>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA> block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
                     if(AABBIntersectedByAABB(bAABB, aabb)){
                         return true;
                     }
@@ -159,7 +159,7 @@ void Chunk::softSetBlockAtLocation(BlockPos pos, std::shared_ptr<Block> block) {
                 BlockData blockData = BlockData(block, pos);
                 AABB bAABB = blockData.getAABB();
 
-                std::function<bool(AABB, bool, std::optional<SBDA>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA> block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
                     if(AABBIntersectedByAABB(bAABB, aabb)){
                         return true;
                     }
@@ -186,7 +186,7 @@ void Chunk::softSetColumnOfBlocks(BlockPos pos, std::vector<std::shared_ptr<Bloc
                 BlockData blockData = BlockData(block[0], pos);
                 AABB bAABB = blockData.getAABB();
 
-                std::function<bool(AABB, bool, std::optional<SBDA>)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA> block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
                     if(AABBIntersectedByAABB(bAABB, aabb)){
                         return true;
                     }
@@ -229,7 +229,7 @@ AABB Chunk::getChunkAABB() {
 }
 
 std::vector<BlockData> Chunk::getBlocksInChunk() {
-    std::function<bool(AABB, bool, std::optional<SBDA>&)> eval = [](AABB aabb, bool isLeaf, std::optional<SBDA>& block) -> bool { 
+    std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
         return true;
     };
     std::vector<std::optional<SBDA>*> blocksVector = blockTree.getLeafOfTree(eval);
@@ -257,7 +257,7 @@ void Chunk::removeBlockAtLocation(BlockPos pos) {
             if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
                 //blocktree version
                 AABB bAABB = AABB(pos.x, pos.y, pos.z, 1, 1, 1);
-                std::function<bool(AABB, bool, std::optional<SBDA>&)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>& block) -> bool { 
+                std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
                     if(AABBIntersectedByAABB(bAABB, aabb)){
                         return true;
                     }
@@ -333,7 +333,7 @@ BinaryTree<SBDA, AABB, SBDA>* Chunk::getBlockTree() {
 }
 
 void Chunk::updateChunk(BlockArrayData* data) {
-    std::function<bool(AABB, bool, std::optional<SBDA>&)> eval = [](AABB aabb, bool isLeaf, std::optional<SBDA>& block) -> bool { 
+    std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
         return true;
     };
     std::vector<std::optional<SBDA>*> blocksVector = blockTree.getLeafOfTree(eval);

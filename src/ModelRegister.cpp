@@ -12,9 +12,10 @@ bool ModelRegister::hasID(int id) {
 }
 
 int ModelRegister::registerModel(std::vector<float>& vertexBufferIn, std::vector<int>& indices) {
-    Renderer::appendVectorWithVector(&vertexBuffer, vertexBufferIn);
+    //Renderer::appendVectorWithVector(&vertexBuffer, vertexBufferIn);
     idIndicesMap[nextID] = indices;
     ++nextID;
+    return nextID - 1;
 }
 
 std::vector<float>& ModelRegister::getVertexBuffer() {

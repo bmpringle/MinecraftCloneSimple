@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BC6175E52697B58F00FADEFA /* BlockRenderedModelIndexBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC6175E42697B58F00FADEFA /* BlockRenderedModelIndexBuffer.cpp */; };
 		BCD0260C2673EAB40072157B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD0260B2673EAB40072157B /* OpenGL.framework */; };
 		BCD0260E2673EAB80072157B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD0260D2673EAB80072157B /* Cocoa.framework */; };
 		BCD026102673EAC00072157B /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD0260F2673EAC00072157B /* IOKit.framework */; };
@@ -77,6 +76,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BC4D313F269E20F8004DBAAC /* BinaryNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BinaryNode.h; path = ../BinaryTree/BinaryNode.h; sourceTree = "<group>"; };
+		BC4D3140269E20F8004DBAAC /* BinaryTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BinaryTree.h; path = ../BinaryTree/BinaryTree.h; sourceTree = "<group>"; };
+		BC4D3141269E2112004DBAAC /* ObjLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjLoader.h; path = ../ObjLoader/ObjLoader.h; sourceTree = "<group>"; };
+		BC4D3142269E2112004DBAAC /* ObjMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjMesh.h; path = ../ObjLoader/ObjMesh.h; sourceTree = "<group>"; };
+		BC4D3143269E211E004DBAAC /* EventQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EventQueue.h; path = ../EventQueue/EventQueue.h; sourceTree = "<group>"; };
+		BC4D3144269E211E004DBAAC /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Event.h; path = ../EventQueue/Event.h; sourceTree = "<group>"; };
+		BC4D3145269E2126004DBAAC /* Listener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Listener.h; path = ../EventQueue/Listener.h; sourceTree = "<group>"; };
+		BC4D3146269E213E004DBAAC /* TimerMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimerMap.h; path = ../TimerMap/TimerMap.h; sourceTree = "<group>"; };
 		BC6175AD26960E8100FADEFA /* TextureArrayCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureArrayCreator.h; path = ../include/TextureArrayCreator.h; sourceTree = "<group>"; };
 		BC6175AE26960E8100FADEFA /* Gui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gui.h; path = ../include/Gui.h; sourceTree = "<group>"; };
 		BC6175AF26960E8100FADEFA /* SBDA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBDA.h; path = ../include/SBDA.h; sourceTree = "<group>"; };
@@ -132,8 +139,6 @@
 		BC6175E126960E8200FADEFA /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Player.h; path = ../include/Player.h; sourceTree = "<group>"; };
 		BC6175E226960E8200FADEFA /* BlockPlanks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockPlanks.h; path = ../include/BlockPlanks.h; sourceTree = "<group>"; };
 		BC6175E326960E8200FADEFA /* InputHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputHandler.h; path = ../include/InputHandler.h; sourceTree = "<group>"; };
-		BC6175E42697B58F00FADEFA /* BlockRenderedModelIndexBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BlockRenderedModelIndexBuffer.cpp; path = ../src/BlockRenderedModelIndexBuffer.cpp; sourceTree = "<group>"; };
-		BC6175E62697B59C00FADEFA /* BlockRenderedModelIndexBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockRenderedModelIndexBuffer.h; path = ../include/BlockRenderedModelIndexBuffer.h; sourceTree = "<group>"; };
 		BCD0256F2673E6BE0072157B /* MCSXcode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MCSXcode; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCD0260B2673EAB40072157B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		BCD0260D2673EAB80072157B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -220,8 +225,14 @@
 		BCD025662673E6BE0072157B = {
 			isa = PBXGroup;
 			children = (
-				BC6175E62697B59C00FADEFA /* BlockRenderedModelIndexBuffer.h */,
-				BC6175E42697B58F00FADEFA /* BlockRenderedModelIndexBuffer.cpp */,
+				BC4D3146269E213E004DBAAC /* TimerMap.h */,
+				BC4D3145269E2126004DBAAC /* Listener.h */,
+				BC4D3144269E211E004DBAAC /* Event.h */,
+				BC4D3143269E211E004DBAAC /* EventQueue.h */,
+				BC4D3141269E2112004DBAAC /* ObjLoader.h */,
+				BC4D3142269E2112004DBAAC /* ObjMesh.h */,
+				BC4D313F269E20F8004DBAAC /* BinaryNode.h */,
+				BC4D3140269E20F8004DBAAC /* BinaryTree.h */,
 				BC6175CC26960E8100FADEFA /* AABB.h */,
 				BC6175B726960E8100FADEFA /* Block.h */,
 				BC6175BD26960E8100FADEFA /* BlockArrayData.h */,
@@ -413,7 +424,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BC6175E52697B58F00FADEFA /* BlockRenderedModelIndexBuffer.cpp in Sources */,
 				BCD02656267547420072157B /* Button.cpp in Sources */,
 				BCD02657267547420072157B /* Player.cpp in Sources */,
 				BCD02658267547420072157B /* SideEnum.cpp in Sources */,
@@ -604,6 +614,7 @@
 					"-Wpedantic",
 					"-D_USE_MATH_DEFINES",
 					"-DNOISE_STATIC",
+					"-DDBG",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -636,6 +647,7 @@
 					"-std=c++2a",
 					"-DGLEW_STATIC",
 					"$(OTHER_CFLAGS)",
+					"-DDBG",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

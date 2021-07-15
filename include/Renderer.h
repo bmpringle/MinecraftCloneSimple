@@ -31,7 +31,7 @@ class Renderer {
         unsigned int textTextureBuffer(std::string text);
 
         template<class T>
-        static void appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T> vectorToAppend);
+        static void appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T>& vectorToAppend);
 
         static glm::mat3x3 calculateXRotationMatrix(double xRotation);
         static glm::mat3x3 calculateYRotationMatrix(double yRotation);
