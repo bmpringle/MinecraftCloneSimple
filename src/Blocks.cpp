@@ -20,14 +20,20 @@ std::map<std::string, std::shared_ptr<Block>> Blocks::blockMap = {
             {door->getName(), door}
 };
 
-const unsigned int MAX_META = 64;
-
 void Blocks::initTextureArrayCreator(TextureArrayCreator* texCreator) {
     for(std::pair<std::string, std::shared_ptr<Block>> nameBlockPair : blockMap) {
         for(int i = 0; i < 6; ++i) {
-            for(unsigned int meta = 0; meta < MAX_META; ++meta) {
+            for(unsigned int meta = 0; meta < nameBlockPair.second->getNumberOfVariants(); ++meta) {
                 texCreator->addTextureToList(nameBlockPair.second->getTextureName(SideEnum(i), meta));
             }
+        }
+    }
+}
+
+void Blocks::initModelRegister(ModelRegister* modelRegister, TextureArrayCreator* texCreator) {
+    for(std::pair<std::string, std::shared_ptr<Block>> nameBlockPair : blockMap) {
+        for(unsigned int meta = 0; meta < nameBlockPair.second->getNumberOfVariants(); ++meta) {
+            modelRegister->registerModel(texCreator, nameBlockPair.second, meta);
         }
     }
 }

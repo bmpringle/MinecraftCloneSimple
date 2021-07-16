@@ -1,7 +1,7 @@
 #include "BlockLog.h"
 
 BlockLog::BlockLog() {
-
+    numberOfVariants = 3;
 }
 
 std::string BlockLog::getTextureName(SideEnum side, int data = 0) {

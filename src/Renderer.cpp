@@ -8,9 +8,11 @@
 
 #define WORLDSIZE_CONST 100
 
-Renderer::Renderer() : textureFetcher(TextureFetcher()), textureArrayCreator(TextureArrayCreator()), fontLoader("src/assets/courier.ttf") {
+Renderer::Renderer() : textureFetcher(TextureFetcher()), textureArrayCreator(TextureArrayCreator()), modelRegister(ModelRegister()), fontLoader("src/assets/courier.ttf") {
     Blocks::initTextureArrayCreator(&textureArrayCreator);
     textureArrayCreator.generateTextureArray();
+
+    Blocks::initModelRegister(&modelRegister, &textureArrayCreator);
 
     renderSetup();
 }

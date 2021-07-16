@@ -111,3 +111,7 @@ void Block::rotateModel(BlockRenderedModel& model, int data) {
 bool Block::onBlockActivated(World* world, BlockPos pos, ItemStack* stack, int* data) {
     return false;
 }
+
+int Block::getNumberOfVariants() {
+    return numberOfVariants;
+}

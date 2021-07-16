@@ -13,6 +13,7 @@
 #include "RenderChunkBuffer.h"
 #include "FontLoader.h"
 #include "Frustrum.h"
+#include "ModelRegister.h"
 
 class World;
 
@@ -78,6 +79,8 @@ class Renderer {
         TextureFetcher textureFetcher;
 
         TextureArrayCreator textureArrayCreator;
+
+        ModelRegister modelRegister;
 
         FontLoader fontLoader;
 

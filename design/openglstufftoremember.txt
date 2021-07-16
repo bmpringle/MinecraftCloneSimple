@@ -1,0 +1,2 @@
+https://stackoverflow.com/questions/14249634/opengl-vaos-and-multiple-buffers
+desc: this is here so i can easily remember how this convoluted logic works

@@ -3,7 +3,7 @@
 #include "World.h"
 
 BlockDoor::BlockDoor() {
-
+    numberOfVariants = 16;
 }
 
 std::string BlockDoor::getName() {

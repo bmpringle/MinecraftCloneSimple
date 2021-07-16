@@ -44,8 +44,11 @@ class Block {
 
         virtual bool onBlockActivated(World* world, BlockPos pos, ItemStack* stack, int* data);
 
+        virtual int getNumberOfVariants();
+
         virtual ~Block() = default;
-    private:
+    protected:
+        int numberOfVariants = 1;
 
 };
 #endif

@@ -11,6 +11,7 @@
 #include "BlockDoor.h"
 
 #include "TextureArrayCreator.h"
+#include "ModelRegister.h"
 
 #include <map>
 
@@ -28,5 +29,6 @@ class Blocks {
         static const std::shared_ptr<Block> door;
 
         static void initTextureArrayCreator(TextureArrayCreator* texCreator);
+        static void initModelRegister(ModelRegister* modelRegister, TextureArrayCreator* texCreator);
 };
 #endif

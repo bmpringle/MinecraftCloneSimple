@@ -3,30 +3,59 @@
 #include <iostream>
 #include "Renderer.h"
 
-ModelRegister::ModelRegister() : vertexBuffer(std::vector<float>()),  idIndicesMap(std::map<int, std::vector<int>>()), nextID(0) {
+
+ModelRegister::ModelRegister() {
 
 };
 
-bool ModelRegister::hasID(int id) {
-    return idIndicesMap.count(id) == 1;
-}
+void ModelRegister::registerModel(TextureArrayCreator* texCreator, std::shared_ptr<Block> block, int metadata) {
+    std::vector<float> buffer = std::vector<float>();
 
-int ModelRegister::registerModel(std::vector<float>& vertexBufferIn, std::vector<int>& indices) {
-    //Renderer::appendVectorWithVector(&vertexBuffer, vertexBufferIn);
-    idIndicesMap[nextID] = indices;
-    ++nextID;
-    return nextID - 1;
-}
+    BlockRenderedModel model = block->getRenderedModel(metadata);
 
-std::vector<float>& ModelRegister::getVertexBuffer() {
-    return vertexBuffer;
-}
+    for(BlockFace face : model.renderedBlockModel) {
+        int texID = texCreator->getTextureLayer(block->getTextureName(face.side, metadata));
 
-std::vector<int>& ModelRegister::getIndices(int id) {
-    if(hasID(id)) {
-        return idIndicesMap.at(id);
-    }else {
-        std::cout << "Tried to get indicies for a model that doesn't exist!" << std::endl;
-        abort();
+        for(RenderedTriangle triangle : face.triangles) {
+            buffer.push_back(triangle.a.x);
+            buffer.push_back(triangle.a.y);
+            buffer.push_back(triangle.a.z);
+            buffer.push_back(triangle.a.u);
+            buffer.push_back(triangle.a.v);
+            buffer.push_back(texID);
+
+            buffer.push_back(triangle.b.x);
+            buffer.push_back(triangle.b.y);
+            buffer.push_back(triangle.b.z);
+            buffer.push_back(triangle.b.u);
+            buffer.push_back(triangle.b.v);
+            buffer.push_back(texID);
+
+            buffer.push_back(triangle.c.x);
+            buffer.push_back(triangle.c.y);
+            buffer.push_back(triangle.c.z);
+            buffer.push_back(triangle.c.u);
+            buffer.push_back(triangle.c.v);
+            buffer.push_back(texID);
+        }
     }
+
+    unsigned int VAO, VBO;
+
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);  
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    blockToVAOAndVBOMap.try_emplace(block->getName() + "-" + std::to_string(metadata), std::tie(VAO, VBO));
+};
+
+std::tuple<unsigned int, unsigned int> ModelRegister::getVAOAndVBO(std::shared_ptr<Block> block, int metadata) {
+    return blockToVAOAndVBOMap.at(block->getName() + "-" + std::to_string(metadata));
 }
