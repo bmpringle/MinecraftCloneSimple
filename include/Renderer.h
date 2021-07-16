@@ -51,11 +51,13 @@ class Renderer {
 
         void setupEntityRenderer();
 
+        void cleanup();
+
     private:
         void renderSetup();
         void renderEntity(std::shared_ptr<Entity> entity, World* world);
 
-        void updateChunkData(std::vector<float>* buffer, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator);
+        void updateChunkData(std::map<std::string, std::vector<int>>* blockTypeToPositionsMap, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator);
 
         unsigned int compileShaderProgramFromFiles(std::string vertexShaderPath, std::string fragmentShaderPath);
 

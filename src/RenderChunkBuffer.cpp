@@ -1,52 +1,69 @@
 #include "RenderChunkBuffer.h"
 #include "RenderInclude.h"
 
-RenderChunkBuffer::RenderChunkBuffer(std::vector<float> _renderData, BlockPos _pos) {
+RenderChunkBuffer::RenderChunkBuffer(std::map<std::string, std::vector<int>> _renderData, BlockPos _pos, ModelRegister* modelRegister) {
     pos = _pos;
-    chunkBufferSize = _renderData.size();
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    for(std::pair<const std::string, std::vector<int>>& pair : _renderData) {
+        std::tuple<unsigned int, unsigned int> vboAndVao = modelRegister->getVAOAndVBO(pair.first);
 
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, chunkBufferSize * sizeof(float), _renderData.data(), GL_DYNAMIC_DRAW);
+        glBindVertexArray(std::get<0>(vboAndVao));
+        unsigned int vbo;
+        glGenBuffers(1, &vbo);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);  
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(int) * pair.second.size(), pair.second.data(), GL_DYNAMIC_DRAW);
+
+        renderData.try_emplace(pair.first, vbo);
+
+        numberOfInstances.try_emplace(pair.first, pair.second.size() / 3);
+    }
 }
 
-void RenderChunkBuffer::setRenderData(std::vector<float> newData) {
-    chunkBufferSize = newData.size();
+void RenderChunkBuffer::setRenderData(std::map<std::string, std::vector<int>> newData, ModelRegister* modelRegister) {
+   renderData.clear();
+   numberOfInstances.clear();
+   
+   for(std::pair<const std::string, std::vector<int>>& pair : newData) {
+        std::tuple<unsigned int, unsigned int> vboAndVao = modelRegister->getVAOAndVBO(pair.first);
 
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, chunkBufferSize * sizeof(float), newData.data(), GL_DYNAMIC_DRAW);
-}
+        glBindVertexArray(std::get<0>(vboAndVao));
+        unsigned int vbo;
+        glGenBuffers(1, &vbo);
 
-unsigned int RenderChunkBuffer::getRenderDataBuffer() {
-    return VBO;
-}
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-int RenderChunkBuffer::getRenderDataSize() {
-    return chunkBufferSize;
+        glBufferData(GL_ARRAY_BUFFER, sizeof(int) * pair.second.size(), pair.second.data(), GL_DYNAMIC_DRAW);
+
+        renderData.try_emplace(pair.first, vbo);
+
+        numberOfInstances.try_emplace(pair.first, pair.second.size() / 3);
+    }
 }
 
 BlockPos RenderChunkBuffer::getPos() {
     return pos;
 }
 
-void RenderChunkBuffer::renderChunk() {
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, getRenderDataBuffer());
-    glDrawArrays(GL_TRIANGLES, 0, getRenderDataSize() / 6);
-    glBindVertexArray(0);
+void RenderChunkBuffer::renderChunk(ModelRegister* modelRegister) {
+    for(std::pair<const std::string, unsigned int>& pair : renderData) {
+        std::tuple<unsigned int, unsigned int> vboAndVao = modelRegister->getVAOAndVBO(pair.first);
+
+        glBindVertexArray(std::get<0>(vboAndVao));
+
+        glBindBuffer(GL_ARRAY_BUFFER, pair.second);
+        glVertexAttribPointer(2, 3, GL_INT, GL_FALSE, 3 * sizeof(int), (void*)0);
+        glEnableVertexAttribArray(2);
+        glVertexAttribDivisor(2, 1);
+
+        glDrawArraysInstanced(GL_TRIANGLES, 0, modelRegister->getBufferLength(pair.first) / 6, numberOfInstances.at(pair.first)); 
+
+        glBindVertexArray(0);
+
+    }
 }
 
 RenderChunkBuffer::~RenderChunkBuffer() {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+
 }

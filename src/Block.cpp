@@ -13,7 +13,7 @@ Block::Block() {
 }
 
 AABB Block::getAABB(int data) {
-    return AABB(0, 0, 0, 1, 1, 1);
+    return aabb;
 }
 
 BlockRenderedModel Block::getRenderedModel(int data) {

@@ -195,14 +195,14 @@ void Renderer::updateWorldVBO(World* world) {
             BlockPos pos = lchunk.first;
             if(renderChunkBuffers.count(pos) > 0) {
                 std::vector<BlockData> blockData = c->getBlocksInChunk();
-                std::vector<float> vectorWithColors = std::vector<float>();
-                updateChunkData(&vectorWithColors, &blockData, &textureArrayCreator);
-                renderChunkBuffers.at(pos).setRenderData(vectorWithColors); 
+                std::map<std::string, std::vector<int>> blockTypeToPositionsMap = std::map<std::string, std::vector<int>>();
+                updateChunkData(&blockTypeToPositionsMap, &blockData, &textureArrayCreator);
+                renderChunkBuffers.at(pos).setRenderData(blockTypeToPositionsMap, &modelRegister); 
             }else {
-                std::vector<float> vectorWithColors = std::vector<float>();
+                std::map<std::string, std::vector<int>> blockTypeToPositionsMap = std::map<std::string, std::vector<int>>();
                 std::vector<BlockData> blockData = c->getBlocksInChunk();
-                updateChunkData(&vectorWithColors, &blockData, &textureArrayCreator);
-                renderChunkBuffers.try_emplace(pos, vectorWithColors, pos);
+                updateChunkData(&blockTypeToPositionsMap, &blockData, &textureArrayCreator);
+                renderChunkBuffers.try_emplace(pos, blockTypeToPositionsMap, pos, &modelRegister);
             }      
         }
     }
@@ -216,7 +216,7 @@ void Renderer::renderFrame(World* world) {
     glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayCreator.getGeneratedTextureArray());
 
     for(std::pair<const BlockPos, RenderChunkBuffer>& cBuffer : renderChunkBuffers) {
-        cBuffer.second.renderChunk();
+        cBuffer.second.renderChunk(&modelRegister);
     }
     std::map<BlockPos, LoadedChunkInfo> loadedChunkMap = world->getBlockData()->getLoadedChunkLocations();
     for(std::pair<BlockPos, LoadedChunkInfo> lChunk : loadedChunkMap) {
@@ -589,38 +589,23 @@ glm::mat3x3 Renderer::calculateYRotationMatrix(double yRotation) {
     return rotationMatrix;
 }
 
-void Renderer::updateChunkData(std::vector<float>* buffer, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator) {    
+void Renderer::updateChunkData(std::map<std::string, std::vector<int>>* blockTypeToPositionsMap, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator) {    
+    
     for(int i = 0; i < blocksInChunk->size(); ++i) {
         BlockData blockData = blocksInChunk->at(i);
 
-        BlockRenderedModel model = blockData.getRenderedModel();
         BlockPos pos = blockData.getPos();
-    
-        for(BlockFace face : model.renderedBlockModel) {
-            int texID = texCreator->getTextureLayer(blockData.getTextureName(face.side));
 
-            for(RenderedTriangle triangle : face.triangles) {
-                buffer->push_back(triangle.a.x + pos.x);
-                buffer->push_back(triangle.a.y + pos.y);
-                buffer->push_back(triangle.a.z + pos.z);
-                buffer->push_back(triangle.a.u);
-                buffer->push_back(triangle.a.v);
-                buffer->push_back(texID);
-
-                buffer->push_back(triangle.b.x + pos.x);
-                buffer->push_back(triangle.b.y + pos.y);
-                buffer->push_back(triangle.b.z + pos.z);
-                buffer->push_back(triangle.b.u);
-                buffer->push_back(triangle.b.v);
-                buffer->push_back(texID);
-
-                buffer->push_back(triangle.c.x + pos.x);
-                buffer->push_back(triangle.c.y + pos.y);
-                buffer->push_back(triangle.c.z + pos.z);
-                buffer->push_back(triangle.c.u);
-                buffer->push_back(triangle.c.v);
-                buffer->push_back(texID);
-            }
+        std::string name = blockData.getBlockType()->getName() + "-" + std::to_string(blockData.getData());
+        
+        if(blockTypeToPositionsMap->contains(name)) {
+            std::vector<int>& posVector = blockTypeToPositionsMap->at(name);
+            posVector.push_back(pos.x);
+            posVector.push_back(pos.y);
+            posVector.push_back(pos.z);
+        }else {
+            std::vector<int> position = {pos.x, pos.y, pos.z};
+            blockTypeToPositionsMap->try_emplace(name, position);
         }
     }
 }
@@ -665,7 +650,7 @@ unsigned int Renderer::textTextureBuffer(std::string text) {
     glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, b_w, b_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap4Channel);
-
+    
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glBindVertexArray(0);
@@ -802,4 +787,10 @@ void Renderer::setupEntityRenderer() {
     glGenBuffers(1, &entityEBO);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, entityEBO);
+}
+
+
+void Renderer::cleanup() {
+    renderChunkBuffers.clear();
+    renderChunkBuffersOld.clear();
 }

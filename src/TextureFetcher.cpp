@@ -3,6 +3,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
+#include <iostream>
+
 TextureFetcher::TextureFetcher() {
 
 }
@@ -52,7 +54,7 @@ unsigned int TextureFetcher::getOrLoadAbsolutePathTexture(std::string name, int 
 }
 
 unsigned int TextureFetcher::getOrLoadTexture(std::string name, int gl_setting1, int gl_setting2) {
-    if(textureIDs.find(name) != textureIDs.end()) {
+    if(textureIDs.contains(name)) {
         return textureIDs.at(name);
     }
 

@@ -98,6 +98,9 @@ void World::mainLoop() {
     std::string seed = std::to_string(internalBlockData.getSeed());
     std::ofstream chunkFile("./worlds/"+name+"/data/seed.cdat");
     chunkFile.write(seed.c_str(), seed.length());
+
+    //cleanup renderer
+    renderer->cleanup();
 }
 
 void World::pause() {

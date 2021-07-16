@@ -23,7 +23,7 @@ unsigned int TextureArrayCreator::generateTextureArray() {
     glBindTexture(GL_TEXTURE_2D_ARRAY, texBuffer);
 
     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, 16, 16, texturePaths.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
+    
     textureDepths.clear();
 
     for(int i = 0; i < texturePaths.size(); ++i) {

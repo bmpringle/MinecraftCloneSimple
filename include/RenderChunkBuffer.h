@@ -3,30 +3,24 @@
 
 #include <vector>
 #include "Block.h"
+#include "ModelRegister.h"
 
 class RenderChunkBuffer {
     public:
-        RenderChunkBuffer(std::vector<float> _renderData, BlockPos _pos);
+        RenderChunkBuffer(std::map<std::string, std::vector<int>> _renderData, BlockPos _pos, ModelRegister* modelRegister);
 
         ~RenderChunkBuffer();
 
-        void setRenderData(std::vector<float> newData);
-
-        unsigned int getRenderDataBuffer();
-
-        int getRenderDataSize();
+        void setRenderData(std::map<std::string, std::vector<int>> newData, ModelRegister* modelRegister);
 
         BlockPos getPos();
 
-        void renderChunk();
+        void renderChunk(ModelRegister* modelRegister);
 
     private:
         BlockPos pos = BlockPos(0, 0, 0);
 
-        int chunkBufferSize = 0;
-
-        unsigned int VBO = -1;
-
-        unsigned int VAO = -1;
+        std::map<std::string, int> numberOfInstances = std::map<std::string, int>();
+        std::map<std::string, unsigned int> renderData = std::map<std::string, unsigned int>();
 };
 #endif

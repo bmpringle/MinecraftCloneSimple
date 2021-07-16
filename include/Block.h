@@ -49,6 +49,7 @@ class Block {
         virtual ~Block() = default;
     protected:
         int numberOfVariants = 1;
+        AABB aabb = AABB(0, 0, 0, 1, 1, 1);
 
 };
 #endif

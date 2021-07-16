@@ -47,6 +47,8 @@ void ModelRegister::registerModel(TextureArrayCreator* texCreator, std::shared_p
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * buffer.size(), buffer.data(), GL_DYNAMIC_DRAW);
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);  
 
@@ -54,8 +56,14 @@ void ModelRegister::registerModel(TextureArrayCreator* texCreator, std::shared_p
     glEnableVertexAttribArray(1);
 
     blockToVAOAndVBOMap.try_emplace(block->getName() + "-" + std::to_string(metadata), std::tie(VAO, VBO));
+
+    blockToBufferLengthMap.try_emplace(block->getName() + "-" + std::to_string(metadata), buffer.size());
 };
 
-std::tuple<unsigned int, unsigned int> ModelRegister::getVAOAndVBO(std::shared_ptr<Block> block, int metadata) {
-    return blockToVAOAndVBOMap.at(block->getName() + "-" + std::to_string(metadata));
+std::tuple<unsigned int, unsigned int> ModelRegister::getVAOAndVBO(std::string key) {
+    return blockToVAOAndVBOMap.at(key);
+}
+
+int ModelRegister::getBufferLength(std::string key) {
+    return blockToBufferLengthMap.at(key);
 }

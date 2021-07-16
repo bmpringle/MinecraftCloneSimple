@@ -33,8 +33,6 @@ class Player final : public Listener, public Entity {
         World* world;
         GameSettings* settings;
 
-        Pos pos;
-
         //in m/s
         float speed = 4.3;
         
