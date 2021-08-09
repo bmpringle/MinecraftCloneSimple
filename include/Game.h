@@ -2,7 +2,6 @@
 #define GAME_H
 
 #include "World.h"
-#include "RenderInclude.h"
 #include "GameEventHandler.h"
 #include "MainMenuGui.h"
 #include "GameSettings.h"

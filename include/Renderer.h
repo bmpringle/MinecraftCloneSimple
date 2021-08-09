@@ -15,6 +15,8 @@
 #include "Frustrum.h"
 #include "ModelRegister.h"
 
+#include "OpenGLRenderer.h"
+
 class World;
 
 class Renderer {
@@ -54,47 +56,6 @@ class Renderer {
         void cleanup();
 
     private:
-        void renderSetup();
-        void renderEntity(std::shared_ptr<Entity> entity, World* world);
-
-        void updateChunkData(std::map<std::string, std::vector<int>>* blockTypeToPositionsMap, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator);
-
-        unsigned int compileShaderProgramFromFiles(std::string vertexShaderPath, std::string fragmentShaderPath);
-
-        float vertices[18] = {
-            -0.5f, -0.5f, 0.0f, /*color*/ 1.0f, 1.0f, 0.0f,
-            0.5f, -0.5f, 0.0f, /*color*/ 1.0f, 1.0f, 0.0f,
-            0.0f,  0.5f, 0.0f, /*color*/ 1.0f, 1.0f, 0.0f
-        }; 
-
-        float aspectRatio = 1;
-
-        void setUniforms(World* world, int programIndex);
-
-        void setUniforms(World* world, int programIndex, Frustrum* frustrum);
-
-        unsigned int VAO[4];
-        unsigned int VBO[4];
-
-        unsigned int shaderProgram[7];
-
-        TextureFetcher textureFetcher;
-
-        TextureArrayCreator textureArrayCreator;
-
-        ModelRegister modelRegister;
-
-        FontLoader fontLoader;
-
-        std::map<BlockPos, RenderChunkBuffer> renderChunkBuffers = std::map<BlockPos, RenderChunkBuffer>();
-
-        std::vector<RenderChunkBuffer> renderChunkBuffersOld = std::vector<RenderChunkBuffer>();
-
-        int width = 0;
-        int height = 0;
-        
-        unsigned int entityVBO = INT_MAX;
-        unsigned int entityVAO = INT_MAX;
-        unsigned int entityEBO = INT_MAX;
+        OpenGLRenderer openGLRenderer;
 };
 #endif

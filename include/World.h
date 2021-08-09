@@ -1,11 +1,11 @@
 #ifndef WORLD_H
 #define WORLD_H
+
 #include "InputHandler.h"
 #include "Renderer.h"
 #include "EventQueue/EventQueue.h"
 #include "BlockArrayData.h"
 #include "Player.h"
-#include "RenderInclude.h"
 #include "TimerMap/TimerMap.h"
 #include "GameSettings.h"
 

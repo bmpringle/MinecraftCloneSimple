@@ -4,7 +4,6 @@
 #include <vector>
 #include "Block.h"
 #include <memory>
-#include "RenderInclude.h"
 #include "Chunk.h"
 #include "LoadedChunkInfo.h"
 #include <mutex>
@@ -86,9 +85,9 @@ class BlockArrayData {
         double width = Chunk::getChunkSize()[0];
         double height = Chunk::getChunkSize()[2];
 
-        int averageTerrainHeight = 65;
+        int averageTerrainHeight = 30;
         double amplifier = 3;
-        int waterLevel = 63;
+        int waterLevel = 28;
 
         noise::module::Perlin noise = noise::module::Perlin();
 

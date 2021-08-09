@@ -40,7 +40,7 @@ class Chunk {
         AABB getChunkAABB();
 
         std::vector<BlockData> getBlocksInChunk();
-
+    
         static std::array<int, 3> getChunkSize();
 
         bool isFakeChunk();
