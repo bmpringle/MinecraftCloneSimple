@@ -1,11 +1,18 @@
 #include "Button.h"
 
+int Button::buttonCount = 0;
+
 Button::Button(int x, int y, int width, int height, std::string texture, Renderer* renderer) : x(x), y(y), width(width), height(height), text(texture) {
+    id = std::to_string(buttonCount);
+    textureID = "buttonTexture" + id;
+    ++buttonCount;
     setText(renderer, text);
 }
 
 Button::Button() : x(0), y(0), width(0), height(0), text("") {
-
+    id = std::to_string(buttonCount);
+    textureID = "buttonTexture" + id;
+    ++buttonCount;
 }
 
 bool Button::isBeingHoveredOver(int mouseX, int mouseY, int windowWidth, int windowHeight) {
@@ -39,7 +46,7 @@ void Button::render(Renderer* renderer, double offsetX, double offsetY) {
         (float)(x + width + offsetX) * aspect, (float)(y + height + offsetY) * aspect, layer, 0, 0, 1, 1, 1
     };
 
-    renderer->renderOverlay(numberoverlay, TBO);
+    renderer->renderOverlay(numberoverlay, textureID);
 }
 
 void Button::render(Renderer* renderer) {
@@ -93,19 +100,9 @@ void Button::setLayer(double layer) {
 
 void Button::setText(Renderer* renderer, std::string text) {
     this->text = text;
-    glDeleteTextures(1, &TBO);
-    
-    if(text == "") {
-        TBOinit = true;
-        TBO = renderer->textTextureBuffer(" ");
-        b_h = renderer->getBitmapHeight();
-        b_w = renderer->getBitmapWidth();
-        return;
-    }
-    TBOinit = true;
-    TBO = renderer->textTextureBuffer(text);
-    b_h = renderer->getBitmapHeight();
-    b_w = renderer->getBitmapWidth();
+    renderer->textTextureBuffer(textureID, ((text == "") ? " " : text));
+    b_w = renderer->getTextureDimensions(textureID).first;
+    b_h = renderer->getTextureDimensions(textureID).second;
     autoSize(x + width/2.0, y + height/2.0);
 }
 

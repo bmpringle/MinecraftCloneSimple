@@ -23,13 +23,16 @@ class OpenGLRenderer {
 
         void renderFrame(World* world);
         void renderOverlay(float rectangle[48], std::string texture);
-        void renderOverlay(float rectangle[48], unsigned int TBO);
         void renderRectangle(float rectangle[36]);
         void renderBlockInWireframe(World* world, BlockPos pos);
         void updateAspectRatio(GLFWwindow* window);
         void updateWorldVBO(World* world);
 
-        unsigned int textTextureBuffer(std::string text);
+        void textTextureBuffer(std::string id, std::string text);
+
+        int getWidth();
+
+        int getHeight();
 
         template<class T>
         static void appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T>& vectorToAppend);
@@ -39,15 +42,9 @@ class OpenGLRenderer {
 
         static glm::mat4x4 calculatePerspectiveMatrix(double FOV, double aspectRatio, double zNear, double zFar);
 
-        int getWidth();
-
-        int getHeight();
+        std::pair<unsigned int, unsigned int> getTextureDimensions(std::string id);
 
         std::array<int, 2> overlayDimensions();
-
-        int getBitmapHeight();
-
-        int getBitmapWidth();
 
         void setupEntityRenderer();
 
@@ -89,12 +86,12 @@ class OpenGLRenderer {
         std::map<BlockPos, RenderChunkBuffer> renderChunkBuffers = std::map<BlockPos, RenderChunkBuffer>();
 
         std::vector<RenderChunkBuffer> renderChunkBuffersOld = std::vector<RenderChunkBuffer>();
-
-        int width = 0;
-        int height = 0;
         
         unsigned int entityVBO = INT_MAX;
         unsigned int entityVAO = INT_MAX;
         unsigned int entityEBO = INT_MAX;
+
+        int width = 0;
+        int height = 0;
 };
 #endif

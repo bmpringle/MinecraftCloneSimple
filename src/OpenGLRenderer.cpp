@@ -264,36 +264,6 @@ void OpenGLRenderer::renderOverlay(float rectangle[48], std::string texture) {
     glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 }
 
-void OpenGLRenderer::renderOverlay(float rectangle[48], unsigned int TBO) {
-    glEnable(GL_BLEND);
-    glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-
-    float overlay[48] = {0};
-
-    for(int i = 0; i < 48; ++i) {
-        overlay[i] = rectangle[i] * ((i % 8 == 1) ? aspectRatio : 1);
-    }
-    
-    glBindVertexArray(VAO[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-
-    glUseProgram(shaderProgram[2]);
-
-    int boundsVec3Location = glGetUniformLocation(shaderProgram[2], "bounds");
-
-    glUniform3f(boundsVec3Location, 1000, 1000, 1000);
-
-    glBindTexture(GL_TEXTURE_2D, TBO);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(overlay), &overlay[0], GL_STATIC_DRAW);
-
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    
-    glDisable(GL_BLEND);
-    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-}
-
 //Frustrum* ptr will be filled with data if you don't pass nullptr
 void OpenGLRenderer::setUniforms(World* world, int programIndex, Frustrum* frustrum) {
 
@@ -387,6 +357,14 @@ void OpenGLRenderer::updateAspectRatio(GLFWwindow* window) {
 
     this->width = width;
     this->height = height;
+}
+
+int OpenGLRenderer::getWidth() {
+    return width;
+}
+
+int OpenGLRenderer::getHeight() {
+    return height;
 }
 
 void OpenGLRenderer::renderBlockInWireframe(World* world, BlockPos pos) {
@@ -610,19 +588,20 @@ void OpenGLRenderer::updateChunkData(std::map<std::string, std::vector<int>>* bl
     }
 }
 
-int OpenGLRenderer::getWidth() {
-    return width;
+std::pair<unsigned int, unsigned int> OpenGLRenderer::getTextureDimensions(std::string id) {
+    try {
+        return textureFetcher.getTextureDimensions(id);
+    }catch(std::out_of_range e) {
+        return std::make_pair(0, 0);
+    }
 }
 
-int OpenGLRenderer::getHeight() {
-    return height;
-}
 
 std::array<int, 2> OpenGLRenderer::overlayDimensions() {
     return {1000, 1000};
 }
 
-unsigned int OpenGLRenderer::textTextureBuffer(std::string text) {
+void OpenGLRenderer::textTextureBuffer(std::string id, std::string text) {
     unsigned char* bitmap = fontLoader.getTextBitmap(text);
 
     int b_h = fontLoader.getBH();
@@ -658,17 +637,8 @@ unsigned int OpenGLRenderer::textTextureBuffer(std::string text) {
     free(bitmap4Channel);
     free(bitmap);
 
-    return TBO;
+    textureFetcher.loadBitmapToTexture(id, TBO, b_w, b_h);
 }
-
-int OpenGLRenderer::getBitmapHeight() {
-    return fontLoader.getBH();
-}
-
-int OpenGLRenderer::getBitmapWidth() {
-    return fontLoader.getBW();
-}
-
 
 void OpenGLRenderer::renderRectangle(float rectangle[36]) {
     glEnable(GL_BLEND);

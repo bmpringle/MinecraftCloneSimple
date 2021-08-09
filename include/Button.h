@@ -44,6 +44,8 @@ class Button {
 
         void setText(Renderer* renderer, std::string text);
 
+        std::string getTextureID();
+
         std::string getText();
 
     private:
@@ -54,8 +56,9 @@ class Button {
 
         float layer = -5;
 
-        unsigned int TBO = 0;
-        bool TBOinit = false;
+        std::string id = "-1";
+
+        static int buttonCount;
 
         int b_w = 0;
         int b_h = 0;
@@ -63,5 +66,7 @@ class Button {
         bool pressed = false;
 
         std::string text;
+
+        std::string textureID;
 };
 #endif

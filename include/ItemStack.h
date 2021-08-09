@@ -29,15 +29,17 @@ class ItemStack {
 
         void onLeftClick(World* world, BlockPos* posLookingAt);
 
-        unsigned int getCountTBO(Renderer* renderer);
+        std::string getCountTextureID(Renderer* renderer);
 
     private:
         std::shared_ptr<Item> item = nullptr;
+
         int count = 0;
 
-        unsigned int TBO = 0;
-        bool TBOinit = false;
+        static int itemStackCount;
 
-        int tboCount = -1;
+        std::string textureID;
+
+        int textureCount = -1;
 };
 #endif

@@ -47,10 +47,16 @@ unsigned int TextureFetcher::getOrLoadAbsolutePathTexture(std::string name, int 
     glBindVertexArray(0);
 
     textureIDs.insert(std::make_pair(name, TBO));
+    textureDimensions.insert(std::make_pair(name, std::make_pair(width, height)));
 
     stbi_image_free(data);
 
     return TBO;
+}
+
+void TextureFetcher::loadBitmapToTexture(std::string id, unsigned int TBO, unsigned int width, unsigned int height) {
+    textureIDs[id] = TBO;
+    textureDimensions[id] = std::make_pair(width, height);
 }
 
 unsigned int TextureFetcher::getOrLoadTexture(std::string name, int gl_setting1, int gl_setting2) {
@@ -87,8 +93,13 @@ unsigned int TextureFetcher::getOrLoadTexture(std::string name, int gl_setting1,
     glBindVertexArray(0);
 
     textureIDs.insert(std::make_pair(name, TBO));
+    textureDimensions.insert(std::make_pair(name, std::make_pair(width, height)));
 
     stbi_image_free(data);
 
     return TBO;
+}
+
+std::pair<unsigned int, unsigned int> TextureFetcher::getTextureDimensions(std::string name) {
+    return textureDimensions.at(name);
 }

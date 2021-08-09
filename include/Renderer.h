@@ -15,7 +15,11 @@
 #include "Frustrum.h"
 #include "ModelRegister.h"
 
+#ifdef VULKAN_BACKEND
+#else
 #include "OpenGLRenderer.h"
+typedef OpenGLRenderer INTERNAL_RENDERER;
+#endif
 
 class World;
 
@@ -25,13 +29,16 @@ class Renderer {
 
         void renderFrame(World* world);
         void renderOverlay(float rectangle[48], std::string texture);
-        void renderOverlay(float rectangle[48], unsigned int TBO);
         void renderRectangle(float rectangle[36]);
         void renderBlockInWireframe(World* world, BlockPos pos);
         void updateAspectRatio(GLFWwindow* window);
         void updateWorldVBO(World* world);
 
-        unsigned int textTextureBuffer(std::string text);
+        void textTextureBuffer(std::string id, std::string text);
+
+        int getWidth();
+
+        int getHeight();
 
         template<class T>
         static void appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T>& vectorToAppend);
@@ -41,21 +48,15 @@ class Renderer {
 
         static glm::mat4x4 calculatePerspectiveMatrix(double FOV, double aspectRatio, double zNear, double zFar);
 
-        int getWidth();
-
-        int getHeight();
-
         std::array<int, 2> overlayDimensions();
 
-        int getBitmapHeight();
-
-        int getBitmapWidth();
+        std::pair<unsigned int, unsigned int> getTextureDimensions(std::string id);
 
         void setupEntityRenderer();
 
         void cleanup();
 
     private:
-        OpenGLRenderer openGLRenderer;
+        INTERNAL_RENDERER internalRenderer;
 };
 #endif

@@ -71,7 +71,7 @@ void InventoryGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
                 xPos + xSize, yPos + ySize, -5, 0, 0, 1, 1, 1
             };
 
-            renderer->renderOverlay(numberoverlay, stack.getCountTBO(renderer));
+            renderer->renderOverlay(numberoverlay, stack.getCountTextureID(renderer));
         }   
         double mouseOverlayX = (double)mouseX / (double)renderer->getWidth() * dims[0] * 2 - dims[0];
         double mouseOverlayY = (dims[1] * (2 * (1 - (double)mouseY / (double)renderer->getHeight()) - 1)) * (double)renderer->getHeight() / (double)renderer->getWidth();
@@ -121,7 +121,7 @@ void InventoryGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
                 xPos + xSize, yPos, -10, 0, 0, 1, 1, 0,
                 xPos + xSize, yPos + ySize, -10, 0, 0, 1, 1, 1
             };
-            renderer->renderOverlay(numberoverlay, itemStackHeld.getCountTBO(renderer));
+            renderer->renderOverlay(numberoverlay, itemStackHeld.getCountTextureID(renderer));
         }
     }
 }

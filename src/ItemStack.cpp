@@ -3,8 +3,11 @@
 #include "RenderInclude.h"
 #include "World.h"
 
-ItemStack::ItemStack(std::shared_ptr<Item> item, int count) : item(item), count(count) {
+int ItemStack::itemStackCount = 0;
 
+ItemStack::ItemStack(std::shared_ptr<Item> item, int count) : item(item), count(count) {
+    textureID = "itemStackTexture" + std::to_string(itemStackCount);
+    ++itemStackCount;
 }
 
 std::shared_ptr<Item> ItemStack::getItem() {
@@ -61,14 +64,10 @@ ItemStack::ItemStack() {
 
 }
 
-unsigned int ItemStack::getCountTBO(Renderer* renderer) {
-    if(tboCount != count) {
-        tboCount = count;
-        glDeleteTextures(1, &TBO);
-        TBOinit = true;
-        TBO = renderer->textTextureBuffer(std::to_string(count));
-        return TBO;
-    }else {
-        return TBO;
+std::string ItemStack::getCountTextureID(Renderer* renderer) {
+    if(textureCount != count) {
+        textureCount = count;
+        renderer->textTextureBuffer(textureID, std::to_string(count));
     }
+    return textureID;
 }

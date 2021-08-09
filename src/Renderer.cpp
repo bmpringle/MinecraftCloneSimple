@@ -8,32 +8,36 @@
 
 #define WORLDSIZE_CONST 100
 
-Renderer::Renderer() : openGLRenderer(OpenGLRenderer()){
+Renderer::Renderer() : internalRenderer(INTERNAL_RENDERER()){
 
 }
 
 void Renderer::updateWorldVBO(World* world) {
-    openGLRenderer.updateWorldVBO(world);
+    internalRenderer.updateWorldVBO(world);
 }
 
 void Renderer::renderFrame(World* world) {
-    openGLRenderer.renderFrame(world);
+    internalRenderer.renderFrame(world);
 }
 
 void Renderer::renderOverlay(float rectangle[48], std::string texture) {
-    openGLRenderer.renderOverlay(rectangle, texture);
-}
-
-void Renderer::renderOverlay(float rectangle[48], unsigned int TBO) {
-    openGLRenderer.renderOverlay(rectangle, TBO);
+    internalRenderer.renderOverlay(rectangle, texture);
 }
 
 void Renderer::updateAspectRatio(GLFWwindow* window) {
-    openGLRenderer.updateAspectRatio(window);
+    internalRenderer.updateAspectRatio(window);
 }
 
 void Renderer::renderBlockInWireframe(World* world, BlockPos pos) {
-    openGLRenderer.renderBlockInWireframe(world, pos);
+    internalRenderer.renderBlockInWireframe(world, pos);
+}
+
+int Renderer::getWidth() {
+    return internalRenderer.getWidth();
+}
+
+int Renderer::getHeight() {
+    return internalRenderer.getHeight();
 }
 
 template<class T>
@@ -53,40 +57,28 @@ glm::mat3x3 Renderer::calculateYRotationMatrix(double yRotation) {
     return OpenGLRenderer::calculateYRotationMatrix(yRotation);
 }
 
-int Renderer::getWidth() {
-    return openGLRenderer.getWidth();
-}
-
-int Renderer::getHeight() {
-    return openGLRenderer.getHeight();
-}
-
 std::array<int, 2> Renderer::overlayDimensions() {
-    return openGLRenderer.overlayDimensions();
+    return internalRenderer.overlayDimensions();
 }
 
-unsigned int Renderer::textTextureBuffer(std::string text) {
-    return openGLRenderer.textTextureBuffer(text);
+void Renderer::textTextureBuffer(std::string id, std::string text) {
+    internalRenderer.textTextureBuffer(id, text);
 }
 
-int Renderer::getBitmapHeight() {
-    return openGLRenderer.getBitmapHeight();
-}
-
-int Renderer::getBitmapWidth() {
-    return openGLRenderer.getBitmapWidth();
+std::pair<unsigned int, unsigned int> Renderer::getTextureDimensions(std::string id) {
+    return internalRenderer.getTextureDimensions(id);
 }
 
 
 void Renderer::renderRectangle(float rectangle[36]) {
-    openGLRenderer.renderRectangle(rectangle);
+    internalRenderer.renderRectangle(rectangle);
 }
 
 void Renderer::setupEntityRenderer() {
-    openGLRenderer.setupEntityRenderer();
+    internalRenderer.setupEntityRenderer();
 }
 
 
 void Renderer::cleanup() {
-    openGLRenderer.cleanup();
+    internalRenderer.cleanup();
 }
