@@ -22,3 +22,6 @@
 [submodule "ObjLoader"]
 	path = ObjLoader
 	url = https://github.com/bmpringle/ObjLoader
+[submodule "VulkanEngine"]
+	path = VulkanEngine
+	url = https://github.com/bmpringle/VulkanEngine/

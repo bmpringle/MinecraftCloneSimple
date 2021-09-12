@@ -1,10 +1,11 @@
 #include "Button.h"
 
-int Button::buttonCount = 0;
+unsigned int Button::buttonCount = 0;
 
 Button::Button(int x, int y, int width, int height, std::string texture, Renderer* renderer) : x(x), y(y), width(width), height(height), text(texture) {
     id = std::to_string(buttonCount);
     textureID = "buttonTexture" + id;
+    renderID = "buttonRender" + id;
     ++buttonCount;
     setText(renderer, text);
 }
@@ -12,6 +13,7 @@ Button::Button(int x, int y, int width, int height, std::string texture, Rendere
 Button::Button() : x(0), y(0), width(0), height(0), text("") {
     id = std::to_string(buttonCount);
     textureID = "buttonTexture" + id;
+    renderID = "buttonRender" + id;
     ++buttonCount;
 }
 
@@ -33,7 +35,7 @@ bool Button::isBeingHoveredOver(int mouseX, int mouseY, int windowWidth, int win
     return false;
 }
 
-void Button::render(Renderer* renderer, double offsetX, double offsetY) {
+void Button::setRenderData(Renderer* renderer, double offsetX, double offsetY) {
     float aspect = (double)renderer->getHeight() / (double)renderer->getWidth();
 
     float numberoverlay[48] = {
@@ -46,11 +48,29 @@ void Button::render(Renderer* renderer, double offsetX, double offsetY) {
         (float)(x + width + offsetX) * aspect, (float)(y + height + offsetY) * aspect, layer, 0, 0, 1, 1, 1
     };
 
-    renderer->renderOverlay(numberoverlay, textureID);
+    renderer->setOverlayData(renderID + "_text", numberoverlay, textureID);
+
+    if(renderButtonBackground) {
+        float backgroundoverlay[36] = {
+            (float)(x + offsetX) * aspect, (float)(y + offsetY), layer, 0, 0, 1,
+            (float)(x + width + offsetX) * aspect, (float)(y + offsetY), layer, 0, 0, 1,
+            (float)(x + offsetX) * aspect, (float)(y + height + offsetY), layer, 0, 0, 1,
+
+            (float)(x + offsetX) * aspect, (float)(y + height + offsetY), layer, 0, 0, 1,
+            (float)(x + width + offsetX) * aspect, (float)(y + offsetY), layer, 0, 0, 1,
+            (float)(x + width + offsetX) * aspect, (float)(y + height + offsetY), layer, 0, 0, 1,
+        };
+        renderer->setOverlayData(renderID + "_background", backgroundoverlay);
+    }
 }
 
-void Button::render(Renderer* renderer) {
-    render(renderer, 0, 0);
+void Button::setRenderData(Renderer* renderer) {
+    setRenderData(renderer, 0, 0);
+}
+
+void Button::stopRendering(Renderer* renderer) {
+    renderer->removeOverlayData(renderID + "_text");
+    renderer->removeOverlayData(renderID + "_background");
 }
 
 void Button::setPressed() {
@@ -124,4 +144,8 @@ void Button::setWidth(double width) {
 
 void Button::setHeight(double height) {
     this->height = height;
+}
+
+void Button::setRenderButtonBackground(bool background) {
+    renderButtonBackground = background;
 }

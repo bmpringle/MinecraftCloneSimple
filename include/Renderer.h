@@ -28,8 +28,6 @@ class Renderer {
         Renderer();
 
         void renderFrame(World* world);
-        void renderOverlay(float rectangle[48], std::string texture);
-        void renderRectangle(float rectangle[36]);
         void renderBlockInWireframe(World* world, BlockPos pos);
         void updateAspectRatio(GLFWwindow* window);
         void updateWorldVBO(World* world);
@@ -55,6 +53,12 @@ class Renderer {
         void setupEntityRenderer();
 
         void cleanup();
+
+        void setOverlayData(std::string overlayID, float rectangle[48], std::string texture);
+
+        void setOverlayData(std::string overlayID, float rectangle[36]);
+
+        void removeOverlayData(std::string overlayID);
 
     private:
         INTERNAL_RENDERER internalRenderer;

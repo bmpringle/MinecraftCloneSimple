@@ -81,7 +81,12 @@ void World::mainLoop() {
         dumpFrameTime();
         #endif
     }
-    
+
+    //if player has gui open, close it
+    thePlayer->closeGui(renderer);
+
+    cleanupHUD();
+
     worldEventQueue->removeEventListener(thePlayer);
 
     std::vector<Chunk>& chunks = internalBlockData.getChunkArrayReference();
@@ -181,7 +186,6 @@ void World::renderGame() {
 }
 
 void World::renderOverlays() {
-
     float overlay[48] = {
         -11, -11, 0, 0, 0, 1, 0, 0,
         11, -11, 0, 0, 0, 1, 1, 0,
@@ -192,7 +196,7 @@ void World::renderOverlays() {
         11, 11, 0, 0, 0, 1, 1, 1
     };
 
-    renderer->renderOverlay(overlay, "crosshair.png");
+    renderer->setOverlayData("HUD-Crosshair", overlay, "crosshair.png");
 
     int width, height;
     glfwGetWindowSize(window, &width, &height);
@@ -213,7 +217,7 @@ void World::renderOverlays() {
         xPos + xSize, yPos + ySize, 0, 0, 0, 1, 1, 1
     };
 
-    renderer->renderOverlay(overlay2, "hotbar.png");
+    renderer->setOverlayData("HUD-Hotbar", overlay2, "hotbar.png");
 
     Inventory* inv = thePlayer->getInventory();
 
@@ -238,7 +242,9 @@ void World::renderOverlays() {
                 xPos + endX, yPos + endY, -1, 0, 0, 1, 1, 1
             };
 
-            renderer->renderOverlay(iconoverlay, stack.getItem()->getIcon());
+            renderer->setOverlayData("HUD-Hotbar-Item-Icon-" + std::to_string(i), iconoverlay, stack.getItem()->getIcon());
+        }else {
+            renderer->removeOverlayData("HUD-Hotbar-Item-Icon-" + std::to_string(i));
         }
 
         if(thePlayer->getItemInHandIndex() == i) {
@@ -259,7 +265,7 @@ void World::renderOverlays() {
                 xPos + endX, yPos + endY, -2, 0, 0, 1, 1, 1
             };
 
-            renderer->renderOverlay(iconoverlay, "hotbar_select.png");
+            renderer->setOverlayData("HUD-Hotbar-Item-Select", iconoverlay, "hotbar_select.png");
         }
     }
     thePlayer->displayGui(renderer);
@@ -310,4 +316,15 @@ GameSettings* World::getSettings() {
 
 std::string World::getName() {
     return name;
+}
+
+void World::cleanupHUD() {
+    renderer->removeOverlayData("HUD-Crosshair");
+    renderer->removeOverlayData("HUD-Hotbar");
+
+    for(int i = 0; i < 9; ++i) {
+        renderer->removeOverlayData("HUD-Hotbar-Item-Icon-" + std::to_string(i));
+    }
+
+    renderer->removeOverlayData("HUD-Hotbar-Item-Select");
 }

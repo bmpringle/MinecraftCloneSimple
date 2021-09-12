@@ -20,10 +20,6 @@ void Renderer::renderFrame(World* world) {
     internalRenderer.renderFrame(world);
 }
 
-void Renderer::renderOverlay(float rectangle[48], std::string texture) {
-    internalRenderer.renderOverlay(rectangle, texture);
-}
-
 void Renderer::updateAspectRatio(GLFWwindow* window) {
     internalRenderer.updateAspectRatio(window);
 }
@@ -69,11 +65,6 @@ std::pair<unsigned int, unsigned int> Renderer::getTextureDimensions(std::string
     return internalRenderer.getTextureDimensions(id);
 }
 
-
-void Renderer::renderRectangle(float rectangle[36]) {
-    internalRenderer.renderRectangle(rectangle);
-}
-
 void Renderer::setupEntityRenderer() {
     internalRenderer.setupEntityRenderer();
 }
@@ -81,4 +72,16 @@ void Renderer::setupEntityRenderer() {
 
 void Renderer::cleanup() {
     internalRenderer.cleanup();
+}
+
+void Renderer::setOverlayData(std::string overlayID, float rectangle[48], std::string texture) {
+    internalRenderer.setOverlayData(overlayID, rectangle, texture);
+}
+
+void Renderer::removeOverlayData(std::string overlayID) {
+    internalRenderer.removeOverlayData(overlayID);
+}
+
+void Renderer::setOverlayData(std::string overlayID, float rectangle[36]) {
+    internalRenderer.setOverlayData(overlayID, rectangle);
 }

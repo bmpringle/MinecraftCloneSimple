@@ -7,9 +7,9 @@ MainMenuGui::MainMenuGui(Renderer* renderer) : singleplayer(Button(0, 0, 0, 200,
 }
 
 void MainMenuGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
-    singleplayer.render(renderer);
-    quit.render(renderer);
-    options.render(renderer);
+    singleplayer.setRenderData(renderer);
+    quit.setRenderData(renderer);
+    options.setRenderData(renderer);
 }
 
 int MainMenuGui::getID() {
@@ -37,7 +37,9 @@ void MainMenuGui::mouseClick(int mouseX, int mouseY) {
 }
 
 void MainMenuGui::close() {
-
+    singleplayer.stopRendering(renderer);
+    quit.stopRendering(renderer);
+    options.stopRendering(renderer);
 }
 
 void MainMenuGui::scrollHandle(double offsetX, double offsetY) {

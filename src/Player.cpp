@@ -11,6 +11,10 @@ Player::Player(World* _world) : Entity(), world(_world), settings(_world->getSet
     pos.y = 100;
 }
 
+Player::~Player() {
+    gui->close();
+}
+
 void Player::updateEntity(World* world) {  
 
     updateHorizontalMotion();
@@ -416,6 +420,7 @@ void Player::processInput(std::string event, std::string key, std::shared_ptr<Ev
                 gui = std::make_unique<InventoryGui>(world->getRenderer(), &inventory);
             }else if(gui->getID() == 0) {  
                 glfwSetInputMode(world->getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
+                gui->close();
                 gui = nullptr;
             }
         }
@@ -533,4 +538,10 @@ SideEnum Player::horizontalSidePlacedOn() {
 
 SideEnum Player::sideLookingAt() {
     return sideOfBlockLookingAt;
+}
+
+void Player::closeGui(Renderer* renderer) {
+    if(gui != nullptr) {
+        gui->close();
+    }
 }

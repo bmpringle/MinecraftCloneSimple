@@ -52,6 +52,8 @@ class World {
         
         void dumpFrameTime();
 
+        void cleanupHUD();
+
         std::string name;
 
         //these are all pointers because they cannot go out of scope before this World object.

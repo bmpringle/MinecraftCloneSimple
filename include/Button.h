@@ -14,9 +14,11 @@ class Button {
 
         bool isBeingHoveredOver(int mouseX, int mouseY, int windowWidth, int windowHeight, double offsetX, double offsetY);
 
-        void render(Renderer* renderer);
+        void setRenderData(Renderer* renderer);
 
-        void render(Renderer* renderer, double offsetX, double offsetY);
+        void setRenderData(Renderer* renderer, double offsetX, double offsetY);
+
+        void stopRendering(Renderer* renderer);
 
         bool isPressed();
 
@@ -48,6 +50,8 @@ class Button {
 
         std::string getText();
 
+        void setRenderButtonBackground(bool background);
+
     private:
         float x;
         float y;
@@ -58,7 +62,7 @@ class Button {
 
         std::string id = "-1";
 
-        static int buttonCount;
+        static unsigned int buttonCount;
 
         int b_w = 0;
         int b_h = 0;
@@ -68,5 +72,9 @@ class Button {
         std::string text;
 
         std::string textureID;
+
+        std::string renderID;
+
+        bool renderButtonBackground = false;
 };
 #endif

@@ -22,8 +22,9 @@ class OpenGLRenderer {
         OpenGLRenderer();
 
         void renderFrame(World* world);
-        void renderOverlay(float rectangle[48], std::string texture);
-        void renderRectangle(float rectangle[36]);
+        void setOverlayData(std::string overlayID, float rectangle[48], std::string texture);
+        void setOverlayData(std::string overlayID, float rectangle[36]);
+        void removeOverlayData(std::string overlayID);
         void renderBlockInWireframe(World* world, BlockPos pos);
         void updateAspectRatio(GLFWwindow* window);
         void updateWorldVBO(World* world);
@@ -57,6 +58,10 @@ class OpenGLRenderer {
         void updateChunkData(std::map<std::string, std::vector<int>>* blockTypeToPositionsMap, std::vector<BlockData>* blocksInChunk, TextureArrayCreator* texCreator);
 
         unsigned int compileShaderProgramFromFiles(std::string vertexShaderPath, std::string fragmentShaderPath);
+
+        void renderOverlay(float rectangle[48], std::string texture);
+
+        void renderRectangle(float rectangle[36]);
 
         float vertices[18] = {
             -0.5f, -0.5f, 0.0f, /*color*/ 1.0f, 1.0f, 0.0f,
@@ -93,5 +98,11 @@ class OpenGLRenderer {
 
         int width = 0;
         int height = 0;
+
+        //map::first is the overlayID, map::second is -> pair::first is the rectangle data, pair::second is the texture id
+        std::map<std::string, std::pair<std::array<float, 48>, std::string>> overlayIDToData = std::map<std::string, std::pair<std::array<float, 48>, std::string>>();
+
+        //map::first is the overlayID, map::second is the rectangle data
+        std::map<std::string, std::array<float, 36>> rectangleOverlayIDToData = std::map<std::string, std::array<float, 36>>();
 };
 #endif

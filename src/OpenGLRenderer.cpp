@@ -209,6 +209,17 @@ void OpenGLRenderer::updateWorldVBO(World* world) {
 }
 
 void OpenGLRenderer::renderFrame(World* world) {
+    if(world == nullptr) {
+        //world isn't loaded, so just render overlays
+        for(auto data : overlayIDToData) {
+            renderOverlay(data.second.first.data(), data.second.second);
+        }
+
+        for(auto data : rectangleOverlayIDToData) {
+            renderRectangle(data.second.data());
+        }
+        return;
+    }
 
     setUniforms(world, 3);
 
@@ -229,12 +240,17 @@ void OpenGLRenderer::renderFrame(World* world) {
     if(world->getPlayer()->isThirdPerson()) {
         renderEntity(world->getPlayer(), world);
     }
+
+    for(auto data : overlayIDToData) {
+        renderOverlay(data.second.first.data(), data.second.second);
+    }
+
+    for(auto data : rectangleOverlayIDToData) {
+        renderRectangle(data.second.data());
+    }
 }
 
 void OpenGLRenderer::renderOverlay(float rectangle[48], std::string texture) {
-    glEnable(GL_BLEND);
-    glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-
     float overlay[48] = {0};
 
     for(int i = 0; i < 48; ++i) {
@@ -258,10 +274,6 @@ void OpenGLRenderer::renderOverlay(float rectangle[48], std::string texture) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(overlay), &overlay[0], GL_STATIC_DRAW);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    
-    glDisable(GL_BLEND);
-    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 }
 
 //Frustrum* ptr will be filled with data if you don't pass nullptr
@@ -763,4 +775,31 @@ void OpenGLRenderer::setupEntityRenderer() {
 void OpenGLRenderer::cleanup() {
     renderChunkBuffers.clear();
     renderChunkBuffersOld.clear();
+    overlayIDToData.clear();
+}
+
+void OpenGLRenderer::setOverlayData(std::string overlayID, float rectangle[48], std::string texture) {
+    std::array<float, 48> data = std::array<float, 48>();
+
+    for(int i = 0; i < 48; ++i) {
+        data[i] = rectangle[i];
+    }
+    overlayIDToData[overlayID] = std::make_pair(data, texture);
+}
+
+void OpenGLRenderer::removeOverlayData(std::string overlayID) {
+    if(overlayIDToData.count(overlayID) > 0) {
+        overlayIDToData.erase(overlayID);
+    }else if(rectangleOverlayIDToData.count(overlayID) > 0) {
+        rectangleOverlayIDToData.erase(overlayID);
+    }
+}
+
+void OpenGLRenderer::setOverlayData(std::string overlayID, float rectangle[36]) {
+    std::array<float, 36> data = std::array<float, 36>();
+
+    for(int i = 0; i < 36; ++i) {
+        data[i] = rectangle[i];
+    }
+    rectangleOverlayIDToData[overlayID] = data;
 }

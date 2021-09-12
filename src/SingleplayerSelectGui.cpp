@@ -59,11 +59,17 @@ void SingleplayerSelectGui::handleKeyPressed(std::string keyPressed) {
 
 void SingleplayerSelectGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
     if(state == 0) {
-        createNewWorld.render(renderer);
-        loadWorld.render(renderer);
+        textBuffer.stopRendering(renderer);
+        textPrefix.stopRendering(renderer);
+
+        createNewWorld.setRenderData(renderer);
+        loadWorld.setRenderData(renderer);
     }else {
-        textBuffer.render(renderer);
-        textPrefix.render(renderer);
+        createNewWorld.stopRendering(renderer);
+        loadWorld.stopRendering(renderer);
+
+        textBuffer.setRenderData(renderer);
+        textPrefix.setRenderData(renderer);
     }
 }
 
@@ -90,5 +96,8 @@ void SingleplayerSelectGui::scrollHandle(double offsetX, double offsetY) {
 }
 
 void SingleplayerSelectGui::close() {
-    
+    createNewWorld.stopRendering(renderer);
+    loadWorld.stopRendering(renderer);
+    textBuffer.stopRendering(renderer);
+    textPrefix.stopRendering(renderer);
 }

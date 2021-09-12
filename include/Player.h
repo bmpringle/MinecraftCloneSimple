@@ -8,6 +8,7 @@ class World;
 class Player final : public Listener, public Entity {
     public:
         Player(World* _world);
+        ~Player();
         void updateEntity(World* world) override;
         void listenTo(std::shared_ptr<Event> e) override;
         double getXRotation();
@@ -22,6 +23,8 @@ class Player final : public Listener, public Entity {
         SideEnum sideLookingAt();
 
         bool isThirdPerson();
+
+        void closeGui(Renderer* renderer);
 
     private:
         void updatePlayerLookingAt(World* world);

@@ -42,6 +42,7 @@ void Game::start() {
         renderer.updateAspectRatio(window);
 
         gui->displayGui(&renderer, 0, 0);
+        renderer.renderFrame(nullptr);
 
         if(gui->getID() == 1) {
             std::shared_ptr<MainMenuGui> menuGui = std::dynamic_pointer_cast<MainMenuGui>(gui);
@@ -49,6 +50,7 @@ void Game::start() {
                 if(world != nullptr) {
                     world = nullptr;
                 }
+                gui->close();
                 gui = std::make_shared<SingleplayerSelectGui>(&renderer);
             }
             
@@ -63,6 +65,7 @@ void Game::start() {
         }else if(gui->getID() == 2) {
             std::shared_ptr<OptionsGui> optionsGui = std::dynamic_pointer_cast<OptionsGui>(gui);
             if(optionsGui->done.isPressed()) {
+                gui->close();
                 gui = std::make_shared<MainMenuGui>(&renderer);
             }
         }else if(gui->getID() == 3) {
@@ -83,11 +86,13 @@ void Game::start() {
                     }
                 }catch(std::exception e) {
                     std::cout << "failed to load world. quitting to main menu" << std::endl;
+                    gui->close();
                     gui = std::make_shared<MainMenuGui>(&renderer);
                 }
                 if(seed != -1) {
                     if(fs::exists("./worlds/"+worldname+"/data/")) {
                         std::cout << "world already exists. will not overwrite. quitting to main menu" << std::endl;
+                        gui->close();
                         gui = std::make_shared<MainMenuGui>(&renderer);
                     }else {
                         fs::create_directories("./worlds/"+worldname+"/data/");
@@ -96,6 +101,7 @@ void Game::start() {
                 }
 
                 if(world != nullptr) {
+                    gui->close();
                     world->resume();
                 }
             }

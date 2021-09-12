@@ -3,6 +3,7 @@
 OptionsGui::OptionsGui(Renderer* renderer, GameSettings* settings) : done(Button(0, 0, 0, 160, "Done", renderer)), renderer(renderer), settings(settings) {
     done.autoSize(0, -900);
     done.setLayer(-7);
+    done.setRenderButtonBackground(true);
 
     scrollY = -200;
 
@@ -23,10 +24,10 @@ OptionsGui::OptionsGui(Renderer* renderer, GameSettings* settings) : done(Button
 }
 
 void OptionsGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
-    done.render(renderer);
+    done.setRenderData(renderer);
 
     for(std::pair<Setting, Button> button : optionButtons) {
-        button.second.render(renderer, 0, scrollY);
+        button.second.setRenderData(renderer, 0, scrollY);
     }
 
     float cutout[36] {
@@ -38,7 +39,7 @@ void OptionsGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
         1000, 1000, -6, 0, 0, 0,
     };
 
-    renderer->renderRectangle(cutout);
+    renderer->setOverlayData("options-gui-cutout1", cutout);
 
     float cutout2[36] = {
         -1000, -1000, -6, 0, 0, 0,
@@ -49,7 +50,7 @@ void OptionsGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
         1000, -800, -6, 0, 0, 0,
     };
 
-    renderer->renderRectangle(cutout2);
+    renderer->setOverlayData("options-gui-cutout2", cutout2);
 }
 
 int OptionsGui::getID() {
@@ -87,7 +88,14 @@ void OptionsGui::scrollHandle(double offsetX, double offsetY) {
 }
 
 void OptionsGui::close() {
+    done.stopRendering(renderer);
 
+    for(std::pair<Setting, Button> button : optionButtons) {
+        button.second.stopRendering(renderer);
+    }
+
+    renderer->removeOverlayData("options-gui-cutout1");
+    renderer->removeOverlayData("options-gui-cutout2");
 }
 
 void OptionsGui::handleOptionInput(std::string input) {
