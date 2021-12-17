@@ -108,6 +108,7 @@ void OptionsGui::handleOptionInput(std::string input) {
     double middleX = oldButton.getX() + (double)oldButton.getWidth() / 2.0;
     double middleY = oldButton.getY() + (double)oldButton.getHeight() / 2.0;
 
+    oldButton.stopRendering(renderer);
     optionButtons[settingToSet] = Button(0, 0, 0, 200, GameSettings::settingToString(settingToSet) + ": " + displaySetting(settings->getSetting(settingToSet)), renderer);
     
     optionButtons[settingToSet].autoSize(middleX, middleY);

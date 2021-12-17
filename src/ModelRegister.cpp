@@ -3,10 +3,11 @@
 #include <iostream>
 #include "Renderer.h"
 
-
 ModelRegister::ModelRegister() {
 
 };
+
+#ifndef VULKAN_BACKEND
 
 void ModelRegister::registerModel(TextureArrayCreator* texCreator, std::shared_ptr<Block> block, int metadata) {
     std::vector<float> buffer = std::vector<float>();
@@ -67,3 +68,19 @@ std::tuple<unsigned int, unsigned int> ModelRegister::getVAOAndVBO(std::string k
 int ModelRegister::getBufferLength(std::string key) {
     return blockToBufferLengthMap.at(key);
 }
+
+#else
+void ModelRegister::registerModel(TextureArrayCreator* texCreator, std::shared_ptr<Block> block, int metadata) {
+    std::cout << "registerModel not defined for Vulkan Backend" << std::endl;
+}
+
+std::tuple<unsigned int, unsigned int> ModelRegister::getVAOAndVBO(std::string key) {
+    std::cout << "getVAOAndVBO not defined for Vulkan Backend" << std::endl;
+    return blockToVAOAndVBOMap.at(key);
+}
+
+int ModelRegister::getBufferLength(std::string key) {
+    std::cout << "getBufferLength not defined for Vulkan Backend" << std::endl;
+    return blockToBufferLengthMap.at(key);
+}
+#endif

@@ -16,6 +16,11 @@ DBG = int(ARGUMENTS.get('DBG', 0))
 ARM = int(ARGUMENTS.get('ARM', 1))
 WARN = int(ARGUMENTS.get('WARN', 0))
 
+#0 for GL, 1 for VULKAN
+BACKEND = int(ARGUMENTS.get('BACKEND', 0))
+
+BLD = 'dbg' if DBG == 1 else 'rel'
+
 env = Environment()
 
 if env['PLATFORM'] == 'darwin': #macos
@@ -26,7 +31,10 @@ if env['PLATFORM'] == 'darwin': #macos
     NOISE_DIR='./libnoise/src/'
 
     LIBS=['pthread']
-    LINK='{} -framework OpenGL -framework Cocoa -framework IOKit'.format(CXX)
+    if BACKEND == 1:
+        LIBS.append('libVulkanEngineLib.dylib')
+
+    LINK='{} -framework OpenGL -framework Cocoa -framework IOKit -L./lib/{}'.format(CXX, BLD)
 
     if int(ARGUMENTS.get('W64', 0))==1:
         CXX='/usr/local/bin/x86_64-w64-mingw32-g++'
@@ -76,14 +84,18 @@ else:
 GLFW_INCLUDE=os.sep.join([GLFW_DIR,'include'])
 GLEW_INCLUDE=os.sep.join([GLEW_DIR,'include'])
 
-BLD = 'dbg' if DBG == 1 else 'rel'
+
 OPT = 0 if DBG == 1 else 3
 
 env.Append(CPPPATH = ['include']) 
 
-CCFLAGS='-static -O{} -I {} -I {} -I {} -I {} -I {} -I {} {} -D_USE_MATH_DEFINES -DNOISE_STATIC -Wall -Wpedantic {} -g -std=c++2a -DGLEW_STATIC'.format(OPT, "./ObjLoader/glm/", './', './include/', GLFW_INCLUDE, GLEW_INCLUDE, NOISE_DIR, '-DDBG' if DBG==1 else '', '-Werror' if int(ARGUMENTS.get('W64', 0))==0 and WARN == 0 else '')
+CCFLAGS='-static -O{} -I {} -I {} -I {} -I {} -I {} -I {} -I {} -I {} -I {} -I {} {} {} -D_USE_MATH_DEFINES -DNOISE_STATIC -Wall -Wpedantic {} -g -std=c++2a -DGLEW_STATIC'.format(OPT, "./ObjLoader/glm/", './', './include/', GLFW_INCLUDE, GLEW_INCLUDE, NOISE_DIR, './VulkanEngine/include/', './VulkanEngine/include/Engine/', './VulkanEngine/', './VulkanEngine/StringToText/freetype/include/', '-DDBG' if DBG==1 else '', '-DVULKAN_BACKEND' if BACKEND == 1 else '', '-Werror' if int(ARGUMENTS.get('W64', 0))==0 and WARN == 0 else '')
 
 LIBSSTATIC = Glob(os.sep.join(['lib', '*.a']))
+
+
+if BACKEND == 1:
+    LIBSSTATIC = [x for x in LIBSSTATIC if str(x) not in ['lib/libglfw3.a']]
 
 if int(ARGUMENTS.get('W64', 0))==1:
     LIBSSTATIC = Glob(os.sep.join(['lib', '*.lib']))

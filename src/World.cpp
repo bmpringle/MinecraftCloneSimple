@@ -51,9 +51,6 @@ void World::generateWorld() {
 }
 
 void World::mainLoop() {
-    glfwSwapInterval(1);
-    glClearColor(0, 0, 1, 1);
-
     worldEventQueue->addEventListener(thePlayer);
 
     auto previous = std::chrono::high_resolution_clock::now();
@@ -65,8 +62,6 @@ void World::mainLoop() {
         double elapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(current - previous)).count();
         previous = current;
         lag += elapsed;
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         while (lag >= MS_PER_UPDATE) {
             updateGame();
@@ -180,9 +175,13 @@ void World::renderGame() {
         }
     }
 
+    #ifndef VULKAN_BACKEND
     glClear(GL_DEPTH_BUFFER_BIT);
+    #endif
     renderOverlays();
+    #ifndef VULKAN_BACKEND
     glClear(GL_DEPTH_BUFFER_BIT);
+    #endif
 }
 
 void World::renderOverlays() {

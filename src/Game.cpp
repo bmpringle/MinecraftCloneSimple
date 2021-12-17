@@ -4,13 +4,13 @@
 #include "SingleplayerSelectGui.h"
 #include "PlatformFilesystem.h"
 
-Game::Game(GLFWwindow* _window) : window(_window), eventQueue(EventQueue()), map(TimerMap()), input(InputHandler()), renderer(Renderer()), world(nullptr), gameEventHandler(std::make_shared<GameEventHandler>(GameEventHandler(this))), gui(std::make_shared<MainMenuGui>(&renderer)), settings(GameSettings()) {
+Game::Game(GLFWwindow* _window) : eventQueue(EventQueue()), map(TimerMap()), input(InputHandler()), renderer(Renderer()), world(nullptr), gameEventHandler(std::make_shared<GameEventHandler>(GameEventHandler(this))), gui(std::make_shared<MainMenuGui>(&renderer)), settings(GameSettings()) {
     settings.initDefaultSettings();
     settings.parseOptionsFromFile("src/assets/options.txt");
     
     eventQueue.addEventListener(gameEventHandler);
 
-    glfwSetWindowUserPointer(window, this);
+    glfwSetWindowUserPointer(renderer.getWindowPtr(), this);
 
     auto func = [](GLFWwindow* w, int key, int scancode, int action, int mods) {
         static_cast<Game*>(glfwGetWindowUserPointer(w))->internalKeyCallback(w, key, scancode, action, mods);
@@ -28,19 +28,16 @@ Game::Game(GLFWwindow* _window) : window(_window), eventQueue(EventQueue()), map
         static_cast<Game*>(glfwGetWindowUserPointer(w))->internalScrollCall(w, offsetX, offsetY);
     };
 
-    glfwSetKeyCallback(window, func);
-    glfwSetCursorPosCallback(window, func2);
-    glfwSetMouseButtonCallback(window, func3);
-    glfwSetScrollCallback(window, func4);
+    glfwSetKeyCallback(renderer.getWindowPtr(), func);
+    glfwSetCursorPosCallback(renderer.getWindowPtr(), func2);
+    glfwSetMouseButtonCallback(renderer.getWindowPtr(), func3);
+    glfwSetScrollCallback(renderer.getWindowPtr(), func4);
 }
 
 void Game::start() {    
-    while(!glfwWindowShouldClose(window)) {
-        glClearColor(1, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        renderer.updateAspectRatio(window);
-
+    while(!glfwWindowShouldClose(renderer.getWindowPtr())) {
+        renderer.updateAspectRatio(renderer.getWindowPtr());
+        
         gui->displayGui(&renderer, 0, 0);
         renderer.renderFrame(nullptr);
 
@@ -82,7 +79,7 @@ void Game::start() {
                         std::ifstream seedIn("./worlds/"+worldname+"/data/seed.cdat");
                         std::string buffer;
                         std::getline(seedIn, buffer);
-                        world = std::make_shared<World>(window, &eventQueue, &input, &renderer, &map, &settings, worldname, "./worlds/"+worldname+"/", std::stoi(buffer));
+                        world = std::make_shared<World>(renderer.getWindowPtr(), &eventQueue, &input, &renderer, &map, &settings, worldname, "./worlds/"+worldname+"/", std::stoi(buffer));
                     }
                 }catch(std::exception e) {
                     std::cout << "failed to load world. quitting to main menu" << std::endl;
@@ -96,7 +93,7 @@ void Game::start() {
                         gui = std::make_shared<MainMenuGui>(&renderer);
                     }else {
                         fs::create_directories("./worlds/"+worldname+"/data/");
-                        world = std::make_shared<World>(window, &eventQueue, &input, &renderer, &map, &settings, worldname, "./worlds/"+worldname+"/", seed);
+                        world = std::make_shared<World>(renderer.getWindowPtr(), &eventQueue, &input, &renderer, &map, &settings, worldname, "./worlds/"+worldname+"/", seed);
                     }
                 }
 
@@ -109,10 +106,10 @@ void Game::start() {
 
         input.callRegularEvents(&eventQueue, &map);
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(renderer.getWindowPtr());
         glfwPollEvents();
     }
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(renderer.getWindowPtr());
     glfwTerminate();
 
     settings.saveOptionsToFile("src/assets/options.txt");

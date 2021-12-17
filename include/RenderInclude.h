@@ -3,6 +3,8 @@
 
 #ifdef VULKAN_BACKEND
 
+#include "VulkanEngine/include/VKRenderer.h" 
+
 #else
 
 #include "GL/glew.h"

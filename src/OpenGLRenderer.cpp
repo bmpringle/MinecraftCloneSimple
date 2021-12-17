@@ -1,3 +1,5 @@
+#ifndef VULKAN_BACKEND
+
 #include "OpenGLRenderer.h"
 #include "World.h"
 #include <algorithm>
@@ -8,7 +10,38 @@
 
 #define WORLDSIZE_CONST 100
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+} 
+
 OpenGLRenderer::OpenGLRenderer() : textureFetcher(TextureFetcher()), textureArrayCreator(TextureArrayCreator()), modelRegister(ModelRegister()), fontLoader("src/assets/courier.ttf") {
+    if (!glfwInit()) {
+        // Initialization failed
+        glfwTerminate();
+    }
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
+    
+    window = glfwCreateWindow(640, 480, "Minecraft Clone Simple", NULL, NULL);
+
+    if(!window) {
+        std::cout << "window == nullptr, something has gone very wrong." << std::endl;
+        abort();
+    }
+
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    glfwMakeContextCurrent(window);
+    
+    glewExperimental = GL_TRUE;
+    glewInit();
+
+    printf("Opengl Version being used is: %s\n", glGetString(GL_VERSION));
+    
     Blocks::initTextureArrayCreator(&textureArrayCreator);
     textureArrayCreator.generateTextureArray();
 
@@ -165,6 +198,9 @@ void OpenGLRenderer::renderSetup() {
     glEnableVertexAttribArray(1);  
 
     setupEntityRenderer();
+
+    glfwSwapInterval(1);
+    glClearColor(0, 0, 1, 1);
 }
 
 void OpenGLRenderer::updateWorldVBO(World* world) {
@@ -209,6 +245,8 @@ void OpenGLRenderer::updateWorldVBO(World* world) {
 }
 
 void OpenGLRenderer::renderFrame(World* world) {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     if(world == nullptr) {
         //world isn't loaded, so just render overlays
         for(auto data : overlayIDToData) {
@@ -803,3 +841,9 @@ void OpenGLRenderer::setOverlayData(std::string overlayID, float rectangle[36]) 
     }
     rectangleOverlayIDToData[overlayID] = data;
 }
+
+GLFWwindow* OpenGLRenderer::getWindowPtr() {
+    return window;
+}
+
+#endif

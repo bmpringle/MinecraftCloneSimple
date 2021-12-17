@@ -1,3 +1,5 @@
+#ifndef VULKAN_BACKEND
+
 #include "TextureArrayCreator.h"
 #include <algorithm>
 #include "RenderInclude.h"
@@ -87,3 +89,13 @@ int TextureArrayCreator::getTextureLayer(std::string tex) {
 
     return textureDepths.at(index);
 }
+
+#else
+#include "TextureArrayCreator.h"
+#include <string>
+#include <iostream>
+
+void TextureArrayCreator::addTextureToList(std::string texPath) {
+    std::cout << "addTextureToList isn't defined for Vulkan Backend" << std::endl;
+}
+#endif

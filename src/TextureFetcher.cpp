@@ -1,3 +1,5 @@
+#ifndef VULKAN_BACKEND
+
 #include "TextureFetcher.h"
 #include "RenderInclude.h"
 #define STB_IMAGE_IMPLEMENTATION
@@ -103,3 +105,5 @@ unsigned int TextureFetcher::getOrLoadTexture(std::string name, int gl_setting1,
 std::pair<unsigned int, unsigned int> TextureFetcher::getTextureDimensions(std::string name) {
     return textureDimensions.at(name);
 }
+
+#endif

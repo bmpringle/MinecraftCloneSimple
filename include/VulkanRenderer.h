@@ -1,5 +1,4 @@
-#ifndef OPENGLRENDERER_H
-#define OPENGLRENDERER_H
+#ifndef VULKANRENDERER_H
 
 #include <sstream>
 #include <string>
@@ -17,9 +16,9 @@
 
 class World;
 
-class OpenGLRenderer {
+class VulkanRenderer {
     public:
-        OpenGLRenderer();
+        VulkanRenderer();
 
         void renderFrame(World* world);
         void setOverlayData(std::string overlayID, float rectangle[48], std::string texture);
@@ -54,6 +53,9 @@ class OpenGLRenderer {
         GLFWwindow* getWindowPtr();
 
     private:
+        VKRenderer renderer = VKRenderer();
+        //this is subject to change, since it's from the OpenGlRenderer class
+
         void renderSetup();
         void renderEntity(std::shared_ptr<Entity> entity, World* world);
 
@@ -82,21 +84,11 @@ class OpenGLRenderer {
 
         unsigned int shaderProgram[7];
 
-        TextureFetcher textureFetcher;
-
-        TextureArrayCreator textureArrayCreator;
-
         ModelRegister modelRegister;
-
-        FontLoader fontLoader;
 
         std::map<BlockPos, RenderChunkBuffer> renderChunkBuffers = std::map<BlockPos, RenderChunkBuffer>();
 
         std::vector<RenderChunkBuffer> renderChunkBuffersOld = std::vector<RenderChunkBuffer>();
-        
-        unsigned int entityVBO = INT_MAX;
-        unsigned int entityVAO = INT_MAX;
-        unsigned int entityEBO = INT_MAX;
 
         int width = 0;
         int height = 0;
@@ -106,7 +98,6 @@ class OpenGLRenderer {
 
         //map::first is the overlayID, map::second is the rectangle data
         std::map<std::string, std::array<float, 36>> rectangleOverlayIDToData = std::map<std::string, std::array<float, 36>>();
-
-        GLFWwindow* window;
 };
+
 #endif

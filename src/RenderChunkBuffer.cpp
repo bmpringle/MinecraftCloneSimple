@@ -1,6 +1,8 @@
 #include "RenderChunkBuffer.h"
 #include "RenderInclude.h"
 
+#ifndef VULKAN_BACKEND
+
 RenderChunkBuffer::RenderChunkBuffer(std::map<std::string, std::vector<int>> _renderData, BlockPos _pos, ModelRegister* modelRegister) {
     pos = _pos;
 
@@ -48,6 +50,8 @@ void RenderChunkBuffer::renderChunk(ModelRegister* modelRegister) {
         glBindVertexArray(0);
     }
 }
+
+#endif
 
 RenderChunkBuffer::~RenderChunkBuffer() {
 

@@ -38,19 +38,38 @@ int Renderer::getHeight() {
 
 template<class T>
 void Renderer::appendVectorWithVector(std::vector<T>* vectorToAppendTo, std::vector<T>& vectorToAppend) {
+    #ifndef VULKAN_BACKEND
     OpenGLRenderer::appendVectorWithVector(vectorToAppendTo, vectorToAppend);
+    #endif
+    throw std::runtime_error("appendVectorWithVector isn't defined for the Vulkan backend");
+    return;
 }
 
 glm::mat4x4 Renderer::calculatePerspectiveMatrix(double FOV, double aspectRatio, double zNear, double zFar) {
+    #ifndef VULKAN_BACKEND
     return OpenGLRenderer::calculatePerspectiveMatrix(FOV, aspectRatio, zNear, zFar);
+    #else
+    throw std::runtime_error("calculatePerspectiveMatrix isn't defined for the Vulkan backend");
+    //return VulkanRenderer::calculatePerspectiveMatrix(FOV, aspectRatio, zNear, zFar);
+    #endif
 }
 
 glm::mat3x3 Renderer::calculateXRotationMatrix(double xRotation) {
+    #ifndef VULKAN_BACKEND
     return OpenGLRenderer::calculateXRotationMatrix(xRotation);
+    #else
+    //throw std::runtime_error("calculateXRotationMatrix isn't defined for the Vulkan backend");
+    return VulkanRenderer::calculateXRotationMatrix(xRotation);
+    #endif
 }
 
 glm::mat3x3 Renderer::calculateYRotationMatrix(double yRotation) {
+    #ifndef VULKAN_BACKEND
     return OpenGLRenderer::calculateYRotationMatrix(yRotation);
+    #else
+    //throw std::runtime_error("calculateYRotationMatrix isn't defined for the Vulkan backend");
+    return VulkanRenderer::calculateYRotationMatrix(yRotation);
+    #endif
 }
 
 std::array<int, 2> Renderer::overlayDimensions() {
@@ -84,4 +103,8 @@ void Renderer::removeOverlayData(std::string overlayID) {
 
 void Renderer::setOverlayData(std::string overlayID, float rectangle[36]) {
     internalRenderer.setOverlayData(overlayID, rectangle);
+}
+
+GLFWwindow* Renderer::getWindowPtr() {
+    return internalRenderer.getWindowPtr();
 }

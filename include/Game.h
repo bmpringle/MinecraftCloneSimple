@@ -26,7 +26,6 @@ class Game {
 
         void quitToMainMenu();
     private:
-        GLFWwindow* window;
         EventQueue eventQueue;
         TimerMap map;
         InputHandler input;

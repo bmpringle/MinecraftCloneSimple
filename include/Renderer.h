@@ -16,6 +16,8 @@
 #include "ModelRegister.h"
 
 #ifdef VULKAN_BACKEND
+#include "VulkanRenderer.h"
+typedef VulkanRenderer INTERNAL_RENDERER;
 #else
 #include "OpenGLRenderer.h"
 typedef OpenGLRenderer INTERNAL_RENDERER;
@@ -27,6 +29,7 @@ class Renderer {
     public:
         Renderer();
 
+        GLFWwindow* getWindowPtr();
         void renderFrame(World* world);
         void renderBlockInWireframe(World* world, BlockPos pos);
         void updateAspectRatio(GLFWwindow* window);
