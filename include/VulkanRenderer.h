@@ -1,4 +1,5 @@
 #ifndef VULKANRENDERER_H
+#define VULKANRENDERER_H
 
 #include <sstream>
 #include <string>
@@ -54,6 +55,13 @@ class VulkanRenderer {
 
     private:
         VKRenderer renderer = VKRenderer();
+
+        void initTexturesAndModels();
+
+        std::vector<BlockPos> chunkPositionsCurrentlyLoaded;
+
+        void updateChunkData(Chunk* chunk);
+
         //this is subject to change, since it's from the OpenGlRenderer class
 
         void renderSetup();
