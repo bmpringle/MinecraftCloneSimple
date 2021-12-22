@@ -20,12 +20,12 @@ void ItemBlockDoor::onUse(World* world, ItemStack* stack) {
                 break;
             case UP:
                 location = BlockPos(blockLookingAt->x, blockLookingAt->y + 1, blockLookingAt->z);
-                if(world->getBlockData()->getBlockAtPosition(location).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(location).isSolid()) {
+                if(world->getBlockData()->getBlockAtPosition(location).isBlockAir() || !world->getBlockData()->getBlockAtPosition(location).isSolid()) {
                     //check if block below is solid
-                    if(world->getBlockData()->getBlockAtPosition(*blockLookingAt).getBlockType() != nullptr && world->getBlockData()->getBlockAtPosition(*blockLookingAt).isSolid()) {
+                    if(!world->getBlockData()->getBlockAtPosition(*blockLookingAt).isBlockAir() && world->getBlockData()->getBlockAtPosition(*blockLookingAt).isSolid()) {
                         //check if block above doesn't exist
                         BlockPos secondDoorBlock = BlockPos(location.x, location.y + 1, location.z);
-                        if(world->getBlockData()->getBlockAtPosition(secondDoorBlock).getBlockType() == nullptr || !world->getBlockData()->getBlockAtPosition(secondDoorBlock).isSolid()) {
+                        if(world->getBlockData()->getBlockAtPosition(secondDoorBlock).isBlockAir() || !world->getBlockData()->getBlockAtPosition(secondDoorBlock).isSolid()) {
                             BlockData oldBlock = world->getBlockData()->getBlockAtPosition(location);
                             world->getBlockData()->setBlockAtPosition(location, Blocks::door);
                             world->getBlockData()->getBlockReferenceAtPosition(location).placedOnSide(world->getPlayer()->horizontalSidePlacedOn(), world->getPlayer()->sideLookingAt());
@@ -38,12 +38,12 @@ void ItemBlockDoor::onUse(World* world, ItemStack* stack) {
                             bool valid = world->getPlayer()->validatePosition(world->getPlayer()->getPos(), world->getBlockData());
                             if(!valid) {
                                 world->getBlockData()->removeBlockAtPosition(location);
-                                if(oldBlock.getBlockType() != nullptr) {
+                                if(!oldBlock.isBlockAir()) {
                                     world->getBlockData()->setBlockDataAtPosition(location, oldBlock);
                                 }
 
                                 world->getBlockData()->removeBlockAtPosition(secondDoorBlock);
-                                if(secondBlockOld.getBlockType() != nullptr) {
+                                if(!secondBlockOld.isBlockAir()) {
                                     world->getBlockData()->setBlockDataAtPosition(secondDoorBlock, secondBlockOld);
                                 }
                                 stack->add(1);

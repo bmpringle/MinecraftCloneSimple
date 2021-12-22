@@ -4,10 +4,12 @@
 #include "ItemStack.h"
 
 BlockData::BlockData(std::shared_ptr<Block> type, BlockPos pos) : pos(pos), type(type) {
-
+    if(type == nullptr) {
+        isAir = true;
+    }
 }
 
-BlockData::BlockData() : pos(BlockPos(0, 0, 0)), type(nullptr) {
+BlockData::BlockData() : pos(BlockPos(0, 0, 0)), type(nullptr), isAir(true) {
 
 }
 
@@ -25,7 +27,7 @@ AABB BlockData::getAABB() {
     return aabb;
 }
 
-std::shared_ptr<Block> BlockData::getBlockType() {
+const std::shared_ptr<Block>& BlockData::getBlockType() {
     return type;
 }
 
@@ -38,7 +40,7 @@ void BlockData::setData(int data) {
 }
 
 BlockRenderedModel BlockData::getRenderedModel() {
-    if(type != nullptr) {
+    if(!isAir) {
         BlockRenderedModel model = type->getRenderedModel(data);
         type->rotateModel(model, data);
         return model;
@@ -48,7 +50,7 @@ BlockRenderedModel BlockData::getRenderedModel() {
 }
 
 std::string BlockData::getTextureName(SideEnum side) {
-    if(type != nullptr) {
+    if(!isAir) {
         return type->getTextureName(side, data);
     }else {
         throw std::invalid_argument("type is null");
@@ -56,7 +58,7 @@ std::string BlockData::getTextureName(SideEnum side) {
 }
 
 bool BlockData::isSolid() {
-    if(type != nullptr) {
+    if(!isAir) {
         return type->isSolid(data);
     }else {
         return false;
@@ -64,7 +66,7 @@ bool BlockData::isSolid() {
 }
 
 bool BlockData::isOpaque() {
-    if(type != nullptr) {
+    if(!isAir) {
         return type->isOpaque(data);
     }else {
         return false;
@@ -72,21 +74,25 @@ bool BlockData::isOpaque() {
 }
 
 void BlockData::placedOnSide(SideEnum hPlacementAngle, SideEnum sideLookingAt) {
-    if(type != nullptr) {
+    if(!isAir) {
         type->onPlaced(hPlacementAngle, sideLookingAt, &data);
     }
 }
 
 void BlockData::updateBlock(BlockArrayData* data) {
-    if(type != nullptr) {
+    if(!isAir) {
         type->updateBlock(data, this);
     }
 }
 
 bool BlockData::activateBlock(World* world, ItemStack* stack) {
-    if(type != nullptr) {
+    if(!isAir) {
         return type->onBlockActivated(world, pos, stack, &data);
     }else {
         return false;
     }
+}
+
+bool BlockData::isBlockAir() {
+    return isAir;
 }

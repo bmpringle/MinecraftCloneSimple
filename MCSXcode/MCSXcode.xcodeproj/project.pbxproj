@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BCD0260C2673EAB40072157B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD0260B2673EAB40072157B /* OpenGL.framework */; };
+		BC5CA0A12771600700FB1B16 /* OpenGLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC5CA09E2771600700FB1B16 /* OpenGLRenderer.cpp */; };
+		BC5CA0A22771600700FB1B16 /* VulkanRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC5CA09F2771600700FB1B16 /* VulkanRenderer.cpp */; };
+		BC5CA0A32771600800FB1B16 /* ModelRegister.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC5CA0A02771600700FB1B16 /* ModelRegister.cpp */; };
+		BC5CA0B327727D0F00FB1B16 /* libVulkanEngineLib.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BC5CA0B227727D0F00FB1B16 /* libVulkanEngineLib.dylib */; };
+		BCD0260C2673EAB40072157B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD0260B2673EAB40072157B /* OpenGL.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		BCD0260E2673EAB80072157B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD0260D2673EAB80072157B /* Cocoa.framework */; };
 		BCD026102673EAC00072157B /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD0260F2673EAC00072157B /* IOKit.framework */; };
 		BCD02656267547420072157B /* Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCD02629267547420072157B /* Button.cpp */; };
@@ -84,6 +88,17 @@
 		BC4D3144269E211E004DBAAC /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Event.h; path = ../EventQueue/Event.h; sourceTree = "<group>"; };
 		BC4D3145269E2126004DBAAC /* Listener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Listener.h; path = ../EventQueue/Listener.h; sourceTree = "<group>"; };
 		BC4D3146269E213E004DBAAC /* TimerMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimerMap.h; path = ../TimerMap/TimerMap.h; sourceTree = "<group>"; };
+		BC5CA09E2771600700FB1B16 /* OpenGLRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OpenGLRenderer.cpp; path = ../src/OpenGLRenderer.cpp; sourceTree = "<group>"; };
+		BC5CA09F2771600700FB1B16 /* VulkanRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VulkanRenderer.cpp; path = ../src/VulkanRenderer.cpp; sourceTree = "<group>"; };
+		BC5CA0A02771600700FB1B16 /* ModelRegister.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModelRegister.cpp; path = ../src/ModelRegister.cpp; sourceTree = "<group>"; };
+		BC5CA0A42771601B00FB1B16 /* ModelRegister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModelRegister.h; path = ../include/ModelRegister.h; sourceTree = "<group>"; };
+		BC5CA0A52771601B00FB1B16 /* OpenGLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenGLRenderer.h; path = ../include/OpenGLRenderer.h; sourceTree = "<group>"; };
+		BC5CA0A62771601B00FB1B16 /* VulkanRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VulkanRenderer.h; path = ../include/VulkanRenderer.h; sourceTree = "<group>"; };
+		BC5CA0AB27727B0C00FB1B16 /* libVulkanEngineLib.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libVulkanEngineLib.dylib; path = ../lib/dbg/libVulkanEngineLib.dylib; sourceTree = "<group>"; };
+		BC5CA0B027727B7600FB1B16 /* OpenGLRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OpenGLRenderer.cpp; path = ../src/OpenGLRenderer.cpp; sourceTree = "<group>"; };
+		BC5CA0B127727B7600FB1B16 /* VulkanRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = VulkanRenderer.cpp; path = ../src/VulkanRenderer.cpp; sourceTree = "<group>"; };
+		BC5CA0B227727D0F00FB1B16 /* libVulkanEngineLib.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libVulkanEngineLib.dylib; path = ../lib/rel/libVulkanEngineLib.dylib; sourceTree = "<group>"; };
+		BC5CA0B427727E5900FB1B16 /* MCSXcode.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MCSXcode.entitlements; path = MCSXcode/MCSXcode.entitlements; sourceTree = "<group>"; };
 		BC6175AD26960E8100FADEFA /* TextureArrayCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureArrayCreator.h; path = ../include/TextureArrayCreator.h; sourceTree = "<group>"; };
 		BC6175AE26960E8100FADEFA /* Gui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gui.h; path = ../include/Gui.h; sourceTree = "<group>"; };
 		BC6175AF26960E8100FADEFA /* SBDA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBDA.h; path = ../include/SBDA.h; sourceTree = "<group>"; };
@@ -207,6 +222,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BC5CA0B327727D0F00FB1B16 /* libVulkanEngineLib.dylib in Frameworks */,
 				BCD02689267547A30072157B /* libGLEW.a in Frameworks */,
 				BCD0268A267547A30072157B /* libglfw3.a in Frameworks */,
 				BCD0268B267547A30072157B /* objLoaderLib.a in Frameworks */,
@@ -225,6 +241,15 @@
 		BCD025662673E6BE0072157B = {
 			isa = PBXGroup;
 			children = (
+				BC5CA0B427727E5900FB1B16 /* MCSXcode.entitlements */,
+				BC5CA0B027727B7600FB1B16 /* OpenGLRenderer.cpp */,
+				BC5CA0B127727B7600FB1B16 /* VulkanRenderer.cpp */,
+				BC5CA0A42771601B00FB1B16 /* ModelRegister.h */,
+				BC5CA0A52771601B00FB1B16 /* OpenGLRenderer.h */,
+				BC5CA0A62771601B00FB1B16 /* VulkanRenderer.h */,
+				BC5CA0A02771600700FB1B16 /* ModelRegister.cpp */,
+				BC5CA09E2771600700FB1B16 /* OpenGLRenderer.cpp */,
+				BC5CA09F2771600700FB1B16 /* VulkanRenderer.cpp */,
 				BC4D3146269E213E004DBAAC /* TimerMap.h */,
 				BC4D3145269E2126004DBAAC /* Listener.h */,
 				BC4D3144269E211E004DBAAC /* Event.h */,
@@ -349,6 +374,8 @@
 		BCD0260A2673EAB30072157B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BC5CA0AB27727B0C00FB1B16 /* libVulkanEngineLib.dylib */,
+				BC5CA0B227727D0F00FB1B16 /* libVulkanEngineLib.dylib */,
 				BCD026132673EC070072157B /* eventLib.a */,
 				BCD02686267547A30072157B /* eventLib.a */,
 				BCD026162673EC070072157B /* libGLEW.a */,
@@ -424,6 +451,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BC5CA0A12771600700FB1B16 /* OpenGLRenderer.cpp in Sources */,
+				BC5CA0A22771600700FB1B16 /* VulkanRenderer.cpp in Sources */,
 				BCD02656267547420072157B /* Button.cpp in Sources */,
 				BCD02657267547420072157B /* Player.cpp in Sources */,
 				BCD02658267547420072157B /* SideEnum.cpp in Sources */,
@@ -446,6 +475,7 @@
 				BCD02669267547420072157B /* Pos.cpp in Sources */,
 				BCD0266A267547420072157B /* Blocks.cpp in Sources */,
 				BCD0266B267547420072157B /* Chunk.cpp in Sources */,
+				BC5CA0A32771600800FB1B16 /* ModelRegister.cpp in Sources */,
 				BCD0266C267547420072157B /* main.cpp in Sources */,
 				BCD0266D267547420072157B /* RenderedModel.cpp in Sources */,
 				BCD0266E267547420072157B /* Renderer.cpp in Sources */,
@@ -475,6 +505,208 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		BC5CA0A72772714A00FB1B16 /* Debug-VK */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					VULKAN_BACKEND,
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				"HEADER_SEARCH_PATHS[arch=*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				"OTHER_CPLUSPLUSFLAGS[arch=*]" = "$(OTHER_CFLAGS)";
+				SDKROOT = macosx;
+			};
+			name = "Debug-VK";
+		};
+		BC5CA0A82772714A00FB1B16 /* Debug-VK */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MCSXcode/MCSXcode.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2V2TE93732;
+				ENABLE_HARDENED_RUNTIME = YES;
+				"EXCLUDED_ARCHS[sdk=*]" = x86_64;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/ObjLoader/glm/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/glew/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/glfw/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/libnoise/src/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanSDK/macOS/include",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/include/Engine/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/StringToText/freetype/include/",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/lib/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/lib/rel/",
+				);
+				"OTHER_CPLUSPLUSFLAGS[arch=*]" = (
+					"-static",
+					"$(OTHER_CFLAGS)",
+					"-DGLEW_STATIC",
+					"-std=c++2a",
+					"-g",
+					"-Wall",
+					"-Wpedantic",
+					"-D_USE_MATH_DEFINES",
+					"-DNOISE_STATIC",
+					"-DDBG",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-VK";
+		};
+		BC5CA0A92772715100FB1B16 /* Release-VK */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = VULKAN_BACKEND;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				"HEADER_SEARCH_PATHS[arch=*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				"OTHER_CPLUSPLUSFLAGS[arch=*]" = "$(OTHER_CFLAGS)";
+				SDKROOT = macosx;
+			};
+			name = "Release-VK";
+		};
+		BC5CA0AA2772715100FB1B16 /* Release-VK */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MCSXcode/MCSXcode.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2V2TE93732;
+				ENABLE_HARDENED_RUNTIME = YES;
+				"EXCLUDED_ARCHS[sdk=*]" = x86_64;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/libnoise/src/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/glew/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/glfw/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/ObjLoader/glm/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanSDK/macOS/include",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/include/Engine/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/StringToText/freetype/include/",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/lib/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/lib/",
+				);
+				"OTHER_CPLUSPLUSFLAGS[arch=*]" = (
+					"-static",
+					"-O3",
+					"-D_USE_MATH_DEFINES",
+					"-DNOISE_STATIC",
+					"-Wall",
+					"-Wpedantic",
+					"-g",
+					"-std=c++2a",
+					"-DGLEW_STATIC",
+					"$(OTHER_CFLAGS)",
+					"-DDBG",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-VK";
+		};
 		BCD025742673E6BE0072157B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -527,10 +759,12 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				"HEADER_SEARCH_PATHS[arch=*]" = "";
+				"LIBRARY_SEARCH_PATHS[arch=*]" = "";
 				MACOSX_DEPLOYMENT_TARGET = 11.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				"OTHER_CPLUSPLUSFLAGS[arch=*]" = "$(OTHER_CFLAGS)";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -584,6 +818,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 11.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				"OTHER_CPLUSPLUSFLAGS[arch=*]" = "$(OTHER_CFLAGS)";
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -591,6 +826,8 @@
 		BCD025772673E6BE0072157B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MCSXcode/MCSXcode.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2V2TE93732;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -602,8 +839,16 @@
 					"/Users/bmp/Development/C++/MinecraftCloneSimple/glfw/include/",
 					"/Users/bmp/Development/C++/MinecraftCloneSimple/",
 					"/Users/bmp/Development/C++/MinecraftCloneSimple/libnoise/src/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanSDK/macOS/include",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/include/Engine/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/StringToText/freetype/include/",
 				);
-				"LIBRARY_SEARCH_PATHS[arch=*]" = "/Users/bmp/Development/C++/MinecraftCloneSimple/lib/";
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/lib/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/lib/rel",
+				);
 				"OTHER_CPLUSPLUSFLAGS[arch=*]" = (
 					"-static",
 					"$(OTHER_CFLAGS)",
@@ -623,6 +868,8 @@
 		BCD025782673E6BE0072157B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MCSXcode/MCSXcode.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2V2TE93732;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -634,8 +881,16 @@
 					"/Users/bmp/Development/C++/MinecraftCloneSimple/glew/include/",
 					"/Users/bmp/Development/C++/MinecraftCloneSimple/glfw/include/",
 					"/Users/bmp/Development/C++/MinecraftCloneSimple/ObjLoader/glm/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanSDK/macOS/include",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/include/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/include/Engine/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/VulkanEngine/StringToText/freetype/include/",
 				);
-				LIBRARY_SEARCH_PATHS = "/Users/bmp/Development/C++/MinecraftCloneSimple/lib/";
+				LIBRARY_SEARCH_PATHS = (
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/lib/",
+					"/Users/bmp/Development/C++/MinecraftCloneSimple/lib/",
+				);
 				"OTHER_CPLUSPLUSFLAGS[arch=*]" = (
 					"-static",
 					"-O3",
@@ -660,7 +915,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BCD025742673E6BE0072157B /* Debug */,
+				BC5CA0A72772714A00FB1B16 /* Debug-VK */,
 				BCD025752673E6BE0072157B /* Release */,
+				BC5CA0A92772715100FB1B16 /* Release-VK */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -669,7 +926,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BCD025772673E6BE0072157B /* Debug */,
+				BC5CA0A82772714A00FB1B16 /* Debug-VK */,
 				BCD025782673E6BE0072157B /* Release */,
+				BC5CA0AA2772715100FB1B16 /* Release-VK */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

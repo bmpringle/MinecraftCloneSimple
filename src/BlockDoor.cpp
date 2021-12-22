@@ -166,11 +166,11 @@ void BlockDoor::updateBlock(BlockArrayData* data, BlockData* blockToUpdate) {
     BlockPos pos = blockToUpdate->getPos();
 
     if(blockToUpdate->getData() < 8) {
-        if(data->getBlockReferenceAtPosition(BlockPos(pos.x, pos.y + 1, pos.z)).getBlockType() == nullptr) {
+        if(data->getBlockReferenceAtPosition(BlockPos(pos.x, pos.y + 1, pos.z)).isBlockAir()) {
             data->removeBlockAtPosition(pos);
         }
     }else {
-        if(data->getBlockReferenceAtPosition(BlockPos(pos.x, pos.y - 1, pos.z)).getBlockType() == nullptr) {
+        if(data->getBlockReferenceAtPosition(BlockPos(pos.x, pos.y - 1, pos.z)).isBlockAir()) {
             data->removeBlockAtPosition(pos);
         }
     }

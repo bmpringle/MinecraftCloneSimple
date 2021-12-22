@@ -34,6 +34,8 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler,
 
 void World::updateGame() {
     input->callRegularEvents(worldEventQueue, timerMap);
+
+    internalBlockData.updateChunkList();
     
     thePlayer->updateEntity(this);
 
@@ -170,7 +172,7 @@ void World::renderGame() {
     renderer->updateAspectRatio(window);
     renderer->renderFrame(this);
     if(thePlayer->getBlockLookingAt() != nullptr) {
-        if(internalBlockData.getBlockAtPosition(*thePlayer->getBlockLookingAt()).getBlockType() != nullptr) { //this is needed to fix some whack bug on windows :/
+        if(!internalBlockData.getBlockAtPosition(*thePlayer->getBlockLookingAt()).isBlockAir()) { //this is needed to fix some whack bug on windows :/
             renderer->renderBlockInWireframe(this, *thePlayer->getBlockLookingAt());
         }
     }

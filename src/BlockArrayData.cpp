@@ -14,6 +14,7 @@ BlockArrayData::BlockArrayData(int xSize, int ySize, int zSize, std::string _wor
 }
 
 void BlockArrayData::sendChunkUpdates() {
+    //update chunks
     for(Chunk& chunk : chunkList) {
         if(loadedChunkLocations.count(chunk.getChunkCoordinates()) > 0) {
             chunk.updateChunk(this);
@@ -32,6 +33,9 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
 
     loadedChunkLocations.clear();
 
+    std::vector<std::string> chunkPaths;
+    std::vector<BlockPos> chunkLocations;
+
     for(float x = -(float)renderDistance; x <= (float)renderDistance; ++x) {
         for(float z = -(float)renderDistance; z <= (float)renderDistance; ++z) {
             BlockPos playerBlock = BlockPos((int)centerChunk->getChunkCoordinates().x + size[0] * x, 0, (int)centerChunk->getChunkCoordinates().z + size[2] * z);
@@ -49,13 +53,17 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
                 int z = floor((float)playerBlock.z / (float)Chunk::getChunkSize()[2]);
                 std::string chunkPath = worldFolder+"/data/"+std::to_string(x)+"-"+std::to_string(z)+".cdat";
                 if(fs::exists(chunkPath)) {
-                    loadChunkFromFile(chunkPath, playerBlock);
+                    chunkPaths.push_back(chunkPath);
+                    chunkLocations.push_back(playerBlock);
                 }else {
                     generateChunk(playerBlock);
                 }
 
                 LoadedChunkInfo info = LoadedChunkInfo(BlockPos(0, 0, 0), false);
-                BlockPos chunkLocation = getChunkWithBlock(playerBlock)->getChunkCoordinates();
+
+                //used to be getChunkWithBlock(playerBlock)->getChunkCoordinates();, but was changed in order to allow chunks to be loaded asyncronously
+                BlockPos chunkLocation = BlockPos(floor((float)playerBlock.x / (float)Chunk::getChunkSize()[0]) * (float)Chunk::getChunkSize()[0], 0, floor((float)playerBlock.z / (float)Chunk::getChunkSize()[2]) * (float)Chunk::getChunkSize()[0]);
+                
                 if(oldChunks.count(chunkLocation) > 0) {
                     info = oldChunks.at(chunkLocation);       
                     loadedChunkLocations[chunkLocation] = LoadedChunkInfo(chunkLocation, info.update);
@@ -66,11 +74,18 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
         }
     }
 
+    loadChunksFromFileAsync(chunkPaths, chunkLocations);
+
+    std::vector<BlockPos> chunksToSave;
+
     for(std::pair<BlockPos, LoadedChunkInfo> chunkPos : oldChunks) {
         if(loadedChunkLocations.count(chunkPos.first) == 0) {
-            unloadChunkToFile(chunkPos.first, world->getName());
+            chunksToSave.push_back(chunkPos.first);
+            //unloadChunkToFile(chunkPos.first, world->getName());
         }
     }
+
+    unloadChunksToFileAsync(chunksToSave, world->getName());
 }
 
 void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> block) {
@@ -326,7 +341,7 @@ bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
                     for(std::optional<SBDA>* blocksColumn : blocksVector) {
                         for(int i = 0; i < 256; ++i) {
                             BlockData block = (*blocksColumn).value()[i];
-                            if(block.getBlockType() != nullptr && block.isSolid()) {
+                            if(block.isSolid()) {
                                 AABB blockAABB = block.getAABB();
                                 if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
                                     *ypos = blockAABB.startY + blockAABB.ySize;
@@ -417,10 +432,12 @@ bool BlockArrayData::isAABBInWater(AABB playerAABB) {
                     for(std::optional<SBDA>* blocksColumn : blocksVector) {
                         for(int i = 0; i < 256; ++i) {
                             BlockData block = (*blocksColumn).value()[i];
-                            if(block.getBlockType() != nullptr && block.getBlockType()->getName() == "water") {
-                                AABB blockAABB = block.getAABB();
-                                if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
-                                    return true;
+                            if(!block.isBlockAir()) {
+                                if(block.getBlockType()->getName() == "water") {
+                                    AABB blockAABB = block.getAABB();
+                                    if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
+                                        return true;
+                                    }
                                 }
                             }
                         }
@@ -458,6 +475,8 @@ int BlockArrayData::getSeed() {
 void BlockArrayData::setChunkToUpdate(BlockPos chunkLocation) {
     if(loadedChunkLocations.count(chunkLocation) > 0) {
         ++loadedChunkLocations.at(chunkLocation).update;
+    }else {
+        std::cout << "could not find chunk in loadedChunkLocations" << std::endl;
     }
 }
 
@@ -480,4 +499,90 @@ void BlockArrayData::unloadChunkToFile(BlockPos chunkLocation, std::string world
         }
         ++i;
     }
+}
+
+void BlockArrayData::loadChunksFromFileAsync(std::vector<std::string> chunkPaths, std::vector<BlockPos> chunkLocations) {
+    if(chunkPaths.size() != chunkLocations.size()) {
+        throw std::runtime_error("chunkpaths must be the same size as chunklocations");
+    }
+
+    auto asyncCall = [this, chunkPaths, chunkLocations]() {
+        for(int i = 0; i < chunkPaths.size(); ++i) {
+            std::string chunkPath = chunkPaths[i];
+            BlockPos chunkLocation = chunkLocations[i];
+
+            Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize()[0]), floor((float)chunkLocation.z / (float)Chunk::getChunkSize()[2]));
+            std::ifstream t(chunkPath);
+            t.seekg(0, std::ios::end);
+            size_t size = t.tellg();
+            std::string buffer(size, ' ');
+            t.seekg(0);
+            t.read(&buffer[0], size); 
+
+            auto tree = generatingChunk.getBlockTree();
+            tree->deserialize(buffer);
+
+            threadSafeChunkMutex.lock();
+
+            threadSafeChunkList.push_back(generatingChunk);
+
+            threadSafeChunkMutex.unlock();
+        }
+    };
+    
+    std::thread t = std::thread(asyncCall);
+
+    t.detach();
+}
+
+void BlockArrayData::updateChunkList() {
+    //move all chunks that were generated in other threads to the normal chunk list
+    threadSafeChunkMutex.lock();
+
+    for(Chunk& c : threadSafeChunkList) {
+        chunkList.push_back(c);
+        setChunkToUpdate(c.getChunkCoordinates()); 
+    }
+
+    threadSafeChunkList.clear();
+
+    threadSafeChunkMutex.unlock();
+}
+
+void BlockArrayData::unloadChunksToFileAsync(std::vector<BlockPos> chunkLocations, std::string worldName) {
+    
+    if(!fs::exists("./worlds/" + worldName + "/data/")) {
+        fs::create_directories("./worlds/" + worldName + "/data/");
+    }
+
+    std::vector<Chunk> chunksToSave;
+
+    
+    for(BlockPos chunkLocation : chunkLocations) {
+        int i = 0;
+        for(Chunk& c : chunkList) {
+            if(c.getChunkCoordinates() == chunkLocation) {
+                chunksToSave.push_back(c);
+
+                chunkList.erase(chunkList.begin() + i);
+                break;
+            }
+            ++i;
+        }
+    }
+
+
+    auto asyncSave = [chunksToSave, worldName]() {
+        for(Chunk c : chunksToSave) {
+            auto tree = c.getBlockTree();
+            std::string data = tree->serialize();
+            std::string dataname = std::to_string(c.getChunkCoordinates().x / Chunk::getChunkSize()[0]) + "-" + std::to_string(c.getChunkCoordinates().z / Chunk::getChunkSize()[2]);
+            std::ofstream chunkFile("./worlds/" + worldName + "/data/" + dataname + ".cdat");
+            chunkFile.write(data.c_str(), data.length());
+        }
+    };
+
+    std::thread t = std::thread(asyncSave);
+
+    t.detach();
 }

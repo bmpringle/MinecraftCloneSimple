@@ -20,7 +20,7 @@ class BlockData {
 
         AABB getAABB();
 
-        std::shared_ptr<Block> getBlockType();
+        const std::shared_ptr<Block>& getBlockType();
 
         int getData();
 
@@ -40,9 +40,12 @@ class BlockData {
 
         bool activateBlock(World* world, ItemStack* stack);
 
+        bool isBlockAir();
+
     private:
         BlockPos pos;
         std::shared_ptr<Block> type;
         int data = 0;
+        bool isAir = false;
 };
 #endif

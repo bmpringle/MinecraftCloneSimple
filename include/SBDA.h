@@ -14,7 +14,7 @@ class SBDA final : public BinarySerializable {
             strData->append("[");
             for(int i = 0; i < array.size(); ++i) {
                 BlockData& blockData = array[i];
-                if(blockData.getBlockType() != nullptr) {
+                if(!blockData.isBlockAir()) {
                     BlockPos pos = blockData.getPos();
                     strData->append("(" + blockData.getBlockType()->getName() + "|" + std::to_string(pos.x) + "|" + std::to_string(pos.y) + "|" + std::to_string(pos.z) + "|" + std::to_string(blockData.getData()) + ")");
                     strData->append(",");

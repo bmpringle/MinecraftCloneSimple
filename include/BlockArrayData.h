@@ -70,7 +70,14 @@ class BlockArrayData {
 
         void setChunkToUpdate(BlockPos chunkLocation);
 
+        //should be called every logic tick, syncronizes chunks constructed by other threads.
+        void updateChunkList();
+
     private:
+        void loadChunksFromFileAsync(std::vector<std::string> chunkPaths, std::vector<BlockPos> chunkLocations);
+
+        void unloadChunksToFileAsync(std::vector<BlockPos> chunkLocations, std::string worldName);
+        
         std::vector<Chunk> chunkList;
 
         int size[3];
@@ -94,5 +101,8 @@ class BlockArrayData {
         std::string worldFolder = "";
 
         BlockData dummyData = BlockData();
+
+        std::vector<Chunk> threadSafeChunkList;
+        std::mutex threadSafeChunkMutex;
 };
 #endif

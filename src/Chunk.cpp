@@ -171,7 +171,7 @@ void Chunk::softSetBlockAtLocation(BlockPos pos, std::shared_ptr<Block> block) {
                     abort();
                 }
                 std::optional<SBDA>* blocks = blocksVector.at(0);
-                if(blocks->value()[pos.y].getBlockType() == nullptr) {
+                if(blocks->value()[pos.y].isBlockAir()) {
                     blocks->value()[pos.y] = blockData;
                 }   
             }
@@ -207,7 +207,7 @@ void Chunk::softSetColumnOfBlocks(BlockPos pos, std::vector<std::shared_ptr<Bloc
                 for(int _amount : amount) {
                     std::shared_ptr<Block> _block = block.at(b);
                     for(int y = pos.y; y < pos.y + _amount; ++y) {
-                        if(blocks->value()[y].getBlockType() == nullptr) {
+                        if(blocks->value()[y].isBlockAir()) {
                             BlockData data = BlockData(_block, BlockPos(pos.x, y, pos.z));
                             blocks->value()[y] = data;
                         }
@@ -238,7 +238,7 @@ std::vector<BlockData> Chunk::getBlocksInChunk() {
 
     for(std::optional<SBDA>* blocks : blocksVector) {
         for(int i = 0; i < 256; ++i) {
-            if(blocks->value()[i].getBlockType() != nullptr) {
+            if(!blocks->value()[i].isBlockAir()) {
                 result.push_back(blocks->value()[i]);
             }
         }
@@ -340,7 +340,7 @@ void Chunk::updateChunk(BlockArrayData* data) {
 
     for(std::optional<SBDA>* blocks : blocksVector) {
         for(int i = 0; i < 256; ++i) {
-            if(blocks->value()[i].getBlockType() != nullptr) {
+            if(!blocks->value()[i].isBlockAir()) {
                 blocks->value()[i].updateBlock(data);
             }
         }
