@@ -150,3 +150,42 @@ void AABB::rotateZ90() {
     ySize = maxp.y - minp.y;
     zSize = maxp.z - minp.z;
 }
+
+#ifdef VULKAN_BACKEND
+
+std::vector<WireframeVertex> AABB::getWireframeFromAABB() {
+    WireframeVertex v1 = {{0, 0, 0}};
+    WireframeVertex v2 = {{-xSize, 0, 0}};
+    WireframeVertex v3 = {{0, ySize, 0}};
+    WireframeVertex v4 = {{0, 0, zSize}};
+    WireframeVertex v5 = {{-xSize, ySize, 0}};
+    WireframeVertex v6 = {{0, ySize, zSize}};
+    WireframeVertex v7 = {{-xSize, 0, zSize}};
+    WireframeVertex v8 = {{-xSize, ySize, zSize}};
+
+    std::vector<WireframeVertex> vertices;
+    vertices.push_back(v1);
+    vertices.push_back(v2);
+    vertices.push_back(v7);
+    vertices.push_back(v4);
+    vertices.push_back(v1);
+
+    vertices.push_back(v3);
+    vertices.push_back(v5);
+    vertices.push_back(v2);
+    vertices.push_back(v5);
+
+    vertices.push_back(v8);
+    vertices.push_back(v7);
+    vertices.push_back(v8);
+
+    vertices.push_back(v6);
+    vertices.push_back(v4);
+    vertices.push_back(v6);
+
+    vertices.push_back(v3);
+
+    return vertices;
+}
+
+#endif

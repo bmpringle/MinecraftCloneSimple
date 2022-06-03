@@ -12,7 +12,9 @@ Player::Player(World* _world) : Entity(), world(_world), settings(_world->getSet
 }
 
 Player::~Player() {
-    gui->close();
+    if(gui != nullptr) {
+        gui->close();
+    }
 }
 
 void Player::updateEntity(World* world) {  

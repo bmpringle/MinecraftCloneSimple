@@ -5,11 +5,9 @@
 #include <algorithm>
 #include <Blocks.h>
 #include "PlatformFilesystem.h"
+#include <thread>
 
-BlockArrayData::BlockArrayData(int xSize, int ySize, int zSize, std::string _worldFolder, int seed) : chunkList(std::vector<Chunk>()), SEED(seed), worldFolder(_worldFolder) {
-    size[0] = xSize; 
-    size[1] = ySize; 
-    size[2] = zSize;
+BlockArrayData::BlockArrayData(std::string _worldFolder, int seed) : chunkList(std::vector<Chunk>()), SEED(seed), worldFolder(_worldFolder) {
     noise.SetSeed(SEED);
 }
 
@@ -291,7 +289,6 @@ Chunk* BlockArrayData::getChunkWithBlock(BlockPos pos) {
             }
         }
     }
-
     return fakeChunk;
 }
 
@@ -527,6 +524,8 @@ void BlockArrayData::loadChunksFromFileAsync(std::vector<std::string> chunkPaths
             threadSafeChunkList.push_back(generatingChunk);
 
             threadSafeChunkMutex.unlock();
+
+            setChunkToUpdate(chunkLocation);
         }
     };
     

@@ -105,12 +105,15 @@ void Game::start() {
         }
 
         input.callRegularEvents(&eventQueue, &map);
-
+        #ifndef VULKAN_BACKEND
         glfwSwapBuffers(renderer.getWindowPtr());
+        #endif
         glfwPollEvents();
     }
+    #ifndef VULKAN_BACKEND
     glfwDestroyWindow(renderer.getWindowPtr());
     glfwTerminate();
+    #endif
 
     settings.saveOptionsToFile("src/assets/options.txt");
 }

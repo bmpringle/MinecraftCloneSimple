@@ -62,6 +62,14 @@ class VulkanRenderer {
 
         void updateChunkData(Chunk* chunk);
 
+        bool shouldRenderWireframe = false;
+
+        bool wireframeIsRendered = false;
+
+        BlockPos wireframeBlockPos = BlockPos(0, 0, 0);
+
+        std::string wireframeModelName = "";
+
         //this is subject to change, since it's from the OpenGlRenderer class
 
         void renderSetup();

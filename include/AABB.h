@@ -1,6 +1,12 @@
 #ifndef AABB_H
 #define AABB_H
 
+#ifdef VULKAN_BACKEND
+#include "WireframeVertex.h"
+#endif
+
+#include <vector>
+
 #include "glmh.h"
 
 class BlockPos;
@@ -35,6 +41,10 @@ class AABB {
         float getHeight();
 
         float getDepth();
+
+        #ifdef VULKAN_BACKEND
+            std::vector<WireframeVertex> getWireframeFromAABB();
+        #endif
 };
 
 #endif

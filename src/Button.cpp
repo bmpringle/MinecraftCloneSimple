@@ -39,26 +39,26 @@ void Button::setRenderData(Renderer* renderer, double offsetX, double offsetY) {
     float aspect = (double)renderer->getHeight() / (double)renderer->getWidth();
 
     float numberoverlay[48] = {
-        (float)(x + offsetX) * aspect, (float)(y + offsetY) * aspect, layer, 0, 0, 1, 0, 0,
-        (float)(x + width + offsetX) * aspect, (float)(y + offsetY) * aspect, layer, 0, 0, 1, 1, 0,
-        (float)(x + offsetX) * aspect, (float)(y + height + offsetY) * aspect, layer, 0, 0, 1, 0, 1,
+        (float)(x + offsetX) * aspect, (float)(y + offsetY) * aspect, layer, 1, 1, 1, 0, 0,
+        (float)(x + width + offsetX) * aspect, (float)(y + offsetY) * aspect, layer, 1, 1, 1, 1, 0,
+        (float)(x + offsetX) * aspect, (float)(y + height + offsetY) * aspect, layer, 1, 1, 1, 0, 1,
 
-        (float)(x + offsetX) * aspect, (float)(y + height + offsetY) * aspect, layer, 0, 0, 1, 0, 1,
-        (float)(x + width + offsetX) * aspect, (float)(y + offsetY) * aspect, layer, 0, 0, 1, 1, 0,
-        (float)(x + width + offsetX) * aspect, (float)(y + height + offsetY) * aspect, layer, 0, 0, 1, 1, 1
+        (float)(x + offsetX) * aspect, (float)(y + height + offsetY) * aspect, layer, 1, 1, 1, 0, 1,
+        (float)(x + width + offsetX) * aspect, (float)(y + offsetY) * aspect, layer, 1, 1, 1, 1, 0,
+        (float)(x + width + offsetX) * aspect, (float)(y + height + offsetY) * aspect, layer, 1, 1, 1, 1, 1
     };
 
     renderer->setOverlayData(renderID + "_text", numberoverlay, textureID);
 
     if(renderButtonBackground) {
         float backgroundoverlay[36] = {
-            (float)(x + offsetX) * aspect, (float)(y + offsetY), layer, 0, 0, 1,
-            (float)(x + width + offsetX) * aspect, (float)(y + offsetY), layer, 0, 0, 1,
-            (float)(x + offsetX) * aspect, (float)(y + height + offsetY), layer, 0, 0, 1,
+            (float)(x + offsetX) * aspect, (float)(y + offsetY), layer + 1, 1, 1, 1,
+            (float)(x + width + offsetX) * aspect, (float)(y + offsetY), layer + 1, 1, 1, 1,
+            (float)(x + offsetX) * aspect, (float)(y + height + offsetY), layer + 1, 1, 1, 1,
 
-            (float)(x + offsetX) * aspect, (float)(y + height + offsetY), layer, 0, 0, 1,
-            (float)(x + width + offsetX) * aspect, (float)(y + offsetY), layer, 0, 0, 1,
-            (float)(x + width + offsetX) * aspect, (float)(y + height + offsetY), layer, 0, 0, 1,
+            (float)(x + offsetX) * aspect, (float)(y + height + offsetY), layer + 1, 1, 1, 1,
+            (float)(x + width + offsetX) * aspect, (float)(y + offsetY), layer + 1, 1, 1, 1,
+            (float)(x + width + offsetX) * aspect, (float)(y + height + offsetY), layer + 1, 1, 1, 1,
         };
         renderer->setOverlayData(renderID + "_background", backgroundoverlay);
     }

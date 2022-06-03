@@ -58,3 +58,5 @@ output, error = execCmd('mkdir -p shaders/output')
 output, error = execCmd('cp -r VulkanEngine/shaders/output/ shaders/output/')
 
 output, error = execCmd('cp VulkanEngine/assets/missing_texture.png assets/')
+
+output, error = execCmd('cp VulkanEngine/assets/blank_texture.png assets/')

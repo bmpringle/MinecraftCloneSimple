@@ -1,6 +1,8 @@
 #ifndef BLOCKPOS_H
 #define BLOCKPOS_H
 
+#include <string>
+
 class BlockPos {
     public:
         int x = 0;
@@ -18,6 +20,8 @@ class BlockPos {
         friend bool operator<(BlockPos lhs, BlockPos rhs);
 
         void print() const;
+
+        std::string to_string() const; 
 };
 
 #endif

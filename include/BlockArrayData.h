@@ -14,7 +14,7 @@ class World;
 
 class BlockArrayData {
     public:
-        BlockArrayData(int xSize, int ySize, int zSize, std::string worldFolder_, int seed);
+        BlockArrayData(std::string worldFolder_, int seed);
 
         void sendChunkUpdates();
 
@@ -80,7 +80,6 @@ class BlockArrayData {
         
         std::vector<Chunk> chunkList;
 
-        int size[3];
         bool updateRenderer = false;
         Chunk* fakeChunk = new Chunk(0, 0, true);
 

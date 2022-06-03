@@ -28,3 +28,7 @@ bool operator<(BlockPos lhs, BlockPos rhs) {
 void BlockPos::print() const {
     std::cout << "pos: " << x << " " << y << " " << z << std::endl;
 }
+
+std::string BlockPos::to_string() const {
+    return std::string("pos: " + std::to_string(x) +" " + std::to_string(y) + " " + std::to_string(z));
+}

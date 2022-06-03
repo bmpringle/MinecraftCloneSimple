@@ -5,19 +5,6 @@
 #include <iostream>
 #include <string>
 
-void safeRemoveFromVector(std::vector<std::string>* vector, std::string remove) {
-    for(int i = 0; i < vector->size(); ++i) {
-        if(vector->at(i) == remove) {
-            vector->erase(vector->begin() + i);
-        }
-    }
-}
-
-void safeAddToVector(std::vector<std::string>* vector, std::string add) {
-    safeRemoveFromVector(vector, add);
-    vector->push_back(add);
-}
-
 void InputHandler::handleInput(GLFWwindow* window, int key, int scancode, int action, int mods, EventQueue* e, TimerMap* timerMap) { 
     std::optional<std::string> cOptional = fromKeyCode(key);
 
@@ -27,18 +14,26 @@ void InputHandler::handleInput(GLFWwindow* window, int key, int scancode, int ac
 
     std::string c = cOptional.value();
 
+    auto it = std::find(held.begin(), held.end(), c);
+
     switch(action) {
         case GLFW_PRESS:
-            e->callEvent(std::shared_ptr<KeyPressedEvent>(std::make_shared<KeyPressedEvent>(c)));
+            e->callEvent(std::make_shared<KeyPressedEvent>(c));
             if(timerMap->getTimerDuration(c).count() == 0) {
                 timerMap->addTimerToMap(c);
             }
-            safeAddToVector(&held, c);
+
+            if(it != held.end()) {
+                held.erase(it);
+            }
+            held.push_back(c);
             break;
         case GLFW_RELEASE:
             e->callEvent(std::shared_ptr<KeyReleasedEvent>(std::make_shared<KeyReleasedEvent>(c)));
             timerMap->removeTimerFromMap(c);
-            safeRemoveFromVector(&held, c);
+            if(it != held.end()) {
+                held.erase(it);
+            }
             break;
         default:
             break;

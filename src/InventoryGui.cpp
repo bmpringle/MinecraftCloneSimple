@@ -13,13 +13,13 @@ void InventoryGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
     float modYSize = dims[1] * ySize;
 
     float guioverlay[48] = {
-        modX, modY, -3, 0, 0, 1, 0, 0,
-        modX + modXSize, modY, -3, 0, 0, 1, 1, 0,
-        modX, modY + modYSize, -3, 0, 0, 1, 0, 1,
+        modX, modY, -3, 1, 1, 1, 0, 0,
+        modX + modXSize, modY, -3, 1, 1, 1, 1, 0,
+        modX, modY + modYSize, -3, 1, 1, 1, 0, 1,
 
-        modX, modY + modYSize, -3, 0, 0, 1, 0, 1,
-        modX + modXSize, modY, -3, 0, 0, 1, 1, 0,
-        modX + modXSize, modY + modYSize, -3, 0, 0, 1, 1, 1
+        modX, modY + modYSize, -3, 1, 1, 1, 0, 1,
+        modX + modXSize, modY, -3, 1, 1, 1, 1, 0,
+        modX + modXSize, modY + modYSize, -3, 1, 1, 1, 1, 1
     };
 
     renderer->setOverlayData("inventory-background", guioverlay, background);
@@ -50,13 +50,13 @@ void InventoryGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
         if(mouseOverlayX >= modX + rowStartX + xStart && mouseOverlayX <= modX + rowStartX + end) {
             if(mouseOverlayY >= modY + rowStartY && mouseOverlayY <= modY + rowStartY + endY) {
                 float selectoverlay[48] = {
-                    modX + rowStartX + xStart, modY + rowStartY, -8, 0, 0, 1, 0, 0,
-                    modX + rowStartX + end, modY + rowStartY, -8, 0, 0, 1, 1, 0,
-                    modX + rowStartX + xStart, modY + rowStartY + endY, -8, 0, 0, 1, 0, 1,
+                    modX + rowStartX + xStart, modY + rowStartY, -8, 1, 1, 1, 0, 0,
+                    modX + rowStartX + end, modY + rowStartY, -8, 1, 1, 1, 1, 0,
+                    modX + rowStartX + xStart, modY + rowStartY + endY, -8, 1, 1, 1, 0, 1,
 
-                    modX + rowStartX + xStart, modY + rowStartY + endY, -8, 0, 0, 1, 0, 1,
-                    modX + rowStartX + end, modY + rowStartY, -8, 0, 0, 1, 1, 0,
-                    modX + rowStartX + end, modY + rowStartY + endY, -8, 0, 0, 1, 1, 1
+                    modX + rowStartX + xStart, modY + rowStartY + endY, -8, 1, 1, 1, 0, 1,
+                    modX + rowStartX + end, modY + rowStartY, -8, 1, 1, 1, 1, 0,
+                    modX + rowStartX + end, modY + rowStartY + endY, -8, 1, 1, 1, 1, 1
                 };
                 renderer->setOverlayData("inventory-select-overlay-" + std::to_string(i), selectoverlay, "inventory_select.png");
             }else {
@@ -68,13 +68,13 @@ void InventoryGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
 
         if(!stack.isEmpty()) {
             float itemoverlay[48] = {
-                modX + rowStartX + xStart, modY + rowStartY, -4, 0, 0, 1, 0, 0,
-                modX + rowStartX + end, modY + rowStartY, -4, 0, 0, 1, 1, 0,
-                modX + rowStartX + xStart, modY + rowStartY + endY, -4, 0, 0, 1, 0, 1,
+                modX + rowStartX + xStart, modY + rowStartY, -4, 1, 1, 1, 0, 0,
+                modX + rowStartX + end, modY + rowStartY, -4, 1, 1, 1, 1, 0,
+                modX + rowStartX + xStart, modY + rowStartY + endY, -4, 1, 1, 1, 0, 1,
 
-                modX + rowStartX + xStart, modY + rowStartY + endY, -4, 0, 0, 1, 0, 1,
-                modX + rowStartX + end, modY + rowStartY, -4, 0, 0, 1, 1, 0,
-                modX + rowStartX + end, modY + rowStartY + endY, -4, 0, 0, 1, 1, 1
+                modX + rowStartX + xStart, modY + rowStartY + endY, -4, 1, 1, 1, 0, 1,
+                modX + rowStartX + end, modY + rowStartY, -4, 1, 1, 1, 1, 0,
+                modX + rowStartX + end, modY + rowStartY + endY, -4, 1, 1, 1, 1, 1
             };
 
             renderer->setOverlayData("inventory-stack-" + std::to_string(i), itemoverlay, stack.getItem()->getIcon());
@@ -85,13 +85,13 @@ void InventoryGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
             float yPos = modY + rowStartY + ySize * 0.2;
 
             float numberoverlay[48] = {
-                xPos, yPos, -5, 0, 0, 1, 0, 0,
-                xPos + xSize, yPos, -5, 0, 0, 1, 1, 0,
-                xPos, yPos + ySize, -5, 0, 0, 1, 0, 1,
+                xPos, yPos, -5, 1, 1, 1, 0, 0,
+                xPos + xSize, yPos, -5, 1, 1, 1, 1, 0,
+                xPos, yPos + ySize, -5, 1, 1, 1, 0, 1,
 
-                xPos, yPos + ySize, -5, 0, 0, 1, 0, 1,
-                xPos + xSize, yPos, -5, 0, 0, 1, 1, 0,
-                xPos + xSize, yPos + ySize, -5, 0, 0, 1, 1, 1
+                xPos, yPos + ySize, -5, 1, 1, 1, 0, 1,
+                xPos + xSize, yPos, -5, 1, 1, 1, 1, 0,
+                xPos + xSize, yPos + ySize, -5, 1, 1, 1, 1, 1
             };
 
             renderer->setOverlayData("inventory-stack-count-" + std::to_string(i), numberoverlay, stack.getCountTextureID(renderer));
@@ -107,13 +107,13 @@ void InventoryGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
             float yPos = (mouseOverlayY - ySize / 2);
 
             float selectoverlay[48] = {
-                xPos, yPos, -9, 0, 0, 1, 0, 0,
-                xPos + xSize, yPos, -9, 0, 0, 1, 1, 0,
-                xPos, yPos + ySize, -9, 0, 0, 1, 0, 1,
+                xPos, yPos, -9, 1, 1, 1, 0, 0,
+                xPos + xSize, yPos, -9, 1, 1, 1, 1, 0,
+                xPos, yPos + ySize, -9, 1, 1, 1, 0, 1,
 
-                xPos, yPos + ySize, -9, 0, 0, 1, 0, 1,
-                xPos + xSize, yPos, -9, 0, 0, 1, 1, 0,
-                xPos + xSize, yPos + ySize, -9, 0, 0, 1, 1, 1
+                xPos, yPos + ySize, -9, 1, 1, 1, 0, 1,
+                xPos + xSize, yPos, -9, 1, 1, 1, 1, 0,
+                xPos + xSize, yPos + ySize, -9, 1, 1, 1, 1, 1
             };
             renderer->setOverlayData("inventory-item-stack-held", selectoverlay, itemStackHeld.getItem()->getIcon());
 
@@ -123,13 +123,13 @@ void InventoryGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
             yPos = mouseOverlayY - ySize;
 
             float numberoverlay[48] = {
-                xPos, yPos, -10, 0, 0, 1, 0, 0,
-                xPos + xSize, yPos, -10, 0, 0, 1, 1, 0,
-                xPos, yPos + ySize, -10, 0, 0, 1, 0, 1,
+                xPos, yPos, -10, 1, 1, 1, 0, 0,
+                xPos + xSize, yPos, -10, 1, 1, 1, 1, 0,
+                xPos, yPos + ySize, -10, 1, 1, 1, 0, 1,
 
-                xPos, yPos + ySize, -10, 0, 0, 1, 0, 1,
-                xPos + xSize, yPos, -10, 0, 0, 1, 1, 0,
-                xPos + xSize, yPos + ySize, -10, 0, 0, 1, 1, 1
+                xPos, yPos + ySize, -10, 1, 1, 1, 0, 1,
+                xPos + xSize, yPos, -10, 1, 1, 1, 1, 0,
+                xPos + xSize, yPos + ySize, -10, 1, 1, 1, 1, 1
             };
             renderer->setOverlayData("inventory-item-stack-held-count", numberoverlay, itemStackHeld.getCountTextureID(renderer));
         }else {

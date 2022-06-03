@@ -15,7 +15,7 @@
  */
 #define WORLDSIZE_CONST 100
 
-World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler, Renderer* renderer, TimerMap* map, GameSettings* settings, std::string _name, std::string worldFolder, int seed) : name(_name), timerMap(map), worldEventQueue(queue), input(inputHandler), renderer(renderer), window(window_), settings(settings), internalBlockData(BlockArrayData(WORLDSIZE_CONST, WORLDSIZE_CONST, WORLDSIZE_CONST, worldFolder, seed)), thePlayer(std::make_shared<Player>(this)) {
+World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler, Renderer* renderer, TimerMap* map, GameSettings* settings, std::string _name, std::string worldFolder, int seed) : name(_name), timerMap(map), worldEventQueue(queue), input(inputHandler), renderer(renderer), window(window_), settings(settings), internalBlockData(BlockArrayData(worldFolder, seed)), thePlayer(std::make_shared<Player>(this)) {
     thePlayer->setBufferedChunkLocation(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates());
     internalBlockData.updateLoadedChunks(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates(), this);
     renderer->updateWorldVBO(this);
@@ -188,13 +188,13 @@ void World::renderGame() {
 
 void World::renderOverlays() {
     float overlay[48] = {
-        -11, -11, 0, 0, 0, 1, 0, 0,
-        11, -11, 0, 0, 0, 1, 1, 0,
-        -11, 11, 0, 0, 0, 1, 0, 1,
+        -11, -11, 0, 1, 1, 1, 0, 0,
+        11, -11, 0, 1, 1, 1, 1, 0,
+        -11, 11, 0, 1, 1, 1, 0, 1,
 
-        -11, 11, 0, 0, 0, 1, 0, 1,
-        11, -11, 0, 0, 0, 1, 1, 0,
-        11, 11, 0, 0, 0, 1, 1, 1
+        -11, 11, 0, 1, 1, 1, 0, 1,
+        11, -11, 0, 1, 1, 1, 1, 0,
+        11, 11, 0, 1, 1, 1, 1, 1
     };
 
     renderer->setOverlayData("HUD-Crosshair", overlay, "crosshair.png");
@@ -209,13 +209,13 @@ void World::renderOverlays() {
     float yPos = -999 * (float)height/(float)width;
 
     float overlay2[48] = {
-        xPos, yPos, 0, 0, 0, 1, 0, 0,
-        xPos + xSize, yPos, 0, 0, 0, 1, 1, 0,
-        xPos, yPos + ySize, 0, 0, 0, 1, 0, 1,
+        xPos, yPos, 0, 1, 1, 1, 0, 0,
+        xPos + xSize, yPos, 0, 1, 1, 1, 1, 0,
+        xPos, yPos + ySize, 0, 1, 1, 1, 0, 1,
 
-        xPos, yPos + ySize, 0, 0, 0, 1, 0, 1,
-        xPos + xSize, yPos, 0, 0, 0, 1, 1, 0,
-        xPos + xSize, yPos + ySize, 0, 0, 0, 1, 1, 1
+        xPos, yPos + ySize, 0, 1, 1, 1, 0, 1,
+        xPos + xSize, yPos, 0, 1, 1, 1, 1, 0,
+        xPos + xSize, yPos + ySize, 0, 1, 1, 1, 1, 1
     };
 
     renderer->setOverlayData("HUD-Hotbar", overlay2, "hotbar.png");
@@ -234,13 +234,13 @@ void World::renderOverlays() {
             float endY = (2 + sizeX) * ySize / 20.0f;
 
             float iconoverlay[48] = {
-                xPos + startX, yPos + startY, -1, 0, 0, 1, 0, 0,
-                xPos + endX, yPos + startY, -1, 0, 0, 1, 1, 0,
-                xPos + startX, yPos + endY, -1, 0, 0, 1, 0, 1,
+                xPos + startX, yPos + startY, -1, 1, 1, 1, 0, 0,
+                xPos + endX, yPos + startY, -1, 1, 1, 1, 1, 0,
+                xPos + startX, yPos + endY, -1, 1, 1, 1, 0, 1,
 
-                xPos + startX, yPos + endY, -1, 0, 0, 1, 0, 1,
-                xPos + endX, yPos + startY, -1, 0, 0, 1, 1, 0,
-                xPos + endX, yPos + endY, -1, 0, 0, 1, 1, 1
+                xPos + startX, yPos + endY, -1, 1, 1, 1, 0, 1,
+                xPos + endX, yPos + startY, -1, 1, 1, 1, 1, 0,
+                xPos + endX, yPos + endY, -1, 1, 1, 1, 1, 1
             };
 
             renderer->setOverlayData("HUD-Hotbar-Item-Icon-" + std::to_string(i), iconoverlay, stack.getItem()->getIcon());
@@ -257,13 +257,13 @@ void World::renderOverlays() {
             float endY = (2 + sizeX + 2) * ySize / 20.0f;
 
             float iconoverlay[48] = {
-                xPos + startX, yPos + startY, -2, 0, 0, 1, 0, 0,
-                xPos + endX, yPos + startY, -2, 0, 0, 1, 1, 0,
-                xPos + startX, yPos + endY, -2, 0, 0, 1, 0, 1,
+                xPos + startX, yPos + startY, -2, 1, 1, 1, 0, 0,
+                xPos + endX, yPos + startY, -2, 1, 1, 1, 1, 0,
+                xPos + startX, yPos + endY, -2, 1, 1, 1, 0, 1,
 
-                xPos + startX, yPos + endY, -2, 0, 0, 1, 0, 1,
-                xPos + endX, yPos + startY, -2, 0, 0, 1, 1, 0,
-                xPos + endX, yPos + endY, -2, 0, 0, 1, 1, 1
+                xPos + startX, yPos + endY, -2, 1, 1, 1, 0, 1,
+                xPos + endX, yPos + startY, -2, 1, 1, 1, 1, 0,
+                xPos + endX, yPos + endY, -2, 1, 1, 1, 1, 1
             };
 
             renderer->setOverlayData("HUD-Hotbar-Item-Select", iconoverlay, "hotbar_select.png");
