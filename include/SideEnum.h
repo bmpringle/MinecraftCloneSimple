@@ -15,6 +15,10 @@ enum SideEnum {
 
 namespace SideEnumHelper {
     std::string toString(SideEnum side);
+
+    SideEnum getOppositeSide(SideEnum side);
+
+    const int getEnumSize();
 }
 
 #endif

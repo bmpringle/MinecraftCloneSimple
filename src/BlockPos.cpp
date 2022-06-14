@@ -32,3 +32,27 @@ void BlockPos::print() const {
 std::string BlockPos::to_string() const {
     return std::string("pos: " + std::to_string(x) +" " + std::to_string(y) + " " + std::to_string(z));
 }
+
+BlockPos BlockPos::getAbove() {
+    return BlockPos(x, y + 1, z);
+}
+
+BlockPos BlockPos::getBelow() {
+    return BlockPos(x, y - 1, z);
+}
+
+BlockPos BlockPos::getLeft() {
+    return BlockPos(x - 1, y, z);
+}
+
+BlockPos BlockPos::getRight() {
+    return BlockPos(x + 1, y, z);
+}
+
+BlockPos BlockPos::getFront() {
+    return BlockPos(x, y, z + 1);
+}
+
+BlockPos BlockPos::getBehind() {
+    return BlockPos(x, y, z - 1);
+}

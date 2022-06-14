@@ -34,6 +34,8 @@ class BlockData {
 
         bool isOpaque();
 
+        bool isLiquid();
+
         void placedOnSide(SideEnum hPlacementAngle, SideEnum sideLookingAt);
 
         void updateBlock(BlockArrayData* data);

@@ -32,6 +32,8 @@ class Block {
 
         virtual bool isOpaque(int data = 0);
 
+        virtual bool isLiquid(int data = 0);
+
         virtual int getXRotation(int data);
 
         virtual int getYRotation(int data);

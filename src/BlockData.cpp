@@ -73,6 +73,10 @@ bool BlockData::isOpaque() {
     }
 }
 
+bool BlockData::isLiquid() {
+    return type->isLiquid(data);
+}
+
 void BlockData::placedOnSide(SideEnum hPlacementAngle, SideEnum sideLookingAt) {
     if(!isAir) {
         type->onPlaced(hPlacementAngle, sideLookingAt, &data);

@@ -15,6 +15,8 @@ class BlockWater : public Block {
 
         bool isOpaque(int data) override;
 
+        bool isLiquid(int data) override;
+
         BlockRenderedModel getRenderedModel(int data) override;
 };
 #endif

@@ -9,6 +9,18 @@ class BlockPos {
         int y = 0;
         int z = 0;
 
+        BlockPos getAbove();
+
+        BlockPos getBelow();
+
+        BlockPos getLeft();
+
+        BlockPos getRight();
+
+        BlockPos getFront();
+
+        BlockPos getBehind();
+
         BlockPos(int _x, int _y, int _z);
 
         BlockPos operator+(BlockPos rhs);

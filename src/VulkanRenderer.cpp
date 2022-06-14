@@ -240,6 +240,39 @@ void VulkanRenderer::initTexturesAndModels() {
         for(unsigned int meta = 0; meta < nameBlockPair.second->getNumberOfVariants(); ++meta) {
             BlockRenderedModel model = nameBlockPair.second->getRenderedModel(meta);
 
+            if(nameBlockPair.second->isLiquid(meta)) {
+                for(BlockFace face : model.renderedBlockModel) {
+                    std::vector<TransparentVertex> faceVertices;
+                    int texID = renderer.getTextureArrayID("block-textures", "src/assets/"+nameBlockPair.second->getTextureName(face.side, meta));
+
+                    for(RenderedTriangle triangle : face.triangles) {
+                        TransparentVertex v1;
+                        v1.position = glm::vec3(-triangle.a.x, triangle.a.y, triangle.a.z);
+                        v1.color = glm::vec4(1, 1, 1, 1);
+                        v1.texCoord = glm::vec3(triangle.a.u, triangle.a.v, texID);
+
+                        TransparentVertex v2;
+                        v2.position = glm::vec3(-triangle.b.x, triangle.b.y, triangle.b.z);
+                        v2.color = glm::vec4(1, 1, 1, 1);
+                        v2.texCoord = glm::vec3(triangle.b.u, triangle.b.v, texID);
+
+                        TransparentVertex v3;
+                        v3.position = glm::vec3(-triangle.c.x, triangle.c.y, triangle.c.z);
+                        v3.color = glm::vec4(1, 1, 1, 1);
+                        v3.texCoord = glm::vec3(triangle.c.u, triangle.c.v, texID);
+
+                    
+                        faceVertices.push_back(v3);
+                        faceVertices.push_back(v2);
+                        faceVertices.push_back(v1);
+                    }
+
+                    renderer.setModel(nameBlockPair.second->getName() + "-" + SideEnumHelper::toString(face.side) + "-" + std::to_string(meta), {}, faceVertices);
+                }
+    
+                continue; //don't set wireframe model b/c liquids can't be selected
+            }
+
             if(nameBlockPair.second->isOpaque(meta)) {
                 std::vector<Vertex> modelVertices;
 
@@ -309,23 +342,102 @@ void VulkanRenderer::initTexturesAndModels() {
 void VulkanRenderer::updateChunkData(Chunk* chunk) {
     std::string setName = std::to_string(chunk->getChunkCoordinates().x) + "-" + std::to_string(chunk->getChunkCoordinates().y) + "-" + std::to_string(chunk->getChunkCoordinates().z);
 
+    //const std::array<int, 3> size = Chunk::getChunkSize();
+
+    const std::array<std::array<int, 2>, 5> chunkOffsets = {
+        std::array<int, 2>({0, 0}),
+        //std::array<int, 2>(size[0], 0),
+        //std::array<int, 2>(-size[0], 0),
+        //std::array<int, 2>(0, size[2]),
+        //std::array<int, 2>(0, -size[2])
+    };
+
+    std::vector<std::string> liquidSetNames;
+
+    for(std::array<int, 2> offset : chunkOffsets) {
+        liquidSetNames.push_back(std::to_string(chunk->getChunkCoordinates().x  + offset[0]) + "-" + std::to_string(chunk->getChunkCoordinates().y) + "-" + std::to_string(chunk->getChunkCoordinates().z + offset[1]));     
+    }
+
     for(std::pair<const std::string, std::shared_ptr<Block>>& nameBlockPair : Blocks::blockMap) {
         for(unsigned int meta = 0; meta < nameBlockPair.second->getNumberOfVariants(); ++meta) {
-            std::string modelName = nameBlockPair.second->getName() + "-" + std::to_string(meta);
-            renderer.removeInstancesFromModelSafe(modelName, setName);
+            if(nameBlockPair.second->isLiquid(meta)) {
+                for(std::string liquidSetName : liquidSetNames) {
+
+                    //explanation here since this is a ridiculous line of code. this iterates over all SideEnum values except Neutral
+                    for(SideEnum side = (SideEnum)0; (int)side < SideEnumHelper::getEnumSize() - 1; side = (SideEnum)(1 + (int)side)) { // -1 b/c we don't need Neutral
+                        std::string modelName = nameBlockPair.second->getName() + "-" + SideEnumHelper::toString(side) + "-" + std::to_string(meta);
+                        renderer.removeInstancesFromModelSafe(modelName, liquidSetName);
+                    }
+                }
+            }else {
+                std::string modelName = nameBlockPair.second->getName() + "-" + std::to_string(meta);
+                renderer.removeInstancesFromModelSafe(modelName, setName);
+            }   
         }
     }
 
     std::vector<BlockData> chunkData = chunk->getBlocksInChunk();
     std::map<std::string, std::vector<InstanceData>> blockTypesToInstanceVectors;
 
+    std::map<std::string, std::set<InstanceData, decltype([](const InstanceData& a, const InstanceData& b) {
+        return (a.pos[0] == b.pos[0]) ? ((a.pos[1] == b.pos[1]) ? (a.pos[2] < b.pos[2]) : (a.pos[1] < b.pos[1])) : (a.pos[0] < b.pos[0]);
+    })>> liquidBlockTypesToInstanceSets;
+
     for(BlockData& block : chunkData) {
-        std::string typeString = block.getBlockType()->getName() + "-" + std::to_string(block.getData());
-        blockTypesToInstanceVectors[typeString].push_back(InstanceData({{-block.getPos().x, block.getPos().y, block.getPos().z}}));
+        if(block.isLiquid()) {
+            //explanation here since this is a ridiculous line of code. this iterates over all SideEnum values except Neutral
+            for(SideEnum side = (SideEnum)0; (int)side < SideEnumHelper::getEnumSize() - 1; side = (SideEnum)(1 + (int)side)) { // -1 b/c we don't need Neutral
+                std::string typeString = block.getBlockType()->getName() + "-" + SideEnumHelper::toString(side) + "-" + std::to_string(block.getData());
+                std::string typeStringOpposite = block.getBlockType()->getName() + "-" + SideEnumHelper::toString(SideEnumHelper::getOppositeSide(side)) + "-" + std::to_string(block.getData());
+                
+                InstanceData instance;
+
+                switch(side) {
+                    case UP:
+                        instance = InstanceData({{-block.getPos().getAbove().x, block.getPos().getAbove().y, block.getPos().getAbove().z}});
+                        break;
+                    case DOWN:
+                        instance = InstanceData({{-block.getPos().getBelow().x, block.getPos().getBelow().y, block.getPos().getBelow().z}});
+                        break;
+                    case NORTH:
+                        instance = InstanceData({{-block.getPos().getFront().x, block.getPos().getFront().y, block.getPos().getFront().z}});
+                        break;
+                    case SOUTH:
+                        instance = InstanceData({{-block.getPos().getBehind().x, block.getPos().getBehind().y, block.getPos().getBehind().z}});
+                        break;
+                    case EAST:
+                        instance = InstanceData({{-block.getPos().getRight().x, block.getPos().getRight().y, block.getPos().getRight().z}});
+                        break;
+                    case WEST:
+                        instance = InstanceData({{-block.getPos().getLeft().x, block.getPos().getLeft().y, block.getPos().getLeft().z}});
+                        break;
+                    case NEUTRAL:
+                        break;
+                }
+                
+                if(liquidBlockTypesToInstanceSets[typeStringOpposite].contains(instance)) {
+                    liquidBlockTypesToInstanceSets[typeStringOpposite].erase(instance);
+                    continue;
+                }
+
+                liquidBlockTypesToInstanceSets[typeString].insert(InstanceData({{-block.getPos().x, block.getPos().y, block.getPos().z}}));
+            }
+        }else {
+            std::string typeString = block.getBlockType()->getName() + "-" + std::to_string(block.getData());
+            blockTypesToInstanceVectors[typeString].push_back(InstanceData({{-block.getPos().x, block.getPos().y, block.getPos().z}}));
+        }
     }
 
     for(std::pair<const std::string, std::vector<InstanceData>>& instanceSet : blockTypesToInstanceVectors) {
         renderer.addInstancesToModel(instanceSet.first, setName, instanceSet.second);
+    }
+
+    for(auto& instanceSet : liquidBlockTypesToInstanceSets) {
+        std::vector<InstanceData> data;
+        for(const InstanceData& d : instanceSet.second) {
+            data.push_back(d);
+        }
+        renderer.addInstancesToModel(instanceSet.first, setName, data);
     }
 }
 

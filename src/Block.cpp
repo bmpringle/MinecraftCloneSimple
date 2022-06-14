@@ -73,6 +73,10 @@ bool Block::isOpaque(int data) {
     return true;
 }
 
+bool Block::isLiquid(int data) {
+    return false;
+}
+
 int Block::getXRotation(int data) {
     return 0;
 }

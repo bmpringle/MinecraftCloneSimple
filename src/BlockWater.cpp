@@ -20,15 +20,19 @@ bool BlockWater::isOpaque(int data = 0) {
     return false;
 }
 
+bool BlockWater::isLiquid(int data = 0) {
+    return true;
+}
+
 BlockRenderedModel BlockWater::getRenderedModel(int data = 0) {
     RenderedPoint p1 = RenderedPoint(0, 0, 0, /**uv coords*/ 0, 0);
     RenderedPoint p2 = RenderedPoint(1, 0, 0, /**uv coords*/ 0, 0);
     RenderedPoint p3 = RenderedPoint(1, 0, 1, /**uv coords*/ 0, 0);
     RenderedPoint p4 = RenderedPoint(0, 0, 1, /**uv coords*/ 0, 0);
-    RenderedPoint p5 = RenderedPoint(0, 0.9, 0, /**uv coords*/ 0, 0);
-    RenderedPoint p6 = RenderedPoint(1, 0.9, 0, /**uv coords*/ 0, 0);
-    RenderedPoint p7 = RenderedPoint(1, 0.9, 1, /**uv coords*/ 0, 0);
-    RenderedPoint p8 = RenderedPoint(0, 0.9, 1, /**uv coords*/ 0, 0);
+    RenderedPoint p5 = RenderedPoint(0, 0.9 + 0.1, 0, /**uv coords*/ 0, 0);
+    RenderedPoint p6 = RenderedPoint(1, 0.9 + 0.1, 0, /**uv coords*/ 0, 0);
+    RenderedPoint p7 = RenderedPoint(1, 0.9 + 0.1, 1, /**uv coords*/ 0, 0);
+    RenderedPoint p8 = RenderedPoint(0, 0.9 + 0.1, 1, /**uv coords*/ 0, 0);
 
     RenderedTriangle t1 = RenderedTriangle(p4, p2, p1, 1);
     RenderedTriangle t2 = RenderedTriangle(p3, p2, p4, 0);
