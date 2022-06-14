@@ -19,21 +19,3 @@ std::map<std::string, std::shared_ptr<Block>> Blocks::blockMap = {
             {planks->getName(), planks},
             {door->getName(), door}
 };
-
-void Blocks::initTextureArrayCreator(TextureArrayCreator* texCreator) {
-    for(std::pair<std::string, std::shared_ptr<Block>> nameBlockPair : blockMap) {
-        for(int i = 0; i < 6; ++i) {
-            for(unsigned int meta = 0; meta < nameBlockPair.second->getNumberOfVariants(); ++meta) {
-                texCreator->addTextureToList(nameBlockPair.second->getTextureName(SideEnum(i), meta));
-            }
-        }
-    }
-}
-
-void Blocks::initModelRegister(ModelRegister* modelRegister, TextureArrayCreator* texCreator) {
-    for(std::pair<std::string, std::shared_ptr<Block>> nameBlockPair : blockMap) {
-        for(unsigned int meta = 0; meta < nameBlockPair.second->getNumberOfVariants(); ++meta) {
-            modelRegister->registerModel(texCreator, nameBlockPair.second, meta);
-        }
-    }
-}

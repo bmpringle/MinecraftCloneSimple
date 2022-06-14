@@ -7,10 +7,10 @@ InventoryGui::InventoryGui(Renderer* renderer, Inventory* inv) : inventory(inv),
 void InventoryGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
     
     std::array<int, 2> dims = renderer->overlayDimensions();
-    float modX = dims[0] * x * 0.8;
-    float modY = dims[1] * y * 0.75;
-    float modXSize = dims[0] * xSize * 1.2;
-    float modYSize = dims[1] * ySize;
+    float modX = dims.at(0) * x * 0.8;
+    float modY = dims.at(1) * y * 0.75;
+    float modXSize = dims.at(0) * xSize * 1.2;
+    float modYSize = dims.at(1) * ySize;
 
     float guioverlay[48] = {
         modX, modY, -3, 1, 1, 1, 0, 0,
@@ -26,26 +26,26 @@ void InventoryGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
 
     for(int i = 0; i < 36; ++i) {
         ItemStack stack = inventory->getItemStackInSlot(i);
-        float rowStartX = texStartX / backgroundTexX * dims[0];
+        float rowStartX = texStartX / backgroundTexX * dims.at(0);
         float rowStartY = 0;
 
         if(i < 9) {
-            rowStartY = hotbarTexY / backgroundTexY * dims[1];
+            rowStartY = hotbarTexY / backgroundTexY * dims.at(1);
         }else if(i >= 9 && i < 18) {
-            rowStartY = row1TexY / backgroundTexY * dims[1];
+            rowStartY = row1TexY / backgroundTexY * dims.at(1);
         }else if(i >= 18 && i < 27) {
-            rowStartY = row2TexY / backgroundTexY * dims[1];
+            rowStartY = row2TexY / backgroundTexY * dims.at(1);
         }else {
-            rowStartY = row3TexY / backgroundTexY * dims[1];
+            rowStartY = row3TexY / backgroundTexY * dims.at(1);
         }
 
-        float xStart = 3.85 * (i % 9) / backgroundTexX * dims[0] + (i % 9) * itemSizeX / backgroundTexX * dims[0];
-        float end = 3.85 * (i % 9) / backgroundTexX * dims[0] + ((i % 9) + 1) * itemSizeX / backgroundTexX * dims[0];
-        float endY = itemSizeY / backgroundTexY * dims[1];
+        float xStart = 3.85 * (i % 9) / backgroundTexX * dims.at(0) + (i % 9) * itemSizeX / backgroundTexX * dims.at(0);
+        float end = 3.85 * (i % 9) / backgroundTexX * dims.at(0) + ((i % 9) + 1) * itemSizeX / backgroundTexX * dims.at(0);
+        float endY = itemSizeY / backgroundTexY * dims.at(1);
 
 
-        double mouseOverlayX = (double)mouseX / (double)renderer->getWidth() * dims[0] * 2 - dims[0];
-        double mouseOverlayY = (dims[1] * (2 * (1 - (double)mouseY / (double)renderer->getHeight()) - 1)) * (double)renderer->getHeight() / (double)renderer->getWidth();
+        double mouseOverlayX = (double)mouseX / (double)renderer->getWidth() * dims.at(0) * 2 - dims.at(0);
+        double mouseOverlayY = (dims.at(1) * (2 * (1 - (double)mouseY / (double)renderer->getHeight()) - 1)) * (double)renderer->getHeight() / (double)renderer->getWidth();
 
         if(mouseOverlayX >= modX + rowStartX + xStart && mouseOverlayX <= modX + rowStartX + end) {
             if(mouseOverlayY >= modY + rowStartY && mouseOverlayY <= modY + rowStartY + endY) {
@@ -145,30 +145,30 @@ int InventoryGui::getID() {
 
 int InventoryGui::getIndexHoveredOver(Renderer* renderer, int mouseX, int mouseY) {
     std::array<int, 2> dims = renderer->overlayDimensions();
-    float modX = dims[0] * x * 0.8;
-    float modY = dims[1] * y * 0.75;
+    float modX = dims.at(0) * x * 0.8;
+    float modY = dims.at(1) * y * 0.75;
 
     for(int i = 0; i < 36; ++i) {
         ItemStack stack = inventory->getItemStackInSlot(i);
-        float rowStartX = texStartX / backgroundTexX * dims[0];
+        float rowStartX = texStartX / backgroundTexX * dims.at(0);
         float rowStartY = 0;
 
         if(i < 9) {
-            rowStartY = hotbarTexY / backgroundTexY * dims[1];
+            rowStartY = hotbarTexY / backgroundTexY * dims.at(1);
         }else if(i >= 9 && i < 18) {
-            rowStartY = row1TexY / backgroundTexY * dims[1];
+            rowStartY = row1TexY / backgroundTexY * dims.at(1);
         }else if(i >= 18 && i < 27) {
-            rowStartY = row2TexY / backgroundTexY * dims[1];
+            rowStartY = row2TexY / backgroundTexY * dims.at(1);
         }else {
-            rowStartY = row3TexY / backgroundTexY * dims[1];
+            rowStartY = row3TexY / backgroundTexY * dims.at(1);
         }
 
-        float xStart = 3.85 * (i % 9) / backgroundTexX * dims[0] + (i % 9) * itemSizeX / backgroundTexX * dims[0];
-        float end = 3.85 * (i % 9) / backgroundTexX * dims[0] + ((i % 9) + 1) * itemSizeX / backgroundTexX * dims[0];
-        float endY = itemSizeY / backgroundTexY * dims[1];
+        float xStart = 3.85 * (i % 9) / backgroundTexX * dims.at(0) + (i % 9) * itemSizeX / backgroundTexX * dims.at(0);
+        float end = 3.85 * (i % 9) / backgroundTexX * dims.at(0) + ((i % 9) + 1) * itemSizeX / backgroundTexX * dims.at(0);
+        float endY = itemSizeY / backgroundTexY * dims.at(1);
 
-        double mouseOverlayX = (double)mouseX / (double)renderer->getWidth() * dims[0] * 2 - dims[0];
-        double mouseOverlayY = (dims[1] * (2 * (1 - (double)mouseY / (double)renderer->getHeight()) - 1)) * (double)renderer->getHeight() / (double)renderer->getWidth();
+        double mouseOverlayX = (double)mouseX / (double)renderer->getWidth() * dims.at(0) * 2 - dims.at(0);
+        double mouseOverlayY = (dims.at(1) * (2 * (1 - (double)mouseY / (double)renderer->getHeight()) - 1)) * (double)renderer->getHeight() / (double)renderer->getWidth();
 
         if(mouseOverlayX >= modX + rowStartX + xStart && mouseOverlayX <= modX + rowStartX + end) {
             if(mouseOverlayY >= modY + rowStartY && mouseOverlayY <= modY + rowStartY + endY) {

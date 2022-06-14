@@ -1,5 +1,3 @@
-#ifdef VULKAN_BACKEND
-
 #include "VulkanRenderer.h"
 
 #include "Blocks.h"
@@ -331,4 +329,6 @@ void VulkanRenderer::updateChunkData(Chunk* chunk) {
     }
 }
 
-#endif
+VKRenderer& VulkanRenderer::getInternalRenderer() {
+    return renderer;
+}

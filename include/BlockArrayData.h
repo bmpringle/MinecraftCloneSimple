@@ -88,8 +88,8 @@ class BlockArrayData {
         int SEED;
         double zNoise = rand() % 1 - 0.5;
 
-        double width = Chunk::getChunkSize()[0];
-        double height = Chunk::getChunkSize()[2];
+        double width = Chunk::getChunkSize().at(0);
+        double height = Chunk::getChunkSize().at(2);
 
         int averageTerrainHeight = 30;
         double amplifier = 3;

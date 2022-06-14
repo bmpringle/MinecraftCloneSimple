@@ -13,3 +13,5 @@ MinecraftCloneSimple/
 .vscode/**
 .vscode/
 *.sconsign.dblite
+shaders/**
+VulkanSDK/**

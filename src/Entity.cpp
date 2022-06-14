@@ -31,21 +31,21 @@ Entity::Entity() : pos(Pos(0, 40, 0)), mesh(ObjMesh()) {
                 int tvi = ((face.indicesVT.size()) > i) ? face.indicesVT.at(i) : -1;
                 int nvi = ((face.indicesVN.size()) > i) ? face.indicesVN.at(i) : -1;
 
-                GeometricVertex vg = pmesh.second.geometricVertices.at(face.indicesVG[i]);
+                GeometricVertex vg = pmesh.second.geometricVertices.at(face.indicesVG.at(i));
                 vg.geometricVertex.x = vg.geometricVertex.x;
                 vg.geometricVertex.y = vg.geometricVertex.y;
                 vg.geometricVertex.z = vg.geometricVertex.z;
 
                 TextureVertex vt;
                 if(face.indicesVT.size() > 0) {
-                    vt = pmesh.second.textureVertices.at(face.indicesVT[i]);
+                    vt = pmesh.second.textureVertices.at(face.indicesVT.at(i));
                 }else {
                     vt = TextureVertex();
                 }
 
                 NormalVertex nt;
                 if(face.indicesVN.size() > 0) {
-                    nt = pmesh.second.normalVertices.at(face.indicesVN[i]);
+                    nt = pmesh.second.normalVertices.at(face.indicesVN.at(i));
                 }else {
                     nt = NormalVertex();
                 }

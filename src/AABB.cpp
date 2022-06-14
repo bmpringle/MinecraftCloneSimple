@@ -151,8 +151,6 @@ void AABB::rotateZ90() {
     zSize = maxp.z - minp.z;
 }
 
-#ifdef VULKAN_BACKEND
-
 std::vector<WireframeVertex> AABB::getWireframeFromAABB() {
     WireframeVertex v1 = {{0, 0, 0}};
     WireframeVertex v2 = {{-xSize, 0, 0}};
@@ -187,5 +185,3 @@ std::vector<WireframeVertex> AABB::getWireframeFromAABB() {
 
     return vertices;
 }
-
-#endif

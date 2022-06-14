@@ -19,17 +19,6 @@ output, error = execCmd('mv ./timerMapLib.a ../../lib/timerMapLib.a', cwdOverrid
 output, error = execCmd('make library', cwdOverride = './ObjLoader/')
 output, error = execCmd('mv ./objLoaderLib.a ../../lib/objLoaderLib.a', cwdOverride = './ObjLoader/lib/')
 
-try:
-    output, error = execCmd('cmake -DBUILD_SHARED_LIBS=OFF .', cwdOverride = './glfw/')
-    output, error = execCmd('make', cwdOverride = './glfw/')
-    output, error = execCmd('mv ./src/libglfw3.a ../lib/', cwdOverride = './glfw/')
-except FileNotFoundError:
-    print("Error, cmake needed to build glfw")
-    #cmake needed for glfw
-
-output, error = execCmd('make', cwdOverride = './glew/auto/')
-output, error = execCmd('make', cwdOverride = './glew/')
-output, error = execCmd('mv ./lib/libGLEW.a ../lib/', cwdOverride = './glew/')
 output, error = execCmd('mkdir -p build', cwdOverride = './libnoise/')
 output, error = execCmd('g++ -c ../src/*.cpp ../src/model/* ../src/module/* -I../src/noise/ -DNOISE_STATIC', cwdOverride = './libnoise/build/')
 output, error = execCmd('ar rvs libnoise.a *.o', cwdOverride = './libnoise/build/')

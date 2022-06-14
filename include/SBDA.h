@@ -13,7 +13,7 @@ class SBDA final : public BinarySerializable {
         void serialize(std::string* strData, int depth) override {
             strData->append("[");
             for(int i = 0; i < array.size(); ++i) {
-                BlockData& blockData = array[i];
+                BlockData& blockData = array.at(i);
                 if(!blockData.isBlockAir()) {
                     BlockPos pos = blockData.getPos();
                     strData->append("(" + blockData.getBlockType()->getName() + "|" + std::to_string(pos.x) + "|" + std::to_string(pos.y) + "|" + std::to_string(pos.z) + "|" + std::to_string(blockData.getData()) + ")");
@@ -69,13 +69,17 @@ class SBDA final : public BinarySerializable {
                 int y = std::stoi(ystr);
                 int z = std::stoi(zstr);
                 int data = std::stoi(datStr);
-                array[y] = BlockData(type, BlockPos(x, y, z));
-                array[y].setData(data);
+                array.at(y) = BlockData(type, BlockPos(x, y, z));
+                array.at(y).setData(data);
             }
         }
 
         BlockData& operator[](int index) {
             return array[index];
+        }
+
+        BlockData& at(int index) {
+            return array.at(index);
         }
 
         std::array<BlockData, 256> array = std::array<BlockData, 256>();

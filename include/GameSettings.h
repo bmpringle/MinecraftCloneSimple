@@ -31,11 +31,11 @@ enum Setting {
 class GameSettings {
     public:
         std::string getSetting(Setting s) {
-            return settings[s];
+            return settings.at(s);
         }
 
         void setSetting(Setting s, std::string str) {
-            settings[s] = str;
+            settings.at(s) = str;
         }
 
         std::map<Setting, std::string> getSettingsMap() {

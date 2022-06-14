@@ -10,28 +10,26 @@ Game::Game(GLFWwindow* _window) : eventQueue(EventQueue()), map(TimerMap()), inp
     
     eventQueue.addEventListener(gameEventHandler);
 
-    glfwSetWindowUserPointer(renderer.getWindowPtr(), this);
-
-    auto func = [](GLFWwindow* w, int key, int scancode, int action, int mods) {
-        static_cast<Game*>(glfwGetWindowUserPointer(w))->internalKeyCallback(w, key, scancode, action, mods);
+    auto keyCallback = [this](GLFWwindow* w, int key, int scancode, int action, int mods) {
+        internalKeyCallback(w, key, scancode, action, mods);
     };
 
-    auto func2 = [](GLFWwindow* w, double xpos, double ypos) {
-        static_cast<Game*>(glfwGetWindowUserPointer(w))->internalMouseCallback(w, xpos, ypos);
+    auto mouseCallback = [this](GLFWwindow* w, double xpos, double ypos) {
+        internalMouseCallback(w, xpos, ypos);
     };
 
-    auto func3 = [](GLFWwindow* w, int button, int action, int mods) {
-        static_cast<Game*>(glfwGetWindowUserPointer(w))->internalMouseButtonCallback(w, button, action, mods);
+    auto mouseButtonCallback = [this](GLFWwindow* w, int button, int action, int mods) {
+        internalMouseButtonCallback(w, button, action, mods);
     };
 
-    auto func4 = [](GLFWwindow* w, double offsetX, double offsetY) {
-        static_cast<Game*>(glfwGetWindowUserPointer(w))->internalScrollCall(w, offsetX, offsetY);
+    auto scrollCallback = [this](GLFWwindow* w, double offsetX, double offsetY) {
+        internalScrollCall(w, offsetX, offsetY);
     };
 
-    glfwSetKeyCallback(renderer.getWindowPtr(), func);
-    glfwSetCursorPosCallback(renderer.getWindowPtr(), func2);
-    glfwSetMouseButtonCallback(renderer.getWindowPtr(), func3);
-    glfwSetScrollCallback(renderer.getWindowPtr(), func4);
+    renderer.getInternalRenderer().getEngine()->getDisplay()->setKeyCallback(keyCallback);
+    renderer.getInternalRenderer().getEngine()->getDisplay()->setCursorPosCallback(mouseCallback);
+    renderer.getInternalRenderer().getEngine()->getDisplay()->setMouseButtonCallback(mouseButtonCallback);
+    renderer.getInternalRenderer().getEngine()->getDisplay()->setScrollCallback(scrollCallback);
 }
 
 void Game::start() {    
@@ -105,15 +103,9 @@ void Game::start() {
         }
 
         input.callRegularEvents(&eventQueue, &map);
-        #ifndef VULKAN_BACKEND
-        glfwSwapBuffers(renderer.getWindowPtr());
-        #endif
+
         glfwPollEvents();
     }
-    #ifndef VULKAN_BACKEND
-    glfwDestroyWindow(renderer.getWindowPtr());
-    glfwTerminate();
-    #endif
 
     settings.saveOptionsToFile("src/assets/options.txt");
 }

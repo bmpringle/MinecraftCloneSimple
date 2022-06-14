@@ -117,7 +117,7 @@ void Chunk::setColumnOfBlocks(BlockPos pos, std::vector<std::shared_ptr<Block>> 
     if(pos.x >= getChunkCoordinates().x && pos.x < getChunkCoordinates().x + X) {
         if(pos.y >= getChunkCoordinates().y && pos.y < getChunkCoordinates().y + Y) {
             if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
-                BlockData blockData = BlockData(block[0], pos);
+                BlockData blockData = BlockData(block.at(0), pos);
                 AABB bAABB = blockData.getAABB();
 
                 std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
@@ -142,7 +142,7 @@ void Chunk::setColumnOfBlocks(BlockPos pos, std::vector<std::shared_ptr<Block>> 
                     std::shared_ptr<Block> _block = block.at(b);
                     for(int y = pos.y; y < pos.y + _amount; ++y) {
                         BlockData data = BlockData(_block, BlockPos(pos.x, y, pos.z));
-                        blocks->value()[y] = data;
+                        blocks->value().at(y) = data;
                     }
                     pos.y += _amount;    
                     ++b;
@@ -183,7 +183,7 @@ void Chunk::softSetColumnOfBlocks(BlockPos pos, std::vector<std::shared_ptr<Bloc
     if(pos.x >= getChunkCoordinates().x && pos.x < getChunkCoordinates().x + X) {
         if(pos.y >= getChunkCoordinates().y && pos.y < getChunkCoordinates().y + Y) {
             if(pos.z >= getChunkCoordinates().z && pos.z < getChunkCoordinates().z + Z) {
-                BlockData blockData = BlockData(block[0], pos);
+                BlockData blockData = BlockData(block.at(0), pos);
                 AABB bAABB = blockData.getAABB();
 
                 std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [bAABB](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
@@ -207,9 +207,9 @@ void Chunk::softSetColumnOfBlocks(BlockPos pos, std::vector<std::shared_ptr<Bloc
                 for(int _amount : amount) {
                     std::shared_ptr<Block> _block = block.at(b);
                     for(int y = pos.y; y < pos.y + _amount; ++y) {
-                        if(blocks->value()[y].isBlockAir()) {
+                        if(blocks->value().at(y).isBlockAir()) {
                             BlockData data = BlockData(_block, BlockPos(pos.x, y, pos.z));
-                            blocks->value()[y] = data;
+                            blocks->value().at(y) = data;
                         }
                     }
                     pos.y += _amount;    
@@ -238,8 +238,8 @@ std::vector<BlockData> Chunk::getBlocksInChunk() {
 
     for(std::optional<SBDA>* blocks : blocksVector) {
         for(int i = 0; i < 256; ++i) {
-            if(!blocks->value()[i].isBlockAir()) {
-                result.push_back(blocks->value()[i]);
+            if(!blocks->value().at(i).isBlockAir()) {
+                result.push_back(blocks->value().at(i));
             }
         }
     }
@@ -340,8 +340,8 @@ void Chunk::updateChunk(BlockArrayData* data) {
 
     for(std::optional<SBDA>* blocks : blocksVector) {
         for(int i = 0; i < 256; ++i) {
-            if(!blocks->value()[i].isBlockAir()) {
-                blocks->value()[i].updateBlock(data);
+            if(!blocks->value().at(i).isBlockAir()) {
+                blocks->value().at(i).updateBlock(data);
             }
         }
     }

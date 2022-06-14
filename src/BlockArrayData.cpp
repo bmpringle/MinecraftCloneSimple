@@ -36,7 +36,7 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
 
     for(float x = -(float)renderDistance; x <= (float)renderDistance; ++x) {
         for(float z = -(float)renderDistance; z <= (float)renderDistance; ++z) {
-            BlockPos playerBlock = BlockPos((int)centerChunk->getChunkCoordinates().x + size[0] * x, 0, (int)centerChunk->getChunkCoordinates().z + size[2] * z);
+            BlockPos playerBlock = BlockPos((int)centerChunk->getChunkCoordinates().x + size.at(0) * x, 0, (int)centerChunk->getChunkCoordinates().z + size.at(2) * z);
             if(!getChunkWithBlock(playerBlock)->isFakeChunk()) {
                 BlockPos chunkLocation = getChunkWithBlock(playerBlock)->getChunkCoordinates();
                 LoadedChunkInfo info = LoadedChunkInfo(BlockPos(0, 0, 0), false);
@@ -47,8 +47,8 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
                     loadedChunkLocations[chunkLocation] = LoadedChunkInfo(chunkLocation, true);
                 }
             }else {
-                int x = floor((float)playerBlock.x / (float)Chunk::getChunkSize()[0]);
-                int z = floor((float)playerBlock.z / (float)Chunk::getChunkSize()[2]);
+                int x = floor((float)playerBlock.x / (float)Chunk::getChunkSize().at(0));
+                int z = floor((float)playerBlock.z / (float)Chunk::getChunkSize().at(2));
                 std::string chunkPath = worldFolder+"/data/"+std::to_string(x)+"-"+std::to_string(z)+".cdat";
                 if(fs::exists(chunkPath)) {
                     chunkPaths.push_back(chunkPath);
@@ -60,7 +60,7 @@ void BlockArrayData::updateLoadedChunks(BlockPos pos, World* world) {
                 LoadedChunkInfo info = LoadedChunkInfo(BlockPos(0, 0, 0), false);
 
                 //used to be getChunkWithBlock(playerBlock)->getChunkCoordinates();, but was changed in order to allow chunks to be loaded asyncronously
-                BlockPos chunkLocation = BlockPos(floor((float)playerBlock.x / (float)Chunk::getChunkSize()[0]) * (float)Chunk::getChunkSize()[0], 0, floor((float)playerBlock.z / (float)Chunk::getChunkSize()[2]) * (float)Chunk::getChunkSize()[0]);
+                BlockPos chunkLocation = BlockPos(floor((float)playerBlock.x / (float)Chunk::getChunkSize().at(0)) * (float)Chunk::getChunkSize().at(0), 0, floor((float)playerBlock.z / (float)Chunk::getChunkSize().at(2)) * (float)Chunk::getChunkSize().at(0));
                 
                 if(oldChunks.count(chunkLocation) > 0) {
                     info = oldChunks.at(chunkLocation);       
@@ -94,9 +94,9 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
     for(int i = 0; i < chunkList.size(); ++i) {
         Chunk c = chunkList.at(i);
         BlockPos chunkLocation = c.getChunkCoordinates();
-        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
-            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
-                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
+        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size.at(0)) {
+            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size.at(1)) {
+                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size.at(2)) {
                     chunkList.at(i).setBlockAtLocation(pos, block);
                     if(isChunkLoaded(c)) {
                         ++loadedChunkLocations[c.getChunkCoordinates()].update;
@@ -106,7 +106,7 @@ void BlockArrayData::setBlockAtPosition(BlockPos pos, std::shared_ptr<Block> blo
             }        
         }
     }
-    generateChunk(BlockPos((float)size[0] * floor((float)pos.x / (float)size[0]), 0, (float)size[2] * floor((float)pos.z / (float)size[2])));
+    generateChunk(BlockPos((float)size.at(0) * floor((float)pos.x / (float)size.at(0)), 0, (float)size.at(2) * floor((float)pos.z / (float)size.at(2))));
     setBlockAtPosition(pos, block);
 }
 
@@ -116,9 +116,9 @@ void BlockArrayData::setBlockDataAtPosition(BlockPos pos, BlockData data) {
     for(int i = 0; i < chunkList.size(); ++i) {
         Chunk c = chunkList.at(i);
         BlockPos chunkLocation = c.getChunkCoordinates();
-        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
-            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
-                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
+        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size.at(0)) {
+            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size.at(1)) {
+                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size.at(2)) {
                     chunkList.at(i).setBlockDataAtLocation(pos, data);
                     if(isChunkLoaded(c)) {
                         ++loadedChunkLocations[c.getChunkCoordinates()].update;
@@ -128,7 +128,7 @@ void BlockArrayData::setBlockDataAtPosition(BlockPos pos, BlockData data) {
             }        
         }
     }
-    generateChunk(BlockPos((float)size[0] * floor((float)pos.x / (float)size[0]), 0, (float)size[2] * floor((float)pos.z / (float)size[2])));
+    generateChunk(BlockPos((float)size.at(0) * floor((float)pos.x / (float)size.at(0)), 0, (float)size.at(2) * floor((float)pos.z / (float)size.at(2))));
     setBlockDataAtPosition(pos, data);
 }
 
@@ -139,9 +139,9 @@ void BlockArrayData::softSetBlockAtPosition(BlockPos pos, std::shared_ptr<Block>
     for(int i = 0; i < chunkList.size(); ++i) {
         Chunk c = chunkList.at(i);
         BlockPos chunkLocation = c.getChunkCoordinates();
-        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
-            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
-                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
+        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size.at(0)) {
+            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size.at(1)) {
+                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size.at(2)) {
                     chunkList.at(i).softSetBlockAtLocation(pos, block);
                     if(isChunkLoaded(c)) {
                         ++loadedChunkLocations[c.getChunkCoordinates()].update;
@@ -151,7 +151,7 @@ void BlockArrayData::softSetBlockAtPosition(BlockPos pos, std::shared_ptr<Block>
             }        
         }
     }
-    generateChunk(BlockPos((float)size[0] * floor((float)pos.x / (float)size[0]), 0, (float)size[2] * floor((float)pos.z / (float)size[2])));
+    generateChunk(BlockPos((float)size.at(0) * floor((float)pos.x / (float)size.at(0)), 0, (float)size.at(2) * floor((float)pos.z / (float)size.at(2))));
     softSetBlockAtPosition(pos, block);
 }
 
@@ -161,9 +161,9 @@ void BlockArrayData::setColumnAtPosition(BlockPos pos, std::vector<std::shared_p
     for(int i = 0; i < chunkList.size(); ++i) {
         Chunk c = chunkList.at(i);
         BlockPos chunkLocation = c.getChunkCoordinates();
-        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
-            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
-                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
+        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size.at(0)) {
+            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size.at(1)) {
+                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size.at(2)) {
                     chunkList.at(i).setColumnOfBlocks(pos, block, amount);
                     if(isChunkLoaded(c)) {
                         ++loadedChunkLocations[c.getChunkCoordinates()].update;
@@ -173,7 +173,7 @@ void BlockArrayData::setColumnAtPosition(BlockPos pos, std::vector<std::shared_p
             }        
         }
     }   
-    generateChunk(BlockPos((float)size[0] * floor((float)pos.x / (float)size[0]), 0, (float)size[2] * floor((float)pos.z / (float)size[2])));
+    generateChunk(BlockPos((float)size.at(0) * floor((float)pos.x / (float)size.at(0)), 0, (float)size.at(2) * floor((float)pos.z / (float)size.at(2))));
     setColumnAtPosition(pos, block, amount);
 }
 
@@ -183,9 +183,9 @@ void BlockArrayData::softSetColumnAtPosition(BlockPos pos, std::vector<std::shar
     for(int i = 0; i < chunkList.size(); ++i) {
         Chunk c = chunkList.at(i);
         BlockPos chunkLocation = c.getChunkCoordinates();
-        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
-            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
-                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
+        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size.at(0)) {
+            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size.at(1)) {
+                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size.at(2)) {
                     chunkList.at(i).softSetColumnOfBlocks(pos, block, amount);
                     if(isChunkLoaded(c)) {
                         ++loadedChunkLocations[c.getChunkCoordinates()].update;
@@ -195,7 +195,7 @@ void BlockArrayData::softSetColumnAtPosition(BlockPos pos, std::vector<std::shar
             }        
         }
     }
-    generateChunk(BlockPos((float)size[0] * floor((float)pos.x / (float)size[0]), 0, (float)size[2] * floor((float)pos.z / (float)size[2])));
+    generateChunk(BlockPos((float)size.at(0) * floor((float)pos.x / (float)size.at(0)), 0, (float)size.at(2) * floor((float)pos.z / (float)size.at(2))));
     softSetColumnAtPosition(pos, block, amount);
 }
 
@@ -213,9 +213,9 @@ void BlockArrayData::removeBlockAtPosition(BlockPos pos) {
         std::array<int, 3> size = Chunk::getChunkSize();
         BlockPos chunkLocation = c.getChunkCoordinates();
     
-        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
-            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
-                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
+        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size.at(0)) {
+            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size.at(1)) {
+                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size.at(2)) {
                     chunkList.at(i).removeBlockAtLocation(pos);
                     if(isChunkLoaded(c)) {
                         ++loadedChunkLocations[c.getChunkCoordinates()].update;
@@ -233,9 +233,9 @@ BlockData BlockArrayData::getBlockAtPosition(BlockPos pos) {
         std::array<int, 3> size = Chunk::getChunkSize();
         BlockPos chunkLocation = c.getChunkCoordinates();
         
-        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
-            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
-                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
+        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size.at(0)) {
+            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size.at(1)) {
+                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size.at(2)) {
                     return chunkList.at(i).getBlockAtLocation(pos);
                 }
             }
@@ -250,9 +250,9 @@ BlockData& BlockArrayData::getBlockReferenceAtPosition(BlockPos pos) {
         std::array<int, 3> size = Chunk::getChunkSize();
         BlockPos chunkLocation = c.getChunkCoordinates();
         
-        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size[0]) {
-            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size[1]) {
-                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size[2]) {
+        if(pos.x >= chunkLocation.x && pos.x < chunkLocation.x + size.at(0)) {
+            if(pos.y >= chunkLocation.y && pos.y < chunkLocation.y + size.at(1)) {
+                if(pos.z >= chunkLocation.z && pos.z < chunkLocation.z + size.at(2)) {
                     return chunkList.at(i).getBlockReferenceAtLocation(pos);
                 }
             }
@@ -276,15 +276,15 @@ Chunk* BlockArrayData::getChunkWithBlock(BlockPos pos) {
     
     std::array<int, 3> size = Chunk::getChunkSize();
 
-    BlockPos chunkEnd = BlockPos(size[0], size[1], size[2]);
+    BlockPos chunkEnd = BlockPos(size.at(0), size.at(1), size.at(2));
     
     for(int i = 0; i < chunkList.size(); ++i) {
-        BlockPos location = chunkList[i].getChunkCoordinates();
+        BlockPos location = chunkList.at(i).getChunkCoordinates();
         
         if(location.x <= pos.x && location.x + chunkEnd.x > pos.x) {
             if(location.y <= pos.y && location.y + chunkEnd.y > pos.y) {
                 if(location.z <= pos.z && location.z + chunkEnd.z > pos.z) {
-                    return &chunkList[i];
+                    return &chunkList.at(i);
                 }
             }
         }
@@ -337,7 +337,7 @@ bool BlockArrayData::isValidPosition(AABB playerAABB, float* ypos) {
                 if(blocksVector.size() > 0) {
                     for(std::optional<SBDA>* blocksColumn : blocksVector) {
                         for(int i = 0; i < 256; ++i) {
-                            BlockData block = (*blocksColumn).value()[i];
+                            BlockData block = (*blocksColumn).value().at(i);
                             if(block.isSolid()) {
                                 AABB blockAABB = block.getAABB();
                                 if(AABBIntersectedByAABB(playerAABB, blockAABB)) {
@@ -360,7 +360,7 @@ void spawnTree(BlockArrayData* data, Chunk* chunk, int height, BlockPos beginnin
     chunk->softSetColumnOfBlocks(beginningOfTree, blocks, amounts);
 
     //top
-    chunk->softSetBlockAtLocation(BlockPos(beginningOfTree.x, beginningOfTree.y + amounts[0], beginningOfTree.z), Blocks::leaf);
+    chunk->softSetBlockAtLocation(BlockPos(beginningOfTree.x, beginningOfTree.y + amounts.at(0), beginningOfTree.z), Blocks::leaf);
 
     blocks = {Blocks::leaf};
     std::vector<int> amountstwo = {2};
@@ -377,7 +377,7 @@ void spawnTree(BlockArrayData* data, Chunk* chunk, int height, BlockPos beginnin
 }
 
 void BlockArrayData::generateChunk(BlockPos chunkLocation) {
-    Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize()[0]), floor((float)chunkLocation.z / (float)Chunk::getChunkSize()[2]));
+    Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize().at(0)), floor((float)chunkLocation.z / (float)Chunk::getChunkSize().at(2)));
 
     std::map<BlockPos, int> treeMap = std::map<BlockPos, int>();
 
@@ -428,7 +428,7 @@ bool BlockArrayData::isAABBInWater(AABB playerAABB) {
                 if(blocksVector.size() > 0) {
                     for(std::optional<SBDA>* blocksColumn : blocksVector) {
                         for(int i = 0; i < 256; ++i) {
-                            BlockData block = (*blocksColumn).value()[i];
+                            BlockData block = (*blocksColumn).value().at(i);
                             if(!block.isBlockAir()) {
                                 if(block.getBlockType()->getName() == "water") {
                                     AABB blockAABB = block.getAABB();
@@ -451,13 +451,13 @@ void BlockArrayData::setWorldFolder(std::string path) {
 }
 
 void BlockArrayData::loadChunkFromFile(std::string chunkPath, BlockPos chunkLocation) {
-    Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize()[0]), floor((float)chunkLocation.z / (float)Chunk::getChunkSize()[2]));
+    Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize().at(0)), floor((float)chunkLocation.z / (float)Chunk::getChunkSize().at(2)));
     std::ifstream t(chunkPath);
     t.seekg(0, std::ios::end);
     size_t size = t.tellg();
     std::string buffer(size, ' ');
     t.seekg(0);
-    t.read(&buffer[0], size); 
+    t.read(&buffer.at(0), size); 
 
     auto tree = generatingChunk.getBlockTree();
     tree->deserialize(buffer);
@@ -487,7 +487,7 @@ void BlockArrayData::unloadChunkToFile(BlockPos chunkLocation, std::string world
         if(c.getChunkCoordinates() == chunkLocation) {
             auto tree = c.getBlockTree();
             std::string data = tree->serialize();
-            std::string dataname = std::to_string(c.getChunkCoordinates().x / Chunk::getChunkSize()[0]) + "-" + std::to_string(c.getChunkCoordinates().z / Chunk::getChunkSize()[2]);
+            std::string dataname = std::to_string(c.getChunkCoordinates().x / Chunk::getChunkSize().at(0)) + "-" + std::to_string(c.getChunkCoordinates().z / Chunk::getChunkSize().at(2));
             std::ofstream chunkFile("./worlds/"+worldname+"/data/"+dataname+".cdat");
             chunkFile.write(data.c_str(), data.length());
 
@@ -505,16 +505,16 @@ void BlockArrayData::loadChunksFromFileAsync(std::vector<std::string> chunkPaths
 
     auto asyncCall = [this, chunkPaths, chunkLocations]() {
         for(int i = 0; i < chunkPaths.size(); ++i) {
-            std::string chunkPath = chunkPaths[i];
-            BlockPos chunkLocation = chunkLocations[i];
+            std::string chunkPath = chunkPaths.at(i);
+            BlockPos chunkLocation = chunkLocations.at(i);
 
-            Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize()[0]), floor((float)chunkLocation.z / (float)Chunk::getChunkSize()[2]));
+            Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize().at(0)), floor((float)chunkLocation.z / (float)Chunk::getChunkSize().at(2)));
             std::ifstream t(chunkPath);
             t.seekg(0, std::ios::end);
             size_t size = t.tellg();
             std::string buffer(size, ' ');
             t.seekg(0);
-            t.read(&buffer[0], size); 
+            t.read(&buffer.at(0), size); 
 
             auto tree = generatingChunk.getBlockTree();
             tree->deserialize(buffer);
@@ -575,7 +575,7 @@ void BlockArrayData::unloadChunksToFileAsync(std::vector<BlockPos> chunkLocation
         for(Chunk c : chunksToSave) {
             auto tree = c.getBlockTree();
             std::string data = tree->serialize();
-            std::string dataname = std::to_string(c.getChunkCoordinates().x / Chunk::getChunkSize()[0]) + "-" + std::to_string(c.getChunkCoordinates().z / Chunk::getChunkSize()[2]);
+            std::string dataname = std::to_string(c.getChunkCoordinates().x / Chunk::getChunkSize().at(0)) + "-" + std::to_string(c.getChunkCoordinates().z / Chunk::getChunkSize().at(2));
             std::ofstream chunkFile("./worlds/" + worldName + "/data/" + dataname + ".cdat");
             chunkFile.write(data.c_str(), data.length());
         }

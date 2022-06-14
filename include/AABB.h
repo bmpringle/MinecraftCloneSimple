@@ -1,9 +1,7 @@
 #ifndef AABB_H
 #define AABB_H
 
-#ifdef VULKAN_BACKEND
 #include "WireframeVertex.h"
-#endif
 
 #include <vector>
 
@@ -42,9 +40,7 @@ class AABB {
 
         float getDepth();
 
-        #ifdef VULKAN_BACKEND
-            std::vector<WireframeVertex> getWireframeFromAABB();
-        #endif
+        std::vector<WireframeVertex> getWireframeFromAABB();
 };
 
 #endif

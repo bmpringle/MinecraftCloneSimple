@@ -93,7 +93,7 @@ void World::mainLoop() {
     for(Chunk& c : chunks) {
         auto tree = c.getBlockTree();
         std::string data = tree->serialize();
-        std::string dataname = std::to_string(c.getChunkCoordinates().x / Chunk::getChunkSize()[0]) + "-" + std::to_string(c.getChunkCoordinates().z / Chunk::getChunkSize()[2]);
+        std::string dataname = std::to_string(c.getChunkCoordinates().x / Chunk::getChunkSize().at(0)) + "-" + std::to_string(c.getChunkCoordinates().z / Chunk::getChunkSize().at(2));
         std::ofstream chunkFile("./worlds/"+name+"/data/"+dataname+".cdat");
         chunkFile.write(data.c_str(), data.length());
     }
@@ -177,13 +177,7 @@ void World::renderGame() {
         }
     }
 
-    #ifndef VULKAN_BACKEND
-    glClear(GL_DEPTH_BUFFER_BIT);
-    #endif
     renderOverlays();
-    #ifndef VULKAN_BACKEND
-    glClear(GL_DEPTH_BUFFER_BIT);
-    #endif
 }
 
 void World::renderOverlays() {
