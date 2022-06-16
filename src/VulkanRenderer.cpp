@@ -141,10 +141,10 @@ void VulkanRenderer::updateWorldVBO(World* world) {
             if(!c->isFakeChunk()) {
                 BlockPos pos = lchunk.first;
                 if(std::find(chunkPositionsCurrentlyLoaded.begin(), chunkPositionsCurrentlyLoaded.end(), pos) != chunkPositionsCurrentlyLoaded.end()) {
-                    updateChunkData(c);
+                    updateChunkData(c, data);
                 }else {
                     chunkPositionsCurrentlyLoaded.push_back(pos);
-                    updateChunkData(c);
+                    updateChunkData(c, data);
                 }
             }else {
                 //the chunk is likely fake b/c it hasn't finished being loaded from the file yet.
@@ -339,35 +339,16 @@ void VulkanRenderer::initTexturesAndModels() {
     }
 }
 
-void VulkanRenderer::updateChunkData(Chunk* chunk) {
+void VulkanRenderer::updateChunkData(Chunk* chunk, BlockArrayData* data) {
     std::string setName = std::to_string(chunk->getChunkCoordinates().x) + "-" + std::to_string(chunk->getChunkCoordinates().y) + "-" + std::to_string(chunk->getChunkCoordinates().z);
-
-    //const std::array<int, 3> size = Chunk::getChunkSize();
-
-    const std::array<std::array<int, 2>, 5> chunkOffsets = {
-        std::array<int, 2>({0, 0}),
-        //std::array<int, 2>(size[0], 0),
-        //std::array<int, 2>(-size[0], 0),
-        //std::array<int, 2>(0, size[2]),
-        //std::array<int, 2>(0, -size[2])
-    };
-
-    std::vector<std::string> liquidSetNames;
-
-    for(std::array<int, 2> offset : chunkOffsets) {
-        liquidSetNames.push_back(std::to_string(chunk->getChunkCoordinates().x  + offset[0]) + "-" + std::to_string(chunk->getChunkCoordinates().y) + "-" + std::to_string(chunk->getChunkCoordinates().z + offset[1]));     
-    }
 
     for(std::pair<const std::string, std::shared_ptr<Block>>& nameBlockPair : Blocks::blockMap) {
         for(unsigned int meta = 0; meta < nameBlockPair.second->getNumberOfVariants(); ++meta) {
             if(nameBlockPair.second->isLiquid(meta)) {
-                for(std::string liquidSetName : liquidSetNames) {
-
-                    //explanation here since this is a ridiculous line of code. this iterates over all SideEnum values except Neutral
-                    for(SideEnum side = (SideEnum)0; (int)side < SideEnumHelper::getEnumSize() - 1; side = (SideEnum)(1 + (int)side)) { // -1 b/c we don't need Neutral
-                        std::string modelName = nameBlockPair.second->getName() + "-" + SideEnumHelper::toString(side) + "-" + std::to_string(meta);
-                        renderer.removeInstancesFromModelSafe(modelName, liquidSetName);
-                    }
+                //explanation here since this is a ridiculous line of code. this iterates over all SideEnum values except Neutral
+                for(SideEnum side = (SideEnum)0; (int)side < SideEnumHelper::getEnumSize() - 1; side = (SideEnum)(1 + (int)side)) { // -1 b/c we don't need Neutral
+                    std::string modelName = nameBlockPair.second->getName() + "-" + SideEnumHelper::toString(side) + "-" + std::to_string(meta);
+                    renderer.removeInstancesFromModelSafe(modelName, setName);
                 }
             }else {
                 std::string modelName = nameBlockPair.second->getName() + "-" + std::to_string(meta);
@@ -389,38 +370,45 @@ void VulkanRenderer::updateChunkData(Chunk* chunk) {
             for(SideEnum side = (SideEnum)0; (int)side < SideEnumHelper::getEnumSize() - 1; side = (SideEnum)(1 + (int)side)) { // -1 b/c we don't need Neutral
                 std::string typeString = block.getBlockType()->getName() + "-" + SideEnumHelper::toString(side) + "-" + std::to_string(block.getData());
                 std::string typeStringOpposite = block.getBlockType()->getName() + "-" + SideEnumHelper::toString(SideEnumHelper::getOppositeSide(side)) + "-" + std::to_string(block.getData());
-                
-                InstanceData instance;
+
+                BlockPos pos = BlockPos(0, 0, 0);
 
                 switch(side) {
                     case UP:
-                        instance = InstanceData({{-block.getPos().getAbove().x, block.getPos().getAbove().y, block.getPos().getAbove().z}});
+                        pos = block.getPos().getAbove();
                         break;
                     case DOWN:
-                        instance = InstanceData({{-block.getPos().getBelow().x, block.getPos().getBelow().y, block.getPos().getBelow().z}});
+                        pos = block.getPos().getBelow();
                         break;
                     case NORTH:
-                        instance = InstanceData({{-block.getPos().getFront().x, block.getPos().getFront().y, block.getPos().getFront().z}});
+                        pos = block.getPos().getFront();
                         break;
                     case SOUTH:
-                        instance = InstanceData({{-block.getPos().getBehind().x, block.getPos().getBehind().y, block.getPos().getBehind().z}});
+                        pos = block.getPos().getBehind();
                         break;
                     case EAST:
-                        instance = InstanceData({{-block.getPos().getRight().x, block.getPos().getRight().y, block.getPos().getRight().z}});
+                        pos = block.getPos().getRight();
                         break;
                     case WEST:
-                        instance = InstanceData({{-block.getPos().getLeft().x, block.getPos().getLeft().y, block.getPos().getLeft().z}});
+                        pos = block.getPos().getLeft();
                         break;
                     case NEUTRAL:
                         break;
                 }
                 
-                if(liquidBlockTypesToInstanceSets[typeStringOpposite].contains(instance)) {
-                    liquidBlockTypesToInstanceSets[typeStringOpposite].erase(instance);
-                    continue;
-                }
+                BlockData checkBlock;
+                try {
+                    checkBlock = data->getBlockAtPosition(pos);
 
-                liquidBlockTypesToInstanceSets[typeString].insert(InstanceData({{-block.getPos().x, block.getPos().y, block.getPos().z}}));
+                    if(checkBlock.isBlockAir()) {
+                        liquidBlockTypesToInstanceSets[typeString].insert(InstanceData({{-block.getPos().x, block.getPos().y, block.getPos().z}}));
+                    }else if(checkBlock.getBlockType() != block.getBlockType() && (side == UP || !checkBlock.getBlockType()->isOpaque())) {
+                        liquidBlockTypesToInstanceSets[typeString].insert(InstanceData({{-block.getPos().x, block.getPos().y, block.getPos().z}}));
+                    }
+                }catch (std::runtime_error ex) {
+                    //this means the chunk checkBlock belongs to hasn't been loaded yet, so queue the loading
+                    data->setChunkToUpdateOnChunkLoad(block.getPos(), pos);
+                }
             }
         }else {
             std::string typeString = block.getBlockType()->getName() + "-" + std::to_string(block.getData());
@@ -443,4 +431,16 @@ void VulkanRenderer::updateChunkData(Chunk* chunk) {
 
 VKRenderer& VulkanRenderer::getInternalRenderer() {
     return renderer;
+}
+
+float VulkanRenderer::getAspectRatio() {
+    return aspectRatio;
+}
+
+void VulkanRenderer::setWaterTint(bool shouldTint) {
+    if(shouldTint) {
+        renderer.setScreenTint(glm::vec3(0.1, 0.1, 1));
+    }else {
+        renderer.setScreenTint(glm::vec3(1, 1, 1));
+    }
 }

@@ -6,10 +6,10 @@
 
 class InventoryGui : public Gui  {
     public:
-        InventoryGui(Renderer* renderer, Inventory* inv);
-        void displayGui(Renderer* renderer, int mouseX, int mouseY) override;
+        InventoryGui(VulkanRenderer* renderer, Inventory* inv);
+        void displayGui(VulkanRenderer* renderer, int mouseX, int mouseY) override;
         int getID() override;
-        int getIndexHoveredOver(Renderer* renderer, int mouseX, int mouseY);
+        int getIndexHoveredOver(VulkanRenderer* renderer, int mouseX, int mouseY);
         void mouseClick(int mouseX, int mouseY) override;
         void scrollHandle(double offsetX, double offsetY) override;
         void close() override;
@@ -21,7 +21,7 @@ class InventoryGui : public Gui  {
         const double ySize = 1;
         ItemStack itemStackHeld = ItemStack(nullptr, 0);
         Inventory* inventory;
-        Renderer* renderer;
+        VulkanRenderer* renderer;
 
         const double hotbarTexY = 15;
         const double row1TexY = 36;

@@ -241,7 +241,8 @@ BlockData BlockArrayData::getBlockAtPosition(BlockPos pos) {
             }
         }
     }
-    return BlockData();
+    
+    throw std::runtime_error("no chunk currently loaded has a block at that position");
 }
 
 BlockData& BlockArrayData::getBlockReferenceAtPosition(BlockPos pos) {
@@ -450,7 +451,7 @@ void BlockArrayData::setWorldFolder(std::string path) {
     worldFolder = path;
 }
 
-void BlockArrayData::loadChunkFromFile(std::string chunkPath, BlockPos chunkLocation) {
+/*void BlockArrayData::loadChunkFromFile(std::string chunkPath, BlockPos chunkLocation) { //unused
     Chunk generatingChunk = Chunk(floor((float)chunkLocation.x / (float)Chunk::getChunkSize().at(0)), floor((float)chunkLocation.z / (float)Chunk::getChunkSize().at(2)));
     std::ifstream t(chunkPath);
     t.seekg(0, std::ios::end);
@@ -463,7 +464,7 @@ void BlockArrayData::loadChunkFromFile(std::string chunkPath, BlockPos chunkLoca
     tree->deserialize(buffer);
 
     chunkList.push_back(generatingChunk);
-}
+}*/
 
 int BlockArrayData::getSeed() {
     return SEED;
@@ -477,7 +478,7 @@ void BlockArrayData::setChunkToUpdate(BlockPos chunkLocation) {
     }
 }
 
-void BlockArrayData::unloadChunkToFile(BlockPos chunkLocation, std::string worldname) {
+/*void BlockArrayData::unloadChunkToFile(BlockPos chunkLocation, std::string worldname) { // unused
     if(!fs::exists("./worlds/"+worldname+"/data/")) {
         fs::create_directories("./worlds/"+worldname+"/data/");
     }
@@ -496,7 +497,7 @@ void BlockArrayData::unloadChunkToFile(BlockPos chunkLocation, std::string world
         }
         ++i;
     }
-}
+}*/
 
 void BlockArrayData::loadChunksFromFileAsync(std::vector<std::string> chunkPaths, std::vector<BlockPos> chunkLocations) {
     if(chunkPaths.size() != chunkLocations.size()) {
@@ -524,8 +525,6 @@ void BlockArrayData::loadChunksFromFileAsync(std::vector<std::string> chunkPaths
             threadSafeChunkList.push_back(generatingChunk);
 
             threadSafeChunkMutex.unlock();
-
-            setChunkToUpdate(chunkLocation);
         }
     };
     
@@ -546,6 +545,24 @@ void BlockArrayData::updateChunkList() {
     threadSafeChunkList.clear();
 
     threadSafeChunkMutex.unlock();
+
+    std::vector<BlockPos> positionsToDelete;
+
+    for(Chunk& c : chunkList) {
+        for(auto& chunkPos : chunksToUpdateOnSpecificChunkLoads) {
+            if(BlockArrayData::areBlocksInSameChunk(c.getChunkCoordinates(), chunkPos.first)) {
+                positionsToDelete.push_back(chunkPos.first);
+
+                for(BlockPos& pos : chunkPos.second) {
+                    setChunkToUpdate(getChunkWithBlock(pos)->getChunkCoordinates());
+                }     
+            }
+        }
+    }
+
+    for(BlockPos& pos : positionsToDelete) {
+        chunksToUpdateOnSpecificChunkLoads.erase(pos);
+    }
 }
 
 void BlockArrayData::unloadChunksToFileAsync(std::vector<BlockPos> chunkLocations, std::string worldName) {
@@ -584,4 +601,25 @@ void BlockArrayData::unloadChunksToFileAsync(std::vector<BlockPos> chunkLocation
     std::thread t = std::thread(asyncSave);
 
     t.detach();
+}
+
+bool BlockArrayData::isBlockPosInLoadedChunk(BlockPos pos) {
+    for(auto& location : loadedChunkLocations) {
+        if(BlockArrayData::areBlocksInSameChunk(pos, location.first)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void BlockArrayData::setChunkToUpdateOnChunkLoad(BlockPos chunkToUpdate, BlockPos chunkToLoad) {
+    chunksToUpdateOnSpecificChunkLoads[chunkToLoad].push_back(chunkToUpdate);
+}
+
+bool BlockArrayData::areBlocksInSameChunk(BlockPos pos1, BlockPos pos2) {
+    auto size = Chunk::getChunkSize();
+
+    return floor((float) pos1.x / (float) size[0]) == floor((float) pos2.x / (float) size[0]) &&
+                floor((float) pos1.y / (float) size[1]) == floor((float) pos2.y / (float) size[1]) &&
+                floor((float) pos1.z / (float) size[2]) == floor((float) pos2.z / (float) size[2]);
 }

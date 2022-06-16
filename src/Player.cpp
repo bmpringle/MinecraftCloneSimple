@@ -31,6 +31,20 @@ void Player::updateEntity(World* world) {
         waterPhysics = false;
     }
 
+    float nearPlaneLength = 2 * tan(90 / 2) * 0.01; //90 degrees is the FOV of the camera, 0.01 is the near plane distance
+    float nearPlaneWidth =  nearPlaneLength / world->getRenderer()->getAspectRatio();
+
+    Pos cameraPosition = getCameraPosition();
+
+    AABB cameraABBB = AABB(cameraPosition.x - nearPlaneLength / 2.0, cameraPosition.y - nearPlaneWidth / 2.0, cameraPosition.z,
+                            nearPlaneLength, nearPlaneWidth, 0.001);
+
+    if(world->getBlockData()->isAABBInWater(cameraABBB)) {
+        world->getRenderer()->setWaterTint(true);
+    }else {
+        world->getRenderer()->setWaterTint(false);
+    }
+
     if(!isBlockUnderEntity(world)) {
         motion[1] -= (0.086 / 6) * ((waterPhysics) ? 0.5 : 1);
         motion[1] *= 0.98;
@@ -90,7 +104,7 @@ bool Player::isThirdPerson() {
 
 Pos Player::getCameraPosition() {
     glm::vec3 nonRotatedPos = glm::vec3(getPos().x + getAABB().xSize / 2, getPos().y + getAABB().ySize * 3.0 / 4.0, getPos().z + getAABB().zSize / 2);
-    glm::vec3 rotatedPos = (Renderer::calculateXRotationMatrix(-getXRotation()) * glm::vec3(0, 0, 0));
+    glm::vec3 rotatedPos = (VulkanRenderer::calculateXRotationMatrix(-getXRotation()) * glm::vec3(0, 0, 0));
     
     return Pos(rotatedPos.x + nonRotatedPos.x, rotatedPos.y + nonRotatedPos.y + ((isThirdPerson()) ? 2 : 0), rotatedPos.z + nonRotatedPos.z + ((isThirdPerson()) ? -2 : 0));
 }
@@ -179,9 +193,9 @@ Pos Player::getCameraNormal() {
     d[1] = 0;
     d[2] = 1;
 
-    glm::vec3 n1 = Renderer::calculateYRotationMatrix(-getYRotation()) * d;
+    glm::vec3 n1 = VulkanRenderer::calculateYRotationMatrix(-getYRotation()) * d;
 
-    glm::vec3 n2 = Renderer::calculateXRotationMatrix(-getXRotation()) * n1;
+    glm::vec3 n2 = VulkanRenderer::calculateXRotationMatrix(-getXRotation()) * n1;
 
     return Pos(n2[0], n2[1], n2[2]);
 }
@@ -365,7 +379,7 @@ void Player::updateHorizontalMotion() {
     zInputDirection = 0;
 }
 
-void Player::displayGui(Renderer* renderer) {
+void Player::displayGui(VulkanRenderer* renderer) {
     if(gui != nullptr) {
         gui->displayGui(renderer, mouseX, mouseY);
     }
@@ -542,7 +556,7 @@ SideEnum Player::sideLookingAt() {
     return sideOfBlockLookingAt;
 }
 
-void Player::closeGui(Renderer* renderer) {
+void Player::closeGui(VulkanRenderer* renderer) {
     if(gui != nullptr) {
         gui->close();
     }

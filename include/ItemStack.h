@@ -3,7 +3,7 @@
 
 #include "Item.h"
 #include <memory>
-#include "Renderer.h"
+#include "VulkanRenderer.h"
 
 class ItemStack {
     public:
@@ -29,7 +29,7 @@ class ItemStack {
 
         void onLeftClick(World* world, BlockPos* posLookingAt);
 
-        std::string getCountTextureID(Renderer* renderer);
+        std::string getCountTextureID(VulkanRenderer* renderer);
 
     private:
         std::shared_ptr<Item> item = nullptr;

@@ -1,12 +1,12 @@
 #include "MainMenuGui.h"
 
-MainMenuGui::MainMenuGui(Renderer* renderer) : singleplayer(Button(0, 0, 0, 200, "Singleplayer", renderer)), quit(Button(0, 0, 0, 200, "Quit Game", renderer)), options(Button(0, 0, 0, 200, "Options", renderer)), renderer(renderer) {
+MainMenuGui::MainMenuGui(VulkanRenderer* renderer) : singleplayer(Button(0, 0, 0, 200, "Singleplayer", renderer)), quit(Button(0, 0, 0, 200, "Quit Game", renderer)), options(Button(0, 0, 0, 200, "Options", renderer)), renderer(renderer) {
     singleplayer.autoSize(0, 400);
     quit.autoSize(0, -400);
     options.autoSize(0, 0);
 }
 
-void MainMenuGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
+void MainMenuGui::displayGui(VulkanRenderer* renderer, int mouseX, int mouseY) {
     singleplayer.setRenderData(renderer);
     quit.setRenderData(renderer);
     options.setRenderData(renderer);

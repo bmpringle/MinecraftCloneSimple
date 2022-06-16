@@ -2,11 +2,11 @@
 #define BUTTON_H
 
 #include <string>
-#include "Renderer.h"
+#include "VulkanRenderer.h"
 
 class Button {
     public:
-        Button(int x, int y, int width, int height, std::string texture, Renderer* renderer);
+        Button(int x, int y, int width, int height, std::string texture, VulkanRenderer* renderer);
 
         Button();
 
@@ -14,11 +14,11 @@ class Button {
 
         bool isBeingHoveredOver(int mouseX, int mouseY, int windowWidth, int windowHeight, double offsetX, double offsetY);
 
-        void setRenderData(Renderer* renderer);
+        void setRenderData(VulkanRenderer* renderer);
 
-        void setRenderData(Renderer* renderer, double offsetX, double offsetY);
+        void setRenderData(VulkanRenderer* renderer, double offsetX, double offsetY);
 
-        void stopRendering(Renderer* renderer);
+        void stopRendering(VulkanRenderer* renderer);
 
         bool isPressed();
 
@@ -44,7 +44,7 @@ class Button {
 
         void setLayer(double layer);
 
-        void setText(Renderer* renderer, std::string text);
+        void setText(VulkanRenderer* renderer, std::string text);
 
         std::string getTextureID();
 

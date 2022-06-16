@@ -52,6 +52,10 @@ class VulkanRenderer {
 
         VKRenderer& getInternalRenderer();
 
+        float getAspectRatio();
+
+        void setWaterTint(bool shouldTint);
+
     private:
         VKRenderer renderer = VKRenderer();
 
@@ -59,7 +63,7 @@ class VulkanRenderer {
 
         std::vector<BlockPos> chunkPositionsCurrentlyLoaded;
 
-        void updateChunkData(Chunk* chunk);
+        void updateChunkData(Chunk* chunk, BlockArrayData* data);
 
         bool shouldRenderWireframe = false;
 

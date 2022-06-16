@@ -15,7 +15,7 @@
  */
 #define WORLDSIZE_CONST 100
 
-World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler, Renderer* renderer, TimerMap* map, GameSettings* settings, std::string _name, std::string worldFolder, int seed) : name(_name), timerMap(map), worldEventQueue(queue), input(inputHandler), renderer(renderer), window(window_), settings(settings), internalBlockData(BlockArrayData(worldFolder, seed)), thePlayer(std::make_shared<Player>(this)) {
+World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler, VulkanRenderer* renderer, TimerMap* map, GameSettings* settings, std::string _name, std::string worldFolder, int seed) : name(_name), timerMap(map), worldEventQueue(queue), input(inputHandler), renderer(renderer), window(window_), settings(settings), internalBlockData(BlockArrayData(worldFolder, seed)), thePlayer(std::make_shared<Player>(this)) {
     thePlayer->setBufferedChunkLocation(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates());
     internalBlockData.updateLoadedChunks(getBlockData()->getChunkWithBlock(thePlayer->getPos().toBlockPos())->getChunkCoordinates(), this);
     renderer->updateWorldVBO(this);
@@ -296,7 +296,7 @@ GLFWwindow* World::getWindowPtr() {
     return window;
 }
 
-Renderer* World::getRenderer() {
+VulkanRenderer* World::getRenderer() {
     return renderer;
 }
 

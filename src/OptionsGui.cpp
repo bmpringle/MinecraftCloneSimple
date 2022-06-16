@@ -1,6 +1,6 @@
 #include "OptionsGui.h"
 
-OptionsGui::OptionsGui(Renderer* renderer, GameSettings* settings) : done(Button(0, 0, 0, 160, "Done", renderer)), renderer(renderer), settings(settings) {
+OptionsGui::OptionsGui(VulkanRenderer* renderer, GameSettings* settings) : done(Button(0, 0, 0, 160, "Done", renderer)), renderer(renderer), settings(settings) {
     done.autoSize(0, -900);
     done.setLayer(-7);
     done.setRenderButtonBackground(true);
@@ -23,7 +23,7 @@ OptionsGui::OptionsGui(Renderer* renderer, GameSettings* settings) : done(Button
     maxScrollY = -1600 - buttonOffset;
 }
 
-void OptionsGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
+void OptionsGui::displayGui(VulkanRenderer* renderer, int mouseX, int mouseY) {
     done.setRenderData(renderer);
 
     for(std::pair<Setting, Button> button : optionButtons) {

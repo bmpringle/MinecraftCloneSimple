@@ -62,9 +62,9 @@ class BlockArrayData {
 
         bool isAABBInWater(AABB playerAABB);
 
-        void loadChunkFromFile(std::string chunkPath, BlockPos chunkLocation);
+        //void loadChunkFromFile(std::string chunkPath, BlockPos chunkLocation); //unused: is not necessarily updated properly, DO NOT USE W/O rewrite etc.
 
-        void unloadChunkToFile(BlockPos chunkLocation, std::string worldname);
+        //void unloadChunkToFile(BlockPos chunkLocation, std::string worldname); //unused: is not necessarily updated properly, DO NOT USE W/O rewrite etc.
 
         int getSeed();
 
@@ -72,6 +72,12 @@ class BlockArrayData {
 
         //should be called every logic tick, syncronizes chunks constructed by other threads.
         void updateChunkList();
+
+        bool isBlockPosInLoadedChunk(BlockPos pos);
+
+        void setChunkToUpdateOnChunkLoad(BlockPos chunkToUpdate, BlockPos chunkToLoad);
+
+        static bool areBlocksInSameChunk(BlockPos pos1, BlockPos pos2);
 
     private:
         void loadChunksFromFileAsync(std::vector<std::string> chunkPaths, std::vector<BlockPos> chunkLocations);
@@ -103,5 +109,7 @@ class BlockArrayData {
 
         std::vector<Chunk> threadSafeChunkList;
         std::mutex threadSafeChunkMutex;
+
+        std::map<BlockPos, std::vector<BlockPos>> chunksToUpdateOnSpecificChunkLoads = std::map<BlockPos, std::vector<BlockPos>>();
 };
 #endif

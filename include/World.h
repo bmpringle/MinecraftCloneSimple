@@ -2,7 +2,7 @@
 #define WORLD_H
 
 #include "InputHandler.h"
-#include "Renderer.h"
+#include "VulkanRenderer.h"
 #include "EventQueue/EventQueue.h"
 #include "BlockArrayData.h"
 #include "Player.h"
@@ -11,7 +11,7 @@
 
 class World {
     public:
-        World(GLFWwindow* window, EventQueue* queue, InputHandler* inputHandler, Renderer* renderer, TimerMap* map, GameSettings* settings, std::string name, std::string worldFolder, int seed);
+        World(GLFWwindow* window, EventQueue* queue, InputHandler* inputHandler, VulkanRenderer* renderer, TimerMap* map, GameSettings* settings, std::string name, std::string worldFolder, int seed);
 
         void mainLoop();
 
@@ -35,7 +35,7 @@ class World {
 
         GLFWwindow* getWindowPtr();
 
-        Renderer* getRenderer();
+        VulkanRenderer* getRenderer();
 
         GameSettings* getSettings();
 
@@ -60,7 +60,7 @@ class World {
         TimerMap* timerMap;
         EventQueue* worldEventQueue;
         InputHandler* input;
-        Renderer* renderer;
+        VulkanRenderer* renderer;
         GLFWwindow* window;
         GameSettings* settings;
 

@@ -6,10 +6,10 @@
 
 class SingleplayerSelectGui : public Gui {
     public:
-        SingleplayerSelectGui(Renderer* renderer);
+        SingleplayerSelectGui(VulkanRenderer* renderer);
 
         void handleKeyPressed(std::string keyPressed);
-        void displayGui(Renderer* renderer, int mouseX, int mouseY) override;
+        void displayGui(VulkanRenderer* renderer, int mouseX, int mouseY) override;
         int getID() override;
         void mouseClick(int mouseX, int mouseY) override;
         void scrollHandle(double offsetX, double offsetY) override;
@@ -27,7 +27,7 @@ class SingleplayerSelectGui : public Gui {
 
         Button textPrefix;
 
-        Renderer* renderer;
+        VulkanRenderer* renderer;
 
         //0 is select screen, 1 is create screen, 2 is load screen.
         int state = 0;

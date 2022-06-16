@@ -1,11 +1,11 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include "Renderer.h"
+#include "VulkanRenderer.h"
 
 class Gui {
     public:
-        virtual void displayGui(Renderer* renderer, int mouseX, int mouseY) = 0;
+        virtual void displayGui(VulkanRenderer* renderer, int mouseX, int mouseY) = 0;
         virtual int getID() = 0;
 
         virtual void mouseClick(int mouseX, int mouseY) = 0;

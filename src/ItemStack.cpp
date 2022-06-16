@@ -64,7 +64,7 @@ ItemStack::ItemStack() {
 
 }
 
-std::string ItemStack::getCountTextureID(Renderer* renderer) {
+std::string ItemStack::getCountTextureID(VulkanRenderer* renderer) {
     if(textureCount != count) {
         textureCount = count;
         renderer->textTextureBuffer(textureID, std::to_string(count));

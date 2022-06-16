@@ -2,7 +2,7 @@
 
 unsigned int Button::buttonCount = 0;
 
-Button::Button(int x, int y, int width, int height, std::string texture, Renderer* renderer) : x(x), y(y), width(width), height(height), text(texture) {
+Button::Button(int x, int y, int width, int height, std::string texture, VulkanRenderer* renderer) : x(x), y(y), width(width), height(height), text(texture) {
     id = std::to_string(buttonCount);
     textureID = "buttonTexture" + id;
     renderID = "buttonRender" + id;
@@ -35,7 +35,7 @@ bool Button::isBeingHoveredOver(int mouseX, int mouseY, int windowWidth, int win
     return false;
 }
 
-void Button::setRenderData(Renderer* renderer, double offsetX, double offsetY) {
+void Button::setRenderData(VulkanRenderer* renderer, double offsetX, double offsetY) {
     float aspect = (double)renderer->getHeight() / (double)renderer->getWidth();
 
     float numberoverlay[48] = {
@@ -64,11 +64,11 @@ void Button::setRenderData(Renderer* renderer, double offsetX, double offsetY) {
     }
 }
 
-void Button::setRenderData(Renderer* renderer) {
+void Button::setRenderData(VulkanRenderer* renderer) {
     setRenderData(renderer, 0, 0);
 }
 
-void Button::stopRendering(Renderer* renderer) {
+void Button::stopRendering(VulkanRenderer* renderer) {
     renderer->removeOverlayData(renderID + "_text");
     renderer->removeOverlayData(renderID + "_background");
 }
@@ -118,7 +118,7 @@ void Button::setLayer(double layer) {
     this->layer = layer;
 }
 
-void Button::setText(Renderer* renderer, std::string text) {
+void Button::setText(VulkanRenderer* renderer, std::string text) {
     this->text = text;
     renderer->textTextureBuffer(textureID, ((text == "") ? " " : text));
     b_w = renderer->getTextureDimensions(textureID).first;

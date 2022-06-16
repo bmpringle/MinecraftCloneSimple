@@ -18,13 +18,13 @@ class Player final : public Listener, public Entity {
         BlockPos* getBlockLookingAt();
         SideEnum getSideOfBlockLookingAt();
        
-        void displayGui(Renderer* renderer);
+        void displayGui(VulkanRenderer* renderer);
         SideEnum horizontalSidePlacedOn();
         SideEnum sideLookingAt();
 
         bool isThirdPerson();
 
-        void closeGui(Renderer* renderer);
+        void closeGui(VulkanRenderer* renderer);
 
     private:
         void updatePlayerLookingAt(World* world);

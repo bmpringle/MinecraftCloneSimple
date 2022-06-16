@@ -29,7 +29,7 @@ class Game {
         EventQueue eventQueue;
         TimerMap map;
         InputHandler input;
-        Renderer renderer;
+        VulkanRenderer renderer;
         std::shared_ptr<World> world;
         std::shared_ptr<GameEventHandler> gameEventHandler;
 

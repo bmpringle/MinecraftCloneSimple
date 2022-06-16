@@ -5,8 +5,8 @@
 
 class MainMenuGui : public Gui {
     public:
-        MainMenuGui(Renderer* renderer);
-        void displayGui(Renderer* renderer, int mouseX, int mouseY) override; 
+        MainMenuGui(VulkanRenderer* renderer);
+        void displayGui(VulkanRenderer* renderer, int mouseX, int mouseY) override; 
         int getID() override;
         void mouseClick(int mouseX, int mouseY) override;
         void scrollHandle(double offsetX, double offsetY) override;
@@ -17,6 +17,6 @@ class MainMenuGui : public Gui {
         Button options;
 
     private:
-        Renderer* renderer;
+        VulkanRenderer* renderer;
 };
 #endif

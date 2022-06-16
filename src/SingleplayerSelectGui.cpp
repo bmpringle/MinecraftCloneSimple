@@ -1,6 +1,6 @@
 #include "SingleplayerSelectGui.h"
 
-SingleplayerSelectGui::SingleplayerSelectGui(Renderer* renderer) : createNewWorld(Button(0, 0, 0, 200, "Create New World", renderer)), loadWorld(Button(0, 0, 0, 200, "Load World", renderer)), textBuffer(Button(0, 0, 0, 200, "", renderer)), textPrefix(Button(0, 0, 0, 200, "", renderer)), renderer(renderer) {
+SingleplayerSelectGui::SingleplayerSelectGui(VulkanRenderer* renderer) : createNewWorld(Button(0, 0, 0, 200, "Create New World", renderer)), loadWorld(Button(0, 0, 0, 200, "Load World", renderer)), textBuffer(Button(0, 0, 0, 200, "", renderer)), textPrefix(Button(0, 0, 0, 200, "", renderer)), renderer(renderer) {
     createNewWorld.autoSize(0, 300);
     loadWorld.autoSize(0, -300);
     textBuffer.autoSize(0, 0);
@@ -57,7 +57,7 @@ void SingleplayerSelectGui::handleKeyPressed(std::string keyPressed) {
     }
 }
 
-void SingleplayerSelectGui::displayGui(Renderer* renderer, int mouseX, int mouseY) {
+void SingleplayerSelectGui::displayGui(VulkanRenderer* renderer, int mouseX, int mouseY) {
     if(state == 0) {
         textBuffer.stopRendering(renderer);
         textPrefix.stopRendering(renderer);

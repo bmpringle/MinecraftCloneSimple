@@ -37,7 +37,7 @@ BlockData Chunk::getBlockAtLocation(const BlockPos pos) {
             }
         }
     }
-    return BlockData();
+    throw std::runtime_error("this chunk does not have a block at that position");
 }
 
 BlockData& Chunk::getBlockReferenceAtLocation(BlockPos pos) {

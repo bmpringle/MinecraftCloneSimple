@@ -7,8 +7,8 @@
 
 class OptionsGui : public Gui {
     public:
-        OptionsGui(Renderer* renderer, GameSettings* settings);
-        void displayGui(Renderer* renderer, int mouseX, int mouseY) override;
+        OptionsGui(VulkanRenderer* renderer, GameSettings* settings);
+        void displayGui(VulkanRenderer* renderer, int mouseX, int mouseY) override;
         int getID() override;
         void mouseClick(int mouseX, int mouseY) override;
         void scrollHandle(double offsetX, double offsetY) override;
@@ -19,7 +19,7 @@ class OptionsGui : public Gui {
         std::map<Setting, Button> optionButtons = std::map<Setting, Button>();
 
     private:
-        Renderer* renderer;
+        VulkanRenderer* renderer;
         GameSettings* settings;
 
         Setting settingToSet = DUMMY_SETTING;

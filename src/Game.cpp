@@ -4,7 +4,7 @@
 #include "SingleplayerSelectGui.h"
 #include "PlatformFilesystem.h"
 
-Game::Game(GLFWwindow* _window) : eventQueue(EventQueue()), map(TimerMap()), input(InputHandler()), renderer(Renderer()), world(nullptr), gameEventHandler(std::make_shared<GameEventHandler>(GameEventHandler(this))), gui(std::make_shared<MainMenuGui>(&renderer)), settings(GameSettings()) {
+Game::Game(GLFWwindow* _window) : eventQueue(EventQueue()), map(TimerMap()), input(InputHandler()), renderer(VulkanRenderer()), world(nullptr), gameEventHandler(std::make_shared<GameEventHandler>(GameEventHandler(this))), gui(std::make_shared<MainMenuGui>(&renderer)), settings(GameSettings()) {
     settings.initDefaultSettings();
     settings.parseOptionsFromFile("src/assets/options.txt");
     
