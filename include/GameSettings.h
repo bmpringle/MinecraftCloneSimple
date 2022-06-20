@@ -25,7 +25,15 @@ enum Setting {
     SLOT7,
     SLOT8,
     SLOT9,
+    SHOW_FPS,
     DUMMY_SETTING,
+};
+
+enum SettingType {
+    BOOL,
+    INPUT,
+    INTEGER,
+    STRING
 };
 
 class GameSettings {
@@ -64,6 +72,7 @@ class GameSettings {
             settings[SLOT7] = "7";
             settings[SLOT8] = "8";
             settings[SLOT9] = "9";
+            settings[SHOW_FPS] = "TRUE";
         }
 
         static const std::string settingToString(Setting s) {
@@ -110,6 +119,8 @@ class GameSettings {
                     return "SLOT8";
                 case SLOT9:
                     return "SLOT9";
+                case SHOW_FPS:
+                    return "SHOW_FPS";
                 default:
                     return "NO_ENUM_CONVERSION_DEFINED";
             }

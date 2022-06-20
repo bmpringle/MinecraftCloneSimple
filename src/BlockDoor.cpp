@@ -2,19 +2,86 @@
 #include "Pos.h"
 #include "World.h"
 
+/*
+ * metadata format: 
+ *  N -> m % 4 = 0, S -> m % 4 = 1, E -> m % 4 = 2, W -> m % 4 = 3
+ *  bottom -> m % 8 < 4, top -> m % 8 >= 4
+ *  closed -> m % 16 < 8, open -> m % 16 >= 8
+ *  left -> m % 32 < 16, right -> m % 32 >= 16
+ */
+
 BlockDoor::BlockDoor() {
-    numberOfVariants = 16;
+    numberOfVariants = 32; 
 }
 
 std::string BlockDoor::getName() {
     return "door";
 }
 
-std::string BlockDoor::getTextureName(SideEnum side, int data) {
-    bool isBottom = false;
-    if(data < 8) {
-        isBottom = true;
+int serializeMetadata(SideEnum sideFacing, bool isBottomDoorBlock, bool isDoorOpen, bool isRightDoor) {
+    int sideFacingMeta = 0;
+
+    switch(sideFacing) {
+        case NORTH:
+            sideFacingMeta = 0;
+            break;
+        case SOUTH:
+            sideFacingMeta = 1;
+            break;
+        case EAST:
+            sideFacingMeta = 2;
+            break;
+        case WEST:
+            sideFacingMeta = 3;
+            break;
+        default:
+            std::cout << "sideFacing is not N/S/E/W, this should not happen" << std::endl;
+            break;
     }
+    int rightDoorMeta = ((isRightDoor) ? 1 : 0) * 16; //options * stride of choice
+    int doorOpenMeta = ((isDoorOpen) ? 1 : 0) * 8;
+    int bottomDoorBlockMeta = ((isBottomDoorBlock) ? 0 : 1) * 4;
+    return rightDoorMeta + doorOpenMeta + bottomDoorBlockMeta + sideFacingMeta;
+}
+
+SideEnum getSideFromMetadata(int data) {
+    switch(data % 4) {
+        case 0:
+            return NORTH;
+        case 1:
+            return SOUTH;
+        case 2:
+            return EAST;
+        case 3:
+            return WEST;
+        default:
+            throw std::runtime_error("data % 4 is not 0-3, should not happen");
+            break;
+    }
+}
+
+bool getIsBottomDoorBlockFromMetadata(int data) {
+    return (data % 8) < 4;
+}
+
+bool getIsDoorOpenFromMetadata(int data) {
+    return (data % 16) >= 8;
+}
+
+bool getIsRightDoorFromMetadata(int data) {
+    return (data % 32) >= 16;
+}
+
+int toggleDoorInMetadata(int data) {
+    return serializeMetadata(getSideFromMetadata(data), getIsBottomDoorBlockFromMetadata(data), !getIsDoorOpenFromMetadata(data), getIsRightDoorFromMetadata(data));
+}
+
+int toggleDoorSideInMetadata(int data) {
+    return serializeMetadata(getSideFromMetadata(data), getIsBottomDoorBlockFromMetadata(data), getIsDoorOpenFromMetadata(data), !getIsRightDoorFromMetadata(data));
+}
+
+std::string BlockDoor::getTextureName(SideEnum side, int data) {
+    bool isBottom = getIsBottomDoorBlockFromMetadata(data);
     return (isBottom) ? "bottom_door.png" : "top_door.png";
 }
 
@@ -23,45 +90,26 @@ int BlockDoor::getXRotation(int data) {
 }
 
 int BlockDoor::getYRotation(int data) {
-    int NSEWData = data % 4;
-    switch(NSEWData) {
-        case 0:
+    switch(getSideFromMetadata(data)) {
+        case NORTH:
             return 180;
-        case 1:
+        case SOUTH:
             return 0;
-        case 2:
+        case EAST:
             return 90;
-        case 3:
+        case WEST:
             return 270; 
+        default:
+            throw std::runtime_error("getSidefromMetadata somehow didn't return N/S/E/W ...");
     }
-    return 0;
 }
 
 int BlockDoor::getZRotation(int data) {
     return 0;
 }
 
-void BlockDoor::onPlaced(SideEnum hPlacementAngle, SideEnum sideLookingAt, int* data) {    
-    bool isBottom = true;
-    if(*data != 0) {
-        isBottom = false;
-    }
-    switch(hPlacementAngle) {
-        case NORTH:
-            *data = 0 + ((!isBottom) ? 8 : 0);
-            return;
-        case SOUTH:
-            *data = 1 + ((!isBottom) ? 8 : 0);
-            return;
-        case EAST:
-            *data = 2 + ((!isBottom) ? 8 : 0);
-            return;
-        case WEST:
-            *data = 3 + ((!isBottom) ? 8 : 0);
-            return;
-        default:
-            break;
-    }
+void BlockDoor::onPlaced(SideEnum hPlacementAngle, SideEnum sideLookingAt, int* data) {  
+    *data = serializeMetadata(hPlacementAngle, (*data == 0), false, false);  
     return;
 }
 
@@ -88,6 +136,14 @@ BlockRenderedModel BlockDoor::getRenderedModel(int data = 0) {
     RenderedTriangle t11 = RenderedTriangle(p3, p4, p7, 0);
     RenderedTriangle t12 = RenderedTriangle(p7, p4, p8, 1);
 
+    t11.a.u = 1 - t11.a.u;
+    t11.b.u = 1 - t11.b.u;
+    t11.c.u = 1 - t11.c.u;
+
+    t12.a.u = 1 - t12.a.u;
+    t12.b.u = 1 - t12.b.u;
+    t12.c.u = 1 - t12.c.u;
+
     std::array<RenderedTriangle, 2> f1 = {t1, t2};
     BlockFace downFace = BlockFace(f1, DOWN);
 
@@ -110,68 +166,174 @@ BlockRenderedModel BlockDoor::getRenderedModel(int data = 0) {
 
     BlockRenderedModel model = BlockRenderedModel(blockFaceArray);
 
-    bool isOpen = (data % 8) > 3;
-    if(isOpen) {
+    if(getIsRightDoorFromMetadata(data)) {
+        model.rotateY90(0.5, 0, 3.0/32.0);
+        model.rotateY90(0.5, 0, 3.0/32.0);
+
+        if(getIsDoorOpenFromMetadata(data)) {
+            model.rotateY90(0.5, 0, 3.0/32.0);
+            model.rotateY90(0.5, 0, 3.0/32.0);
+            model.rotateY90();
+            model.rotateY90();
+            model.rotateY90();
+        }
+    }else if(getIsDoorOpenFromMetadata(data)) {
+        model.rotateY90(0.5, 0, 3.0/32.0);
+        model.rotateY90(0.5, 0, 3.0/32.0);
         model.rotateY90();
     }
+
     return model;
 }
 
 AABB BlockDoor::getAABB(int data) {
     AABB absoluteAABB = AABB(0, 0, 0, 1, 1, 3.0/16.0);
-    absoluteAABB.add(Pos(-0.5, -0.5, -0.5));
-    int xRotation = getXRotation(data) / 90;
-    int yRotation = getYRotation(data) / 90;
-    int zRotation = getZRotation(data) / 90;
+    int xRotation = round((float) getXRotation(data) / 90.0);
+    int yRotation = round((float) getYRotation(data) / 90.0);
+    int zRotation = round((float) getZRotation(data) / 90.0);
+
     for(int i = 0; i < xRotation; ++i) {
-        absoluteAABB.rotateX90();
+        absoluteAABB.rotateX90(0.5, 0.5, 0.5);
     }
     for(int i = 0; i < yRotation; ++i) {
-        absoluteAABB.rotateY90();
+        absoluteAABB.rotateY90(0.5, 0.5, 0.5);
     }
     for(int i = 0; i < zRotation; ++i) {
-        absoluteAABB.rotateZ90();
-    }
-    bool isOpen = (data % 8) > 3;
-    if(isOpen) {
-        absoluteAABB.rotateY90();
+        absoluteAABB.rotateZ90(0.5, 0.5, 0.5);
     }
 
-    absoluteAABB.add(Pos(0.5, 0.5, 0.5));
+    if(getIsRightDoorFromMetadata(data)) {
+        if(getIsDoorOpenFromMetadata(data)) {
+            absoluteAABB.rotateY90(0.5, 0.5, 0.5);
+            absoluteAABB.rotateY90(0.5, 0.5, 0.5);
+            absoluteAABB.rotateY90(0.5, 0.5, 0.5);
+        }
+    }else if(getIsDoorOpenFromMetadata(data)) {
+        absoluteAABB.rotateY90(0.5, 0.5, 0.5);
+    }
 
     return absoluteAABB;
 }
 
 bool BlockDoor::onBlockActivated(World* world, BlockPos pos, ItemStack* stack, int* data) {
-    bool isOpen = (*data % 8) > 3;
-    if(isOpen) {
-        *data = *data - 4;
-    }else {
-        *data = *data + 4;
-    }
+    *data = toggleDoorInMetadata(*data);
 
-    if(*data < 8) {
-        if(world->getBlockData()->getBlockReferenceAtPosition(BlockPos(pos.x, pos.y + 1, pos.z)).getData() % 8 != *data % 8) {
-            world->getBlockData()->getBlockReferenceAtPosition(BlockPos(pos.x, pos.y + 1, pos.z)).activateBlock(world, stack);
+    if(getIsBottomDoorBlockFromMetadata(*data)) {
+        BlockData& blockAbove = world->getBlockData()->getBlockReferenceAtPosition(pos.getAbove());
+        if(getIsDoorOpenFromMetadata(blockAbove.getData()) != getIsDoorOpenFromMetadata(*data)) {
+            blockAbove.activateBlock(world, stack);
         }
     }else {
-        if(world->getBlockData()->getBlockReferenceAtPosition(BlockPos(pos.x, pos.y - 1, pos.z)).getData() % 8 != *data % 8) {
-            world->getBlockData()->getBlockReferenceAtPosition(BlockPos(pos.x, pos.y - 1, pos.z)).activateBlock(world, stack);
+        BlockData& blockBelow = world->getBlockData()->getBlockReferenceAtPosition(pos.getBelow());
+        if(getIsDoorOpenFromMetadata(blockBelow.getData()) != getIsDoorOpenFromMetadata(*data)) {
+            blockBelow.activateBlock(world, stack);
+        }
+    }
+
+    BlockPos left = BlockPos(0, 0, 0);
+    BlockPos right = BlockPos(0, 0, 0);
+
+    switch(getSideFromMetadata(*data)) { //go from absolute l/r to relative l/r
+        case NORTH:
+            left = pos.getRight();
+            right = pos.getLeft();
+            break;
+        case SOUTH:
+            left = pos.getLeft();
+            right = pos.getRight();
+            break;
+        case EAST:
+            left = pos.getFront();
+            right = pos.getBehind();
+            break;
+        case WEST:
+            left = pos.getBehind();
+            right = pos.getFront();
+            break;
+        default:
+            break;
+    }
+
+    if(getIsRightDoorFromMetadata(*data)) {
+        BlockData& leftBlock = world->getBlockData()->getBlockReferenceAtPosition(left);
+        if(getIsDoorOpenFromMetadata(leftBlock.getData()) != getIsDoorOpenFromMetadata(*data)) {
+            leftBlock.activateBlock(world, stack);
+        }
+    }else {
+        BlockData& rightBlock = world->getBlockData()->getBlockReferenceAtPosition(right);
+        if(rightBlock.getBlockType() == Blocks::door && getIsRightDoorFromMetadata(rightBlock.getData())) {
+            if(getIsDoorOpenFromMetadata(rightBlock.getData()) != getIsDoorOpenFromMetadata(*data)) {
+                rightBlock.activateBlock(world, stack);
+            }
         }
     }
     return true;
 }
 
+bool canPairDoorMetadata(int meta1, int meta2) {
+    return ((getIsBottomDoorBlockFromMetadata(meta1) == getIsBottomDoorBlockFromMetadata(meta2)) &&
+           (getSideFromMetadata(meta1) == getSideFromMetadata(meta2)));
+}
+
 void BlockDoor::updateBlock(BlockArrayData* data, BlockData* blockToUpdate) {
     BlockPos pos = blockToUpdate->getPos();
 
-    if(blockToUpdate->getData() < 8) {
-        if(data->getBlockReferenceAtPosition(BlockPos(pos.x, pos.y + 1, pos.z)).isBlockAir()) {
+    if(getIsBottomDoorBlockFromMetadata(blockToUpdate->getData())) {
+        if(data->getBlockReferenceAtPosition(pos.getAbove()).isBlockAir()) {
             data->removeBlockAtPosition(pos);
         }
     }else {
-        if(data->getBlockReferenceAtPosition(BlockPos(pos.x, pos.y - 1, pos.z)).isBlockAir()) {
+        if(data->getBlockReferenceAtPosition(pos.getBelow()).isBlockAir()) {
             data->removeBlockAtPosition(pos);
         }
+    }
+
+    BlockPos left = BlockPos(0, 0, 0);
+    BlockPos twoLeft = BlockPos(0, 0, 0);
+    BlockPos right = BlockPos(0, 0, 0);
+
+    switch(getSideFromMetadata(blockToUpdate->getData())) { //go from absolute l/r to relative l/r
+        case NORTH:
+            left = pos.getRight();
+            twoLeft = left.getRight();
+            right = pos.getLeft();
+            break;
+        case SOUTH:
+            left = pos.getLeft();
+            twoLeft = left.getLeft();
+            right = pos.getRight();
+            break;
+        case EAST:
+            left = pos.getFront();
+            twoLeft = left.getFront();
+            right = pos.getBehind();
+            break;
+        case WEST:
+            left = pos.getBehind();
+            twoLeft = left.getBehind();
+            right = pos.getFront();
+            break;
+        default:
+            break;
+    }
+
+    BlockData leftBlock = data->getBlockReferenceAtPosition(left);
+    BlockData twoLeftBlock = data->getBlockReferenceAtPosition(twoLeft);
+    BlockData rightBlock = data->getBlockReferenceAtPosition(right);
+
+    if(leftBlock.getBlockType() == Blocks::door && canPairDoorMetadata(leftBlock.getData(), blockToUpdate->getData())) {
+        if(twoLeftBlock.getBlockType() != Blocks::door || !canPairDoorMetadata(leftBlock.getData(), blockToUpdate->getData())) {
+            if(rightBlock.getBlockType() != Blocks::door || !canPairDoorMetadata(leftBlock.getData(), blockToUpdate->getData())) {
+                if(!getIsRightDoorFromMetadata(blockToUpdate->getData())) {
+                    blockToUpdate->setData(toggleDoorSideInMetadata(blockToUpdate->getData()));
+                }
+                
+                return;
+            }
+        }
+    }
+
+    if(getIsRightDoorFromMetadata(blockToUpdate->getData())) {
+        blockToUpdate->setData(toggleDoorSideInMetadata(blockToUpdate->getData()));
     }
 }

@@ -30,12 +30,18 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler,
     thePlayer->getInventory()->setItemStackInSlot(7, ItemStack(std::make_shared<ItemBlockDoor>(), 64));
 
     internalBlockData.getChunkWithBlock(BlockPos(0, 0, 0))->addEntityAtPositionOfType(std::make_shared<Entity>(), Pos(0, 46, 0));
+
+    fpsCounter = Button(-(float) renderer->getWidth() * 1.15, (float) renderer->getHeight() * 1.15, 0, 50, "----", renderer);
+    fpsCounter.setLayer(-999);
+    fpsCounter.setRenderData(renderer);
 }
 
 void World::updateGame() {
     input->callRegularEvents(worldEventQueue, timerMap);
 
     internalBlockData.updateChunkList();
+
+    internalBlockData.sendChunkUpdates();
     
     thePlayer->updateEntity(this);
 
@@ -45,6 +51,11 @@ void World::updateGame() {
         for(std::pair<const int, std::shared_ptr<Entity>>& entity : entityMap) {
             entity.second->updateEntity(this);
         }
+    }
+
+    //update FPS counter
+    if(frameCounter > 0) {
+        calculateFPS();
     }
 }
 
@@ -74,9 +85,7 @@ void World::mainLoop() {
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        #if DBG
-        dumpFrameTime();
-        #endif
+        ++frameCounter;
     }
 
     //if player has gui open, close it
@@ -166,7 +175,6 @@ bool AABBIntersectedByAABBVocal(AABB box1, AABB box2) {
 void World::renderGame() {
     if(internalBlockData.shouldUpdateRenderer()) {
         renderer->updateWorldVBO(this);
-        internalBlockData.sendChunkUpdates();
         internalBlockData.hasUpdatedRenderer();
     }
     renderer->updateAspectRatio(window);
@@ -263,6 +271,7 @@ void World::renderOverlays() {
             renderer->setOverlayData("HUD-Hotbar-Item-Select", iconoverlay, "hotbar_select.png");
         }
     }
+
     thePlayer->displayGui(renderer);
 }
 
@@ -278,18 +287,13 @@ int World::getChunkRenderDistance() {
     return chunkRenderDistance;
 }
 
-void World::dumpFrameTime() { 
-    float frameTime = ((float)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - prevFrameTimePoint).count()) / 1000;
-    frameTimeSum += frameTime;
-    ++frameTimeCounter;
-
-    if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - secondTimer).count() >= 1000) {
-        std::cout << "frameTime avg: " << (frameTimeSum / frameTimeCounter) << std::endl;
-        secondTimer = std::chrono::high_resolution_clock::now();
-        frameTimeSum = 0;
-        frameTimeCounter = 0;
-    }
+void World::calculateFPS() { 
+    float timeSinceLastCalculation = ((float)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - prevFrameTimePoint).count()) / 1000;
     prevFrameTimePoint = std::chrono::high_resolution_clock::now();
+
+    int fps = round(1000.0 / (timeSinceLastCalculation / (float) frameCounter));
+    fpsCounter.setText(renderer, "FPS: " + std::to_string(fps));
+    frameCounter = 0;
 }
 
 GLFWwindow* World::getWindowPtr() {
@@ -322,4 +326,6 @@ void World::cleanupHUD() {
     }
 
     renderer->removeOverlayData("HUD-Hotbar-Item-Select");
+
+    fpsCounter.stopRendering(renderer);
 }

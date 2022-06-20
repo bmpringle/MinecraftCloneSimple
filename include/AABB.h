@@ -28,11 +28,11 @@ class AABB {
 
         void add(BlockPos p);
 
-        void rotateX90();
+        void rotateX90(float x = 0, float y = 0, float z = 0);
 
-        void rotateY90();
+        void rotateY90(float x = 0, float y = 0, float z = 0);
 
-        void rotateZ90();
+        void rotateZ90(float x = 0, float y = 0, float z = 0);
 
         float getWidth();
 

@@ -239,11 +239,12 @@ void VulkanRenderer::initTexturesAndModels() {
     for(std::pair<const std::string, std::shared_ptr<Block>>& nameBlockPair : Blocks::blockMap) {
         for(unsigned int meta = 0; meta < nameBlockPair.second->getNumberOfVariants(); ++meta) {
             BlockRenderedModel model = nameBlockPair.second->getRenderedModel(meta);
+            nameBlockPair.second->rotateModel(model, meta);
 
             if(nameBlockPair.second->isLiquid(meta)) {
                 for(BlockFace face : model.renderedBlockModel) {
                     std::vector<TransparentVertex> faceVertices;
-                    int texID = renderer.getTextureArrayID("block-textures", "src/assets/"+nameBlockPair.second->getTextureName(face.side, meta));
+                    int texID = renderer.getTextureArrayID("block-textures", "src/assets/" + nameBlockPair.second->getTextureName(face.side, meta));
 
                     for(RenderedTriangle triangle : face.triangles) {
                         TransparentVertex v1;
@@ -277,7 +278,7 @@ void VulkanRenderer::initTexturesAndModels() {
                 std::vector<Vertex> modelVertices;
 
                 for(BlockFace face : model.renderedBlockModel) {
-                    int texID = renderer.getTextureArrayID("block-textures", "src/assets/"+nameBlockPair.second->getTextureName(face.side, meta));
+                    int texID = renderer.getTextureArrayID("block-textures", "src/assets/" + nameBlockPair.second->getTextureName(face.side, meta));
 
                     for(RenderedTriangle triangle : face.triangles) {
                         Vertex v1;

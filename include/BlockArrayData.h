@@ -97,9 +97,9 @@ class BlockArrayData {
         double width = Chunk::getChunkSize().at(0);
         double height = Chunk::getChunkSize().at(2);
 
-        int averageTerrainHeight = 30;
+        int averageTerrainHeight = 60;
         double amplifier = 3;
-        int waterLevel = 28;
+        int waterLevel = 58;
 
         noise::module::Perlin noise = noise::module::Perlin();
 

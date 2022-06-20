@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "TimerMap/TimerMap.h"
 #include "GameSettings.h"
+#include "Button.h"
 
 class World {
     public:
@@ -50,7 +51,7 @@ class World {
 
         void renderOverlays();
         
-        void dumpFrameTime();
+        void calculateFPS();
 
         void cleanupHUD();
 
@@ -75,10 +76,11 @@ class World {
         std::chrono::high_resolution_clock::time_point prevFrameTimePoint = std::chrono::high_resolution_clock::now();
         std::chrono::high_resolution_clock::time_point secondTimer = std::chrono::high_resolution_clock::now();
 
-        double frameTimeSum = 0;
-        int frameTimeCounter = 0;
+        int frameCounter = 0;
 
         float worldGravity = 32;
+
+        Button fpsCounter;
 };
 
 bool AABBIntersectedByAABB(AABB box1, AABB box2);
