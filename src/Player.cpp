@@ -388,49 +388,49 @@ void Player::displayGui(VulkanRenderer* renderer) {
 void Player::processInput(std::string event, std::string key, std::shared_ptr<Event> e) {
     if(event == "KEYPRESSED" || key == "") {
         if(gui == nullptr) {
-            if(e->getEventID() == settings->getSetting(SLOT1) || key == settings->getSetting(SLOT1)) {
+            if(e->getEventID() == settings->getSetting(SLOT1)->getSettingState() || key == settings->getSetting(SLOT1)->getSettingState()) {
                 setItemInHandIndex(0);
             }
 
-            if(e->getEventID() == settings->getSetting(SLOT2) || key == settings->getSetting(SLOT2)) {
+            if(e->getEventID() == settings->getSetting(SLOT2)->getSettingState() || key == settings->getSetting(SLOT2)->getSettingState()) {
                 setItemInHandIndex(1);
             }
 
-            if(e->getEventID() == settings->getSetting(SLOT3) || key == settings->getSetting(SLOT3)) {
+            if(e->getEventID() == settings->getSetting(SLOT3)->getSettingState() || key == settings->getSetting(SLOT3)->getSettingState()) {
                 setItemInHandIndex(2);
             }
 
-            if(e->getEventID() == settings->getSetting(SLOT4) || key == settings->getSetting(SLOT4)) {
+            if(e->getEventID() == settings->getSetting(SLOT4)->getSettingState() || key == settings->getSetting(SLOT4)->getSettingState()) {
                 setItemInHandIndex(3);
             }
 
-            if(e->getEventID() == settings->getSetting(SLOT5) || key == settings->getSetting(SLOT5)) {
+            if(e->getEventID() == settings->getSetting(SLOT5)->getSettingState() || key == settings->getSetting(SLOT5)->getSettingState()) {
                 setItemInHandIndex(4);
             }
 
-            if(e->getEventID() == settings->getSetting(SLOT6) || key == settings->getSetting(SLOT6)) {
+            if(e->getEventID() == settings->getSetting(SLOT6)->getSettingState() || key == settings->getSetting(SLOT6)->getSettingState()) {
                 setItemInHandIndex(5);
             }
 
-            if(e->getEventID() == settings->getSetting(SLOT7) || key == settings->getSetting(SLOT7)) {
+            if(e->getEventID() == settings->getSetting(SLOT7)->getSettingState() || key == settings->getSetting(SLOT7)->getSettingState()) {
                 setItemInHandIndex(6);
             }
 
-            if(e->getEventID() == settings->getSetting(SLOT8) || key == settings->getSetting(SLOT8)) {
+            if(e->getEventID() == settings->getSetting(SLOT8)->getSettingState() || key == settings->getSetting(SLOT8)->getSettingState()) {
                 setItemInHandIndex(7);
             }
 
-            if(e->getEventID() == settings->getSetting(SLOT9) || key == settings->getSetting(SLOT9)) {
+            if(e->getEventID() == settings->getSetting(SLOT9)->getSettingState() || key == settings->getSetting(SLOT9)->getSettingState()) {
                 setItemInHandIndex(8);
             }
 
-            if(e->getEventID() == settings->getSetting(USE_SECOND) || key == settings->getSetting(USE_SECOND)) {
+            if(e->getEventID() == settings->getSetting(USE_SECOND)->getSettingState() || key == settings->getSetting(USE_SECOND)->getSettingState()) {
                 inventory[itemInHandIndex].onUse(world);
                 world->getTimerMap()->resetTimer("itemUseTimer");
             }
         }
 
-        if(e->getEventID() == settings->getSetting(INVENTORY) || key == settings->getSetting(INVENTORY)) {
+        if(e->getEventID() == settings->getSetting(INVENTORY)->getSettingState() || key == settings->getSetting(INVENTORY)->getSettingState()) {
             if(gui == nullptr) {
                 glfwSetInputMode(world->getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL); 
                 gui = std::make_unique<InventoryGui>(world->getRenderer(), &inventory);
@@ -441,7 +441,7 @@ void Player::processInput(std::string event, std::string key, std::shared_ptr<Ev
             }
         }
 
-        if(e->getEventID() == settings->getSetting(ATTACK) || key == settings->getSetting(ATTACK)) {
+        if(e->getEventID() == settings->getSetting(ATTACK)->getSettingState() || key == settings->getSetting(ATTACK)->getSettingState()) {
             if(gui == nullptr) {                
                 inventory[itemInHandIndex].onLeftClick(world, blockLookingAt);
                 if(blockLookingAt != nullptr) {
@@ -453,7 +453,7 @@ void Player::processInput(std::string event, std::string key, std::shared_ptr<Ev
             }
         }
 
-        if(e->getEventID() == settings->getSetting(USE) || key == settings->getSetting(USE)) {
+        if(e->getEventID() == settings->getSetting(USE)->getSettingState() || key == settings->getSetting(USE)->getSettingState()) {
             if(gui == nullptr) {
                 inventory[itemInHandIndex].onUse(world);
                 world->getTimerMap()->resetTimer("itemUseTimer");
@@ -463,41 +463,41 @@ void Player::processInput(std::string event, std::string key, std::shared_ptr<Ev
     
     if(event == "KEYHELD" || key == "") {        
         if(gui == nullptr) {
-            if(key == settings->getSetting(MOVE_FORWARD)) {
+            if(key == settings->getSetting(MOVE_FORWARD)->getSettingState()) {
                 ++zInputDirection;
             }
 
-            if(key == settings->getSetting(MOVE_LEFT)) {
+            if(key == settings->getSetting(MOVE_LEFT)->getSettingState()) {
                 --xInputDirection;
             }
 
-            if(key == settings->getSetting(MOVE_BACK)) {
+            if(key == settings->getSetting(MOVE_BACK)->getSettingState()) {
                 --zInputDirection;
             }
 
-            if(key == settings->getSetting(MOVE_RIGHT)) {
+            if(key == settings->getSetting(MOVE_RIGHT)->getSettingState()) {
                 ++xInputDirection;
             }
 
-            if(key == settings->getSetting(USE_SECOND) || event == settings->getSetting(USE_SECOND)) {
+            if(key == settings->getSetting(USE_SECOND)->getSettingState() || event == settings->getSetting(USE_SECOND)->getSettingState()) {
                 if(std::chrono::duration_cast<std::chrono::milliseconds>(world->getTimerMap()->getTimerDuration("itemUseTimer")).count() > 200) {
                     inventory[itemInHandIndex].onUse(world);
                     world->getTimerMap()->resetTimer("itemUseTimer");
                 }
             }
 
-            if(key == settings->getSetting(JUMP) || event == settings->getSetting(JUMP)) {
+            if(key == settings->getSetting(JUMP)->getSettingState() || event == settings->getSetting(JUMP)->getSettingState()) {
                 if(isGrounded || canJumpInWater(world->getBlockData())) {
                     isJumping = true;
                     motion[1] = 0.21 * ((waterPhysics) ? 0.47 : 1);
                 }
             }
 
-            if(key == settings->getSetting(SNEAK)) {
+            if(key == settings->getSetting(SNEAK)->getSettingState()) {
                 isSneaking = true;
             }
 
-            if(key == settings->getSetting(SPRINT)) {
+            if(key == settings->getSetting(SPRINT)->getSettingState()) {
                 isSprinting = true;
             }
         }
@@ -505,11 +505,11 @@ void Player::processInput(std::string event, std::string key, std::shared_ptr<Ev
 
     if(event == "KEYRELEASED") {
         if(gui == nullptr) {
-            if(key == settings->getSetting(SNEAK)) {
+            if(key == settings->getSetting(SNEAK)->getSettingState()) {
                 isSneaking = false;
             }
 
-            if(key == settings->getSetting(SPRINT)) {
+            if(key == settings->getSetting(SPRINT)->getSettingState()) {
                 isSprinting = false;
             }
         }

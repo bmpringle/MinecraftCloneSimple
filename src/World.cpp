@@ -33,7 +33,12 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler,
 
     fpsCounter = Button(-(float) renderer->getWidth() * 1.15, (float) renderer->getHeight() * 1.15, 0, 50, "----", renderer);
     fpsCounter.setLayer(-999);
-    fpsCounter.setRenderData(renderer);
+
+    isRenderingFPSCounter = settings->getSetting(SHOW_FPS)->getSettingState() == "TRUE";
+
+    if(isRenderingFPSCounter) {
+        fpsCounter.setRenderData(renderer);
+    }
 }
 
 void World::updateGame() {
@@ -189,6 +194,14 @@ void World::renderGame() {
 }
 
 void World::renderOverlays() {
+    if(settings->getSetting(SHOW_FPS)->getSettingState() == "TRUE" && !isRenderingFPSCounter) {
+        fpsCounter.setRenderData(renderer);
+    }
+
+    if(settings->getSetting(SHOW_FPS)->getSettingState() == "FALSE" && isRenderingFPSCounter) {
+        fpsCounter.stopRendering(renderer);
+    }
+
     float overlay[48] = {
         -11, -11, 0, 1, 1, 1, 0, 0,
         11, -11, 0, 1, 1, 1, 1, 0,
@@ -327,5 +340,9 @@ void World::cleanupHUD() {
 
     renderer->removeOverlayData("HUD-Hotbar-Item-Select");
 
-    fpsCounter.stopRendering(renderer);
+    if(isRenderingFPSCounter) {
+        fpsCounter.stopRendering(renderer);
+
+        isRenderingFPSCounter = false;
+    }
 }

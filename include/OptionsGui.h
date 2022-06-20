@@ -35,5 +35,7 @@ class OptionsGui : public Gui {
             }
             return s;
         };
+
+        std::string stringBuffer = "";
 };
 #endif

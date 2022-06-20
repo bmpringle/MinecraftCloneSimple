@@ -81,6 +81,7 @@ class World {
         float worldGravity = 32;
 
         Button fpsCounter;
+        bool isRenderingFPSCounter = false; 
 };
 
 bool AABBIntersectedByAABB(AABB box1, AABB box2);

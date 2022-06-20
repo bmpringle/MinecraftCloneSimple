@@ -11,8 +11,8 @@ OptionsGui::OptionsGui(VulkanRenderer* renderer, GameSettings* settings) : done(
 
     int buttonOffset = 0;
 
-    for(std::pair<Setting, std::string> setting : settings->getSettingsMap()) {
-        Button b = Button(0, 0, 0, 200, GameSettings::settingToString(setting.first) + ": " + displaySetting(setting.second), renderer);
+    for(auto setting : settings->getSettingsMap()) {
+        Button b = Button(0, 0, 0, 200, GameSettings::settingToString(setting.first) + ": " + displaySetting(setting.second->getSettingState()), renderer);
 
         b.autoSize(0, 800 + buttonOffset);
 
@@ -68,6 +68,14 @@ void OptionsGui::mouseClick(int mouseX, int mouseY) {
     for(std::pair<Setting, Button> button : optionButtons) {
         if(button.second.isBeingHoveredOver(mouseX, mouseY, renderer->getWidth(), renderer->getHeight(), 0, scrollY)) {
             settingToSet = button.first;
+            stringBuffer = "";
+
+            if(GameSettings::getSettingType(settingToSet) == BOOL) {
+                settings->setSetting(settingToSet, (!(settings->getSetting(settingToSet)->getSettingState() == "TRUE") ? "TRUE" : "FALSE"));
+
+                handleOptionInput("NULL");
+            }
+
             button.second.setPressed();
         }else {
             done.isPressed();
@@ -103,15 +111,67 @@ void OptionsGui::handleOptionInput(std::string input) {
         return;
     }
 
-    settings->setSetting(settingToSet, input);
-    Button oldButton = optionButtons[settingToSet];
-    double middleX = oldButton.getX() + (double)oldButton.getWidth() / 2.0;
-    double middleY = oldButton.getY() + (double)oldButton.getHeight() / 2.0;
+    SettingType type = GameSettings::getSettingType(settingToSet);
 
-    oldButton.stopRendering(renderer);
-    optionButtons[settingToSet] = Button(0, 0, 0, 200, GameSettings::settingToString(settingToSet) + ": " + displaySetting(settings->getSetting(settingToSet)), renderer);
-    
-    optionButtons[settingToSet].autoSize(middleX, middleY);
-    
-    settingToSet = DUMMY_SETTING;
+    if(type == INPUT) {
+        settings->setSetting(settingToSet, input);
+
+        Button oldButton = optionButtons[settingToSet];
+        double middleX = oldButton.getX() + (double)oldButton.getWidth() / 2.0;
+        double middleY = oldButton.getY() + (double)oldButton.getHeight() / 2.0;
+
+        oldButton.stopRendering(renderer);
+        optionButtons[settingToSet] = Button(0, 0, 0, 200, GameSettings::settingToString(settingToSet) + ": " + displaySetting(settings->getSetting(settingToSet)->getSettingState()), renderer);
+        
+        optionButtons[settingToSet].autoSize(middleX, middleY);
+        
+        settingToSet = DUMMY_SETTING;
+    }else if(type == BOOL) {
+        Button oldButton = optionButtons[settingToSet];
+        double middleX = oldButton.getX() + (double)oldButton.getWidth() / 2.0;
+        double middleY = oldButton.getY() + (double)oldButton.getHeight() / 2.0;
+
+        oldButton.stopRendering(renderer);
+        optionButtons[settingToSet] = Button(0, 0, 0, 200, GameSettings::settingToString(settingToSet) + ": " + displaySetting(settings->getSetting(settingToSet)->getSettingState()), renderer);
+        
+        optionButtons[settingToSet].autoSize(middleX, middleY);
+        
+        settingToSet = DUMMY_SETTING;
+    }else if(type == INTEGER) {
+        if(input == "ENTER") {
+            settings->setSetting(settingToSet, stringBuffer);
+            stringBuffer = "";
+
+            Button oldButton = optionButtons[settingToSet];
+            double middleX = oldButton.getX() + (double)oldButton.getWidth() / 2.0;
+            double middleY = oldButton.getY() + (double)oldButton.getHeight() / 2.0;
+
+            oldButton.stopRendering(renderer);
+            optionButtons[settingToSet] = Button(0, 0, 0, 200, GameSettings::settingToString(settingToSet) + ": " + displaySetting(settings->getSetting(settingToSet)->getSettingState()), renderer);
+            
+            optionButtons[settingToSet].autoSize(middleX, middleY);
+            
+            settingToSet = DUMMY_SETTING;
+        }else {
+            try {
+                std::stoi(input);
+                stringBuffer += input;
+
+                settings->setSetting(settingToSet, stringBuffer);
+
+                Button oldButton = optionButtons[settingToSet];
+                double middleX = oldButton.getX() + (double)oldButton.getWidth() / 2.0;
+                double middleY = oldButton.getY() + (double)oldButton.getHeight() / 2.0;
+
+                oldButton.stopRendering(renderer);
+                optionButtons[settingToSet] = Button(0, 0, 0, 200, GameSettings::settingToString(settingToSet) + ": " + displaySetting(settings->getSetting(settingToSet)->getSettingState()), renderer);
+                
+                optionButtons[settingToSet].autoSize(middleX, middleY);
+            }catch(std::invalid_argument ex) {
+                //cehck if input is a valid integer
+            }
+        }
+    }else if(type == STRING) {
+        //todo: implement handling for STRING type Setting
+    }
 }
