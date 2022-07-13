@@ -404,7 +404,7 @@ void VulkanRenderer::updateChunkData(Chunk* chunk, BlockArrayData* data) {
 
                     if(checkBlock.isBlockAir()) {
                         liquidBlockTypesToInstanceSets[typeString].insert(InstanceData({{-block.getPos().x, block.getPos().y, block.getPos().z}}));
-                    }else if(checkBlock.getBlockType() != block.getBlockType() && (side == UP || !checkBlock.getBlockType()->isOpaque())) {
+                    }else if(checkBlock.getBlockType() != block.getBlockType() && (side == UP)) {
                         liquidBlockTypesToInstanceSets[typeString].insert(InstanceData({{-block.getPos().x, block.getPos().y, block.getPos().z}}));
                     }
                 }catch (std::runtime_error ex) {
