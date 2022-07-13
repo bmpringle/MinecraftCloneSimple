@@ -6,6 +6,10 @@ MainMenuGui::MainMenuGui(VulkanRenderer* renderer) : singleplayer(Button(0, 0, 0
     options.autoSize(0, 0);
 }
 
+void MainMenuGui::open() {
+    
+}
+
 void MainMenuGui::displayGui(VulkanRenderer* renderer, int mouseX, int mouseY) {
     singleplayer.setRenderData(renderer);
     quit.setRenderData(renderer);

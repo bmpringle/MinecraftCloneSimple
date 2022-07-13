@@ -11,7 +11,8 @@ class MainMenuGui : public Gui {
         void mouseClick(int mouseX, int mouseY) override;
         void scrollHandle(double offsetX, double offsetY) override;
         void close() override;
-
+        void open() override;
+        
         Button singleplayer;
         Button quit;
         Button options;

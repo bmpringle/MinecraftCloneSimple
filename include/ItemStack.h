@@ -36,7 +36,7 @@ class ItemStack {
 
         int count = 0;
 
-        static unsigned int itemStackCount;
+        static uint64_t itemStackCount;
 
         std::string textureID;
 

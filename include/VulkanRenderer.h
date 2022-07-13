@@ -56,6 +56,8 @@ class VulkanRenderer {
 
         void setWaterTint(bool shouldTint);
 
+        void removeTexture(std::string textureID);
+
     private:
         VKRenderer renderer = VKRenderer();
 

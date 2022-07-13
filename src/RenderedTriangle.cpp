@@ -1,5 +1,9 @@
 #include "RenderedTriangle.h"
 
+RenderedTriangle::RenderedTriangle() {
+
+}
+
 RenderedTriangle::RenderedTriangle(RenderedPoint _a, RenderedPoint _b, RenderedPoint _c, int uvFlag, double scaleX, double scaleY) : a(_a), b(_b), c(_c) {
     if(uvFlag == 0) {
         a.u = 0;

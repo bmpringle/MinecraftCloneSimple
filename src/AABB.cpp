@@ -183,5 +183,12 @@ std::vector<WireframeVertex> AABB::getWireframeFromAABB() {
     vertices.push_back({{-startX, startY + ySize, startZ + zSize}});
     vertices.push_back({{-startX, startY + ySize, startZ}});
 
+    glm::vec3 middleOfWireframe = glm::vec3((-startX + (-startX - xSize)) / 2.0, (startY + (startY + ySize)) / 2.0, (startZ + (startZ + zSize)) / 2.0);
+    for(WireframeVertex& v : vertices) {
+        v.position -= middleOfWireframe;
+        v.position *= 1.005;
+        v.position += middleOfWireframe;
+    }
+
     return vertices;
 }

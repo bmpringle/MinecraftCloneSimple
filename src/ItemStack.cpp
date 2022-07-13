@@ -3,7 +3,7 @@
 #include "RenderInclude.h"
 #include "World.h"
 
-unsigned int ItemStack::itemStackCount = 0;
+uint64_t ItemStack::itemStackCount = 0;
 
 ItemStack::ItemStack(std::shared_ptr<Item> item, int count) : item(item), count(count) {
     textureID = "itemStackTexture" + std::to_string(itemStackCount);

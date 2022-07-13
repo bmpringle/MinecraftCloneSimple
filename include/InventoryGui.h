@@ -13,7 +13,12 @@ class InventoryGui : public Gui  {
         void mouseClick(int mouseX, int mouseY) override;
         void scrollHandle(double offsetX, double offsetY) override;
         void close() override;
+        void open() override;
     private:
+        void renderItems();
+
+        //bool itemsChanged = false;
+
         const std::string background = "inventory.png";
         const double x = -0.75;
         const double xSize = 1;

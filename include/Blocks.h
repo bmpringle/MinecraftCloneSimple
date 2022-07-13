@@ -1,16 +1,8 @@
 #ifndef BLOCKS_H
 #define BLOCKS_H
 
-#include "BlockDirt.h"
-#include "BlockCobblestone.h"
-#include "BlockGrass.h"
-#include "BlockLog.h"
-#include "BlockLeaf.h"
-#include "BlockWater.h"
-#include "BlockPlanks.h"
-#include "BlockDoor.h"
-
 #include <map>
+#include "Block.h"
 
 class Blocks {
     public: 
@@ -24,5 +16,6 @@ class Blocks {
         static const std::shared_ptr<Block> water;
         static const std::shared_ptr<Block> planks;
         static const std::shared_ptr<Block> door;
+        static const std::shared_ptr<Block> glass;
 };
 #endif

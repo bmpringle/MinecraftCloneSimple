@@ -229,10 +229,7 @@ AABB Chunk::getChunkAABB() {
 }
 
 std::vector<BlockData> Chunk::getBlocksInChunk() {
-    std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
-        return true;
-    };
-    std::vector<std::optional<SBDA>*> blocksVector = blockTree.getLeafOfTree(eval);
+    std::vector<std::optional<SBDA>*> blocksVector = blockTree.getAllLeavesOfTree();
 
     std::vector<BlockData> result = std::vector<BlockData>();
 
@@ -333,10 +330,7 @@ BinaryTree<SBDA, AABB, SBDA>* Chunk::getBlockTree() {
 }
 
 void Chunk::updateChunk(BlockArrayData* data) {
-    std::function<bool(AABB, bool, std::optional<SBDA>*)> eval = [](AABB aabb, bool isLeaf, std::optional<SBDA>* block) -> bool {
-        return true;
-    };
-    std::vector<std::optional<SBDA>*> blocksVector = blockTree.getLeafOfTree(eval);
+    std::vector<std::optional<SBDA>*> blocksVector = blockTree.getAllLeavesOfTree();
 
     for(std::optional<SBDA>* blocks : blocksVector) {
         for(int i = 0; i < 256; ++i) {

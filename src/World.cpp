@@ -28,6 +28,8 @@ World::World(GLFWwindow* window_, EventQueue* queue, InputHandler* inputHandler,
     thePlayer->getInventory()->setItemStackInSlot(5, ItemStack(std::make_shared<ItemBlock>(Blocks::water), 64));
     thePlayer->getInventory()->setItemStackInSlot(6, ItemStack(std::make_shared<ItemBlock>(Blocks::planks), 64));
     thePlayer->getInventory()->setItemStackInSlot(7, ItemStack(std::make_shared<ItemBlockDoor>(), 64));
+    thePlayer->getInventory()->setItemStackInSlot(8, ItemStack(std::make_shared<ItemBlock>(Blocks::glass), 64));
+
 
     internalBlockData.getChunkWithBlock(BlockPos(0, 0, 0))->addEntityAtPositionOfType(std::make_shared<Entity>(), Pos(0, 46, 0));
 
@@ -238,7 +240,7 @@ void World::renderOverlays() {
     Inventory* inv = thePlayer->getInventory();
 
     for(int i = 0; i < 9; ++i) {
-        ItemStack stack = inv->getItemStackInSlot(i);
+        ItemStack& stack = inv->getItemStackInSlot(i);
 
         if(stack.getItem() != nullptr && stack.getCount() > 0) {
             float sizeX = 16;

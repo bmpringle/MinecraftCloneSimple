@@ -10,7 +10,6 @@ def execCmdProcessReturn(cmd, cwdOverride = './'):
     process = subprocess.Popen(shell='true', cwd=cwdOverride, args=cmd, stdout=subprocess.PIPE)
     return process
 
-output, error = execCmd('git submodule update --init --recursive')
 output, error = execCmd('mkdir -p lib')
 output, error = execCmd('make library', cwdOverride = './EventQueue/')
 output, error = execCmd('mv ./eventLib.a ../../lib/eventLib.a', cwdOverride = './EventQueue/lib/')

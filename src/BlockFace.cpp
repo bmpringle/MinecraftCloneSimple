@@ -1,6 +1,6 @@
 #include "BlockFace.h"
 
-BlockFace::BlockFace(std::array<RenderedTriangle, 2> tris, SideEnum s) : triangles(tris), side(s) {
+BlockFace::BlockFace(std::vector<RenderedTriangle> tris, SideEnum s) : triangles(tris), side(s) {
 
 }
 

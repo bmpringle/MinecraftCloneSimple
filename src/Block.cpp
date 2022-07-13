@@ -39,22 +39,22 @@ BlockRenderedModel Block::getRenderedModel(int data) {
     RenderedTriangle t11 = RenderedTriangle(p3, p4, p7, 0);
     RenderedTriangle t12 = RenderedTriangle(p7, p4, p8, 1);
 
-    std::array<RenderedTriangle, 2> f1 = {t1, t2};
+    std::vector<RenderedTriangle> f1 = {t1, t2};
     BlockFace downFace = BlockFace(f1, DOWN);
 
-    std::array<RenderedTriangle, 2> f2 = {t3, t4};
+    std::vector<RenderedTriangle> f2 = {t3, t4};
     BlockFace upFace = BlockFace(f2, UP);
 
-    std::array<RenderedTriangle, 2> f3 = {t5, t6};
+    std::vector<RenderedTriangle> f3 = {t5, t6};
     BlockFace westFace = BlockFace(f3, WEST);
 
-    std::array<RenderedTriangle, 2> f4 = {t7, t8};
+    std::vector<RenderedTriangle> f4 = {t7, t8};
     BlockFace eastFace = BlockFace(f4, EAST);
 
-    std::array<RenderedTriangle, 2> f5 = {t9, t10};
+    std::vector<RenderedTriangle> f5 = {t9, t10};
     BlockFace southFace = BlockFace(f5, SOUTH);
 
-    std::array<RenderedTriangle, 2> f6 = {t11, t12};
+    std::vector<RenderedTriangle> f6 = {t11, t12};
     BlockFace northFace = BlockFace(f6, NORTH);
 
     std::array<BlockFace, 6> blockFaceArray = {upFace, downFace, northFace, southFace, eastFace, westFace};

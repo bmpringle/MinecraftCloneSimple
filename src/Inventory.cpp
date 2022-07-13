@@ -4,7 +4,7 @@ Inventory::Inventory(int slots) {
     items.resize(slots);
 }
 
-ItemStack Inventory::getItemStackInSlot(int slot) {
+ItemStack& Inventory::getItemStackInSlot(int slot) {
     return items[slot];
 }
 

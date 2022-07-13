@@ -9,7 +9,7 @@ class Inventory {
     public: 
         Inventory(int slots);
 
-        ItemStack getItemStackInSlot(int slot);
+        ItemStack& getItemStackInSlot(int slot);
 
         void setItemStackInSlot(int slot, ItemStack item);
 

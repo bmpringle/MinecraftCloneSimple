@@ -62,7 +62,7 @@ class Button {
 
         std::string id = "-1";
 
-        static unsigned int buttonCount;
+        static uint64_t buttonCount;
 
         int b_w = 0;
         int b_h = 0;
@@ -76,5 +76,7 @@ class Button {
         std::string renderID;
 
         bool renderButtonBackground = false;
+
+        VulkanRenderer* renderer;
 };
 #endif

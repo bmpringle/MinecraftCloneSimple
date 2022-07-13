@@ -1,6 +1,6 @@
 #include "Button.h"
 
-unsigned int Button::buttonCount = 0;
+uint64_t Button::buttonCount = 0;
 
 Button::Button(int x, int y, int width, int height, std::string texture, VulkanRenderer* renderer) : x(x), y(y), width(width), height(height), text(texture) {
     id = std::to_string(buttonCount);

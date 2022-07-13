@@ -8,6 +8,7 @@ VulkanRenderer::VulkanRenderer() : renderer(VKRenderer()) {
     renderer.setClearColor(glm::vec4(0, 0, 1, 1));
     renderer.setOverlayBounds(1000, 1000, 1000);
     renderer.setWireframeTopology(VK_PRIMITIVE_TOPOLOGY_LINE_STRIP);
+    renderer.setCameraNear(0.1);
 
     glfwSetInputMode(getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
@@ -444,4 +445,8 @@ void VulkanRenderer::setWaterTint(bool shouldTint) {
     }else {
         renderer.setScreenTint(glm::vec3(1, 1, 1));
     }
+}
+
+void VulkanRenderer::removeTexture(std::string textureID) {
+    renderer.removeTexture(textureID);
 }

@@ -3,7 +3,7 @@
 
 class RenderedPoint {
     public:
-        RenderedPoint(float _x, float _y, float _z, float _u, float _v);
+        RenderedPoint(float _x, float _y, float _z, float _u = 0, float _v = 0);
 
         float x = 0;
         float y = 0;

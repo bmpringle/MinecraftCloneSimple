@@ -4,6 +4,10 @@ InventoryGui::InventoryGui(VulkanRenderer* renderer, Inventory* inv) : inventory
 
 }
 
+void InventoryGui::open() {
+    
+}
+
 void InventoryGui::displayGui(VulkanRenderer* renderer, int mouseX, int mouseY) {
     
     std::array<int, 2> dims = renderer->overlayDimensions();
@@ -25,7 +29,7 @@ void InventoryGui::displayGui(VulkanRenderer* renderer, int mouseX, int mouseY) 
     renderer->setOverlayData("inventory-background", guioverlay, background);
 
     for(int i = 0; i < 36; ++i) {
-        ItemStack stack = inventory->getItemStackInSlot(i);
+        ItemStack& stack = inventory->getItemStackInSlot(i);
         float rowStartX = texStartX / backgroundTexX * dims.at(0);
         float rowStartY = 0;
 
@@ -98,7 +102,7 @@ void InventoryGui::displayGui(VulkanRenderer* renderer, int mouseX, int mouseY) 
         }else {
             renderer->removeOverlayData("inventory-stack-" + std::to_string(i));
             renderer->removeOverlayData("inventory-stack-count-" + std::to_string(i));
-        }   
+        }
 
         if(!itemStackHeld.isEmpty()) {
             float xSize = (end - xStart);

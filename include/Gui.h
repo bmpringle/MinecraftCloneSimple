@@ -11,6 +11,8 @@ class Gui {
         virtual void mouseClick(int mouseX, int mouseY) = 0;
         virtual void scrollHandle(double offsetX, double offsetY) = 0;
         virtual void close() = 0;
+        virtual void open() = 0;
+        
         virtual ~Gui() = default;
 };
 #endif

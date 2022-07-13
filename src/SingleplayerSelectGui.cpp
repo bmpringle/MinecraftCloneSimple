@@ -101,3 +101,7 @@ void SingleplayerSelectGui::close() {
     textBuffer.stopRendering(renderer);
     textPrefix.stopRendering(renderer);
 }
+
+void SingleplayerSelectGui::open() {
+    
+}

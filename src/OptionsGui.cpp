@@ -106,6 +106,10 @@ void OptionsGui::close() {
     renderer->removeOverlayData("options-gui-cutout2");
 }
 
+void OptionsGui::open() {
+    
+}
+
 void OptionsGui::handleOptionInput(std::string input) {
     if(settingToSet == DUMMY_SETTING) {
         return;
